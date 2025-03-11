@@ -66,8 +66,6 @@ export default {
         password: '',
         rePassword: '',
       },
-      phoneError: true,
-      passwordError: true,
       smsCountDown: 0
     };
   },
@@ -83,33 +81,63 @@ export default {
       }
     },
   },
-  onShow() {
-
-  },
   created() {
     this.safe = uni.getSystemInfoSync().safeArea
   },
   methods: {
     login() {
-      uni.switchTab({
-        url: '/pages/home/index'
+      let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
+
+      if(!this.loginFormData.phone || this.loginFormData.phone.length === 0){
+        this.$tip.toast('请填写手机号');
+        return;
+      }
+      if(!checkPhone.test(this.loginFormData.phone)){
+        this.$tip.toast('请输入正确的手机号');
+        return;
+      }
+      if (this.loginType === 0) {
+        this.onPasswordLogin();
+      } else {
+        this.onSMSLogin()
+      }
+    },
+    onPasswordLogin() {
+      if (!this.loginFormData.password) {
+        this.$tip.toast('请输入密码');
+        return
+      }
+      let params = {
+        phone: this.loginFormData.phone,
+        password: this.loginFormData.password,
+      }
+      this.$http.post('/user/login', params).then(res => {
+        if (res.status === 'success') {
+          uni.setStorageSync('userId', res.data.user_id)
+          uni.switchTab({
+            url: '/pages/home/index'
+          })
+        }else {
+          this.$tip.toast(res.message);
+        }
       })
+    },
+    onSMSLogin() {
+      if(!this.loginFormData.sms || this.loginFormData.sms.length === 0){
+        this.$tip.toast('请填短信验证码');
+        return;
+      }
+      console.log(222)
     },
     onSMSSend() {
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
-      if (!this.loginFormData.phone || this.loginFormData.phone === 0) {
-        uni.showToast({
-          title: '请输入手机号',
-          icon: 'none'
-        });
-        return false
+      if (!this.loginFormData.phone || this.loginFormData.phone.length === 0) {
+        this.$tip.toast('请填写手机号');
+        return
       }
       if (!checkPhone.test(this.loginFormData.phone)) {
-        uni.showToast({
-          title: '请输入正确的手机号',
-          icon: 'none'
-        });
-        return false
+        this.$tip.toast('请输入正确的手机号');
+        return
       }
       this.smsCountDown = 60;
       this.startSMSTimer();
@@ -122,6 +150,51 @@ export default {
         }
       }, 1000);
     },
+    register() {
+      let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
+      if (!this.registerFormData.phone || this.registerFormData.phone.length === 0) {
+        this.$tip.toast('请填写手机号');
+        return
+      }
+      if (!checkPhone.test(this.registerFormData.phone)) {
+        this.$tip.toast('请输入正确的手机号');
+        return
+      }
+      if (!this.registerFormData.password || this.registerFormData.password.length === 0) {
+        this.$tip.toast('请填写密码');
+        return
+      }
+      if (this.registerFormData.password !== this.registerFormData.rePassword) {
+        this.$tip.toast('两次密码不一致');
+        return
+      }
+      let params = {
+        phone: this.registerFormData.phone,
+        password: this.registerFormData.password,
+      }
+      this.$http.post('/user/register', params).then(res => {
+        if (res.status === 'success') {
+          this.$tip.toast('注册成功，请登录');
+          this.resetData();
+        } else {
+          this.$tip.toast(res.message);
+        }
+      })
+    },
+    resetData() {
+      this.isLogin = true
+      this.loginType = 0
+      this.loginFormData = {
+        phone: '',
+        password: '',
+        sms: '',
+      };
+      this.registerFormData = {
+        phone: '',
+        password: '',
+        rePassword: '',
+      };
+    }
   },
 }
 </script>

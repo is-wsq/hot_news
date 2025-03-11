@@ -1,55 +1,64 @@
 <template>
-  <view class="detail" :style="{ height: `${safeAreaHeight}px` }">
-    <view class="detail-header">
-      <uni-icons class="back" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
-      <view class="title">热点详情</view>
+  <view class="pages detail" :style="{ height: `${safeAreaHeight}px` }">
+    <view class="nav-bar-header">
+      <uni-icons class="nav-bar-back" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
+      <view class="nav-bar-title">热点详情</view>
     </view>
     <view class="detail-content">
-      <view style="color: #ffffff">{{ news.name }}</view>
-      <view class="detail-card">{{ news.content }}</view>
+      <view style="color: #ffffff">{{ news.title }}</view>
+      <view class="detail-card">{{ news.details }}</view>
     </view>
-    <view class="warning">内容由大模型AI生成，禁止从事违法活动</view>
+    <view class="warning">内容来源网络</view>
     <view class="detail-setting">
       <view class="setting-item">
         <view style="flex: 1">字数设置</view>
-        <view class="setting-name">{{ setting.count }}</view>
-        <uni-icons type="right" size="20" color="#ffffff" @click="showPopup"></uni-icons>
+        <view class="setting-name" @click="showWordPopup">{{ word }}</view>
+        <uni-icons type="right" size="20" color="#ffffff" @click="showWordPopup"></uni-icons>
       </view>
       <view class="setting-item">
         <view style="flex: 1">文案风格</view>
-        <view class="setting-name">{{ setting.style }}</view>
-        <uni-icons type="right" size="20" color="#ffffff"></uni-icons>
-      </view>
-      <view class="setting-item">
-        <view style="flex: 1">声音选择</view>
-        <view class="setting-name">{{ setting.voice }}</view>
-        <uni-icons type="right" size="20" color="#ffffff"></uni-icons>
-      </view>
-      <view class="setting-item">
-        <view style="flex: 1">形象选择</view>
-        <view class="setting-name">{{ setting.figure }}</view>
-        <uni-icons type="right" size="20" color="#ffffff"></uni-icons>
+        <view class="setting-name" @click="showStylePopup">{{ style.name }}</view>
+        <uni-icons type="right" size="20" color="#ffffff" @click="showStylePopup"></uni-icons>
       </view>
     </view>
-    <button class="detail-btn">口播视频生成</button>
-    <uni-popup ref="popup" :mask-click="false" type="bottom">
+    <button class="detail-btn" @click="generate">口播文案生成</button>
+    <uni-popup ref="wordPopup" :mask-click="false" type="bottom">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">字数设置</view>
           <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="$refs.popup.close"></uni-icons>
+                     @click="$refs.wordPopup.close"></uni-icons>
         </view>
-        <view style="height: 300px;display: flex;flex-direction: column;align-items: center;justify-content: center;">
+        <view class="word-content">
           <picker-view class="picker-view" :indicator-style="indicatorStyle" @change="bindChange">
             <picker-view-column>
-              <view class="picker-item" v-for="(item, index) in wordSetting" :key="index"
-                    :class="{ option: true, active: item.count === setting.count }">
+              <view class="picker-item" :value="value" v-for="(item, index) in words" :key="index"
+                    :class="{ option: true, active: item.count === selectedWord }">
                 {{ item.count + item.introduce }}
               </view>
             </picker-view-column>
           </picker-view>
         </view>
-        <button class="detail-btn">确定</button>
+        <button class="detail-btn" @click="wordSure">确定</button>
+      </view>
+    </uni-popup>
+    <uni-popup ref="stylePopup" :mask-click="false" type="bottom">
+      <view class="popup-content">
+        <view class="popup-title">
+          <view style="color: #ffffff; font-size: 16px;">文案风格</view>
+          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
+                     @click="$refs.stylePopup.close"></uni-icons>
+        </view>
+        <view class="style-content">
+          <view style="flex: none;text-align: center" v-for="item in styles" :key="item.id"
+                @click="selectedStyle = item">
+            <view class="style-item" :style="{ border: item.id === selectedStyle.id? '2px solid #e99d42' : '' }"></view>
+            <view style="margin-top: 10px;font-size: 14px"
+                  :style="{ color: item.id === selectedStyle.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            </view>
+          </view>
+        </view>
+        <button class="detail-btn" @click="styleSure">确定</button>
       </view>
     </uni-popup>
   </view>
@@ -61,34 +70,89 @@ export default {
   data() {
     return {
       safeAreaHeight: 0,
+      newsId: null,
       news: {
-        name: '暴雪中的美国中产',
-        content: '广东广东省，英文名（Guangdong Province）， [10]简称粤， [121]中华人民共和国省级行政区，省会是广州市。 [210] [245]地处中国大陆最南部，东邻福建，北接江西、湖南，西接广西，南邻南海。 [2]截至2023年12月，下辖21个地级市、65个市辖区， [209]总面积17.98万平方千米， [6]2023年年末，全省常住人口12706万人。 [195]广东省语言复杂多样，主要有粤、客、闽三大汉语方言。 [12] [283]\n广东省属亚热带季风气候， [154]属东亚季风区，从北向南分别为中亚热带、南亚热带和热带气候。 [6]有山地、丘陵、台地和平原多种地貌类型，地势总体北高南低。 [2]广东在旧石器时代早期就有人类活动， [161]秦始皇三十三年（公元前214年），设南海郡、象郡、桂林郡，也是广东历史上第一次划分行政区。清初，广东省名称正式使用， [196]1988年，全面实行市管县体制，至2022年底，广东省辖境范围未变。 [3]广东是改革开放的前沿阵地，处在南海航运枢纽位置上，同时也是中国外贸第一大省和农产品进出口大省。 [160]广东省自古就是中国海上贸易和移民出洋最早、最多、最广的省份，占全国海外华侨华人人数一半以上 [284]。广东连续7年成为第一生育大省 [280]，外来人口数量居全国之首 [281]。广东形成了独具特色的岭南文化，开放包容，敢为人先的人文氛围。 [80]2024年，全省地区生产总值141633.81亿元，比上年增长3.5% [282]。2023年度国家科学技术奖励名单中，广东有14个项目分获自然科学奖、技术发明奖、科技进步奖。 [164]广东省也是中国改革开放的排头兵、先行地、实验区，在社会主义现代化建设大局中具有十分重要的地位和作为。'
+        title: '标题',
+        details: ''
       },
-      setting: {
-        count: 300,
-        style: '李佳琪',
-        voice: '温柔带货',
-        figure: '系统形象',
-      },
-      wordSetting: [
+      value: [300],
+      words: [
         {count: 300, introduce: '（口播约1分钟）'},
         {count: 400, introduce: '（口播约2分钟）'},
         {count: 500, introduce: '（口播约3分钟）'},
         {count: 600, introduce: '（口播约4分钟）'},
         {count: 700, introduce: '（口播约5分钟）'},
       ],
+      word: 300,
+      selectedWord: 300,
+      styles: [],
+      style: {},
+      selectedStyle: {},
       indicatorStyle: `height: 50px;`
     }
   },
+  onLoad: function (option) {
+    let self = this
+    self.newsId = option.id
+    this.$http.get('/news/query', {id: option.id}).then(res => {
+      if (res.status === 'success') {
+        this.news = res.data
+      }
+    })
+  },
+  mounted() {
+    this.queryStyles()
+  },
   methods: {
-    showPopup() {
-      this.$refs.popup.open()
+    queryStyles() {
+      this.$http.get('/copywriting/styles/query/all').then(res => {
+        if (res.status ==='success') {
+          this.styles = res.data
+          if (this.styles.length > 0) {
+            this.style = this.styles[0]
+            this.selectedStyle = this.styles[0]
+          }
+        }
+      })
+    },
+    showWordPopup() {
+      this.$refs.wordPopup.open()
+      this.value = [this.word]
+    },
+    showStylePopup() {
+      this.$refs.stylePopup.open()
     },
     bindChange(e) {
-      console.log(e)
       let val = e.detail.value[0]
-      this.setting.count = this.wordSetting[val].count
+      this.selectedWord = this.words[val].count
+    },
+    wordSure() {
+      this.word = this.selectedWord
+      this.$refs.wordPopup.close()
+    },
+    styleSure() {
+      this.style = this.selectedStyle
+      this.$refs.stylePopup.close()
+    },
+    generate() {
+      let params = {
+        style_id: this.style.id,
+        news_id: this.newsId,
+        count: this.word,
+      }
+      uni.showLoading({title: '口播文案生成中...', mask: true})
+      this.$http.post('/copywriting/voice', params, 300000).then(res => {
+        if (res.status === 'success') {
+          uni.hideLoading()
+          let userId = uni.getStorageSync('userId')
+          uni.setStorageSync(`${userId}_script`, res.data.script)
+          uni.navigateTo({
+            url: '/pages/home/copy?' +'newsId=' +  this.newsId +'&word=' + this.word + '&style=' + this.style.id
+          })
+        } else {
+          this.$tip.toast(res.message)
+        }
+      })
     },
     back() {
       uni.switchTab({url: '/pages/home/index'})
@@ -101,46 +165,21 @@ export default {
 </script>
 
 <style scoped>
-.detail {
-  background-color: #000000;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
-.detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 0;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.back {
-  position: absolute;
-  left: 0;
-}
-
-.title {
-  font-size: 20px;
-  color: #ffffff;
-  display: flex;
-}
-
 .detail-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: calc(100% - 320px);
+  height: calc(100% - 250px);
 }
 
 .detail-card {
   width: 100%;
+  height: calc(100% - 30px);
   margin-top: 10px;
   border-radius: 20px;
   background-color: #303030;
-  color: #9A9A9A;
+  color: #ffffff;
   overflow-y: auto;
   padding: 10px;
   box-sizing: border-box;
@@ -203,6 +242,14 @@ export default {
   color: #ffffff;
 }
 
+.word-content {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .picker-view {
   width: 250px;
   height: 150px;
@@ -242,5 +289,22 @@ export default {
 
 .detail >>> .uni-picker-view-indicator:after {
   border: none !important;
+}
+
+.style-content {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  align-items: center
+}
+
+.style-item {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #9A9A9A
 }
 </style>

@@ -1,46 +1,62 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{ "path": "pages/login/login" },
-		{ "path": "pages/home/index" },
-		{ "path": "pages/home/search" },
-		{ "path": "pages/home/detail" },
-		{ "path": "pages/index/index1" },
-		{ "path": "pages/index/index2" }
-	],
-	"tabBar": {
-		"color": "#9A9A9A",
-		"selectedColor": "#ffffff",
-		"borderStyle": "black",
-		"backgroundColor": "#000000",
-		"height": "70px",
-		"iconWidth": "30px",
-		"list": [
-			{
-				"pagePath": "pages/home/index",
-				"iconPath": "static/tabbar/home.png",
-				"selectedIconPath": "static/tabbar/homeActive.png",
-				"text": "主页"
-			},
-			{
-				"pagePath": "pages/index/index1",
-				"iconPath": "static/tabbar/live.png",
-				"selectedIconPath": "static/tabbar/liveActive.png",
-				"text": "视频"
-			},
-			{
-				"pagePath": "pages/index/index2",
-				"iconPath": "static/tabbar/user.png",
-				"selectedIconPath": "static/tabbar/userActive.png",
-				"text": "我的"
-			}
-		]
-	},
-	"globalStyle": {
-		"navigationStyle": "custom",
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "新闻热榜",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#000000"
-	},
-	"uniIdRouter": {}
+  "pages": [
+    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+    {
+      "path": "pages/login/login"
+    },
+    {
+      "path": "pages/home/index"
+    },
+    {
+      "path": "pages/home/search"
+    },
+    {
+      "path": "pages/home/detail"
+    },
+    {
+      "path": "pages/home/copy"
+    },
+    {
+      "path": "pages/template/index"
+    },
+    {
+      "path": "pages/user/index"
+    }
+  ],
+  "tabBar": {
+    "color": "#9A9A9A",
+    "selectedColor": "#ffffff",
+    "borderStyle": "black",
+    "backgroundColor": "#000000",
+    "height": "70px",
+    "iconWidth": "30px",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/homeActive.png",
+        "text": "主页"
+      },
+      {
+        "pagePath": "pages/template/index",
+        "iconPath": "static/tabbar/live.png",
+        "selectedIconPath": "static/tabbar/liveActive.png",
+        "text": "模板"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "iconPath": "static/tabbar/user.png",
+        "selectedIconPath": "static/tabbar/userActive.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "新闻热榜",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#000000"
+  },
+  "uniIdRouter": {}
 }

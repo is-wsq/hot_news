@@ -1,0 +1,318 @@
+<template>
+  <view class="pages copy" :style="{ height: `${safeAreaHeight}px` }">
+    <view class="nav-bar-header">
+      <uni-icons class="nav-bar-back" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
+      <view class="nav-bar-title">口播文案</view>
+      <view class="regenerate" @click="generate">重新生成</view>
+    </view>
+    <view class="copy-content">
+      <view style="color: #ffffff;display: flex;justify-content: center;align-items: center">
+        <view v-if="!isEdit" style="height: 23px;line-height: 23px">{{ title }}</view>
+        <input style="height: 23px;line-height: 23px" v-else type="text" :focus="focus" v-model="title"
+               placeholder="请输入标题"
+               :style="{ width: String(title).length * 16 + 'px', maxWidth: '200px'}"></input>
+        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>
+      </view>
+      <view class="copy-card">
+        <view class="copy-script">{{ script }}</view>
+        <view style="height: 20px;text-align: end">
+          <image src="/static/copy_icon.png" @click="copy"
+                 style="width: 18px;height: 18px;margin-top: 5px;margin-right: 3px;"></image>
+        </view>
+      </view>
+    </view>
+    <view class="warning">内容由大模型AI生成，禁止从事违法活动</view>
+    <view class="copy-setting">
+      <view class="setting-item">
+        <view style="flex: 1">声音选择</view>
+        <view class="setting-name" @click="$refs.voicePopup.open">{{ voice.name }}</view>
+        <uni-icons type="right" size="20" color="#ffffff" @click="$refs.voicePopup.open"></uni-icons>
+      </view>
+      <view class="setting-item">
+        <view style="flex: 1">形象选择</view>
+        <view class="setting-name" @click="$refs.figurePopup.open">{{ figure.name }}</view>
+        <uni-icons type="right" size="20" color="#ffffff" @click="$refs.figurePopup.open"></uni-icons>
+      </view>
+    </view>
+    <button class="copy-btn">口播视频生成</button>
+    <uni-popup ref="voicePopup" :mask-click="false" type="bottom">
+      <view class="popup-content">
+        <view class="popup-title">
+          <view style="color: #ffffff; font-size: 16px;">声音</view>
+          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
+                     @click="$refs.voicePopup.close"></uni-icons>
+        </view>
+        <view class="voice-content">
+          <view style="flex: none;text-align: center" v-for="item in voices" :key="item.id"
+                @click="selectedVoice = item">
+            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '' }"></view>
+            <view style="margin-top: 10px;font-size: 14px"
+                  :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            </view>
+          </view>
+        </view>
+        <button class="copy-btn" @click="voiceSure">确定</button>
+      </view>
+    </uni-popup>
+    <uni-popup ref="figurePopup" :mask-click="false" type="bottom">
+      <view class="popup-content">
+        <view class="popup-title">
+          <view style="color: #ffffff; font-size: 16px;">形象</view>
+          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
+                     @click="$refs.figurePopup.close"></uni-icons>
+        </view>
+        <view class="figure-content">
+          <view style="flex: none;text-align: center" v-for="item in figures" :key="item.id"
+                @click="selectedFigure = item">
+            <image :src="item.picture" class="figure-item"
+                   :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
+            <view style="margin-top: 10px;font-size: 14px"
+                  :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            </view>
+          </view>
+        </view>
+        <button class="copy-btn" @click="figureSure">确定</button>
+      </view>
+    </uni-popup>
+  </view>
+</template>
+
+<script>
+export default {
+  name: 'Detail',
+  data() {
+    return {
+      safeAreaHeight: 0,
+      newsId: null,
+      word: 0,
+      styleId: '',
+      isEdit: false,
+      focus: false,
+      title: '',
+      script: '',
+      voices: [],
+      voice: {},
+      selectedVoice: {},
+      figures: [],
+      figure: {},
+      selectedFigure: {},
+    }
+  },
+  onLoad: function (option) {
+    this.newsId = option.newsId
+    this.word = option.word
+    this.styleId = option.style
+  },
+  mounted() {
+    this.queryTitleAndScript()
+    this.queryVoices()
+    this.queryFigures()
+  },
+  methods: {
+    queryFigures() {
+      let userId = uni.getStorageSync('userId')
+      this.$http.get('/figure/query/user', {user_id: userId}).then(res => {
+        if (res.status === 'success') {
+          this.figures = res.data
+          if (this.figures.length > 0) {
+            this.figure = this.figures[0]
+            this.selectedFigure = this.figures[0]
+          }
+        } else {
+          this.$tip.toast(res.message)
+        }
+      })
+    },
+    queryVoices() {
+      let userId = uni.getStorageSync('userId')
+      this.$http.get('/timbres/query/user', {user_id: userId}).then(res => {
+        if (res.status === 'success') {
+          this.voices = res.data
+          if (this.voices.length > 0) {
+            this.voice = this.voices[0]
+            this.selectedVoice = this.voices[0]
+          }
+        } else {
+          this.$tip.toast(res.message)
+        }
+      })
+    },
+    generate() {
+      let params = {
+        style_id: this.styleId,
+        news_id: this.newsId,
+        count: this.word,
+      }
+      uni.showLoading({title: '口播文案生成中...', mask: true})
+      this.$http.post('/copywriting/voice', params, 300000).then(res => {
+        if (res.status === 'success') {
+          this.script = res.data.script
+          uni.hideLoading()
+        } else {
+          this.$tip.toast(res.message)
+        }
+      })
+    },
+    queryTitleAndScript() {
+      let userId = uni.getStorageSync('userId')
+      this.script = uni.getStorageSync(`${userId}_script`)
+      this.$http.get('/news/query', {id: this.newsId}).then(res => {
+        if (res.status === 'success') {
+          this.title = res.data.title
+        }
+      })
+    },
+    voiceSure() {
+      this.voice = this.selectedVoice
+      this.$refs.voicePopup.close()
+    },
+    figureSure() {
+      this.figure = this.selectedFigure
+      this.$refs.figurePopup.close()
+    },
+    copy() {
+      let self = this
+      uni.setClipboardData({
+        data: self.script,
+        showToast: false,
+        success: function () {
+          self.$tip.toast('复制成功')
+        }
+      });
+    },
+    back() {
+      uni.navigateBack()
+    },
+    edit() {
+      this.focus = !this.focus
+      this.isEdit = !this.isEdit
+    }
+  },
+  created() {
+    this.safeAreaHeight = uni.getSystemInfoSync().safeArea.height
+  }
+}
+</script>
+
+<style scoped>
+.regenerate {
+  position: absolute;
+  right: 5px;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.copy-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 250px);
+}
+
+.copy-card {
+  width: 100%;
+  height: calc(100% - 30px);
+  margin-top: 10px;
+  border-radius: 20px;
+  background-color: #303030;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.copy-script {
+  height: calc(100% - 20px);
+  overflow-y: auto;
+  color: #9A9A9A;
+}
+
+.warning {
+  color: #9A9A9A;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.copy-setting {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+.setting-item {
+  color: #ffffff;
+  font-size: 16px;
+  height: 35px;
+  line-height: 35px;
+  display: flex;
+  align-items: center;
+}
+
+.setting-name {
+  width: 80px;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-right: 5px;
+}
+
+.copy-btn {
+  background-color: #e99d42;
+  width: 230px;
+  margin: 0 auto;
+  font-size: 14px;
+  border-radius: 15px;
+  color: #101010;
+}
+
+.popup-content {
+  background-color: #292929;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 20px;
+}
+
+.popup-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.popup-close {
+  position: absolute;
+  top: 5px;
+  right: 0;
+  color: #ffffff;
+}
+
+.voice-content {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  align-items: center
+}
+
+.voice-item {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #9A9A9A
+}
+
+.figure-content {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  align-items: center
+}
+
+.figure-item {
+  width: 100px;
+  height: 130px;
+  border-radius: 20px;
+}
+</style>
