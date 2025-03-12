@@ -21,6 +21,9 @@
     },
     {
       "path": "pages/user/index"
+    },
+    {
+      "path": "pages/user/info"
     }
   ],
   "tabBar": {

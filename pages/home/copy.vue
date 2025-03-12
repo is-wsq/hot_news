@@ -1,7 +1,7 @@
 <template>
   <view class="pages copy" :style="{ height: `${safeAreaHeight}px` }">
     <view class="nav-bar-header">
-      <uni-icons class="nav-bar-back" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
+      <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">口播文案</view>
       <view class="regenerate" @click="generate">重新生成</view>
     </view>
@@ -16,8 +16,7 @@
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
         <view style="height: 20px;text-align: end">
-          <image src="/static/copy_icon.png" @click="copy"
-                 style="width: 18px;height: 18px;margin-top: 5px;margin-right: 3px;"></image>
+          <image class="copy-icon" src="/static/copy_icon.png" @click="copy"></image>
         </view>
       </view>
     </view>
@@ -79,12 +78,18 @@
         <button class="copy-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..." />
   </view>
 </template>
 
 <script>
+import LoadingVideo from '@/components/loading-video.vue'
+
 export default {
   name: 'Detail',
+  components: {
+    LoadingVideo
+  },
   data() {
     return {
       safeAreaHeight: 0,
@@ -103,6 +108,7 @@ export default {
       selectedFigure: {},
       testAudioContext: null,
       testAudioIndex: null,
+      isLoading: false,
     }
   },
   onLoad: function (option) {
@@ -150,11 +156,16 @@ export default {
         news_id: this.newsId,
         count: this.word,
       }
-      uni.showLoading({title: '口播文案生成中...', mask: true})
+      // uni.showLoading({title: '口播文案生成中...', mask: true})
+      this.isLoading = true
+      this.$nextTick(() => {
+        this.$refs.loadingVideo.playVideo()
+      })
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
           this.script = res.data.script
-          uni.hideLoading()
+          // uni.hideLoading()
+          this.isLoading = false
         } else {
           this.$tip.toast(res.message)
         }
@@ -228,7 +239,6 @@ export default {
   position: absolute;
   right: 5px;
   color: #ffffff;
-  font-size: 14px;
 }
 
 .copy-content {
@@ -252,7 +262,15 @@ export default {
 .copy-script {
   height: calc(100% - 20px);
   overflow-y: auto;
+  font-size: 14px;
   color: #9A9A9A;
+}
+
+.copy-icon {
+  width: 18px;
+  height: 18px;
+  margin-top: 5px;
+  margin-right: 3px;
 }
 
 .warning {
@@ -286,7 +304,7 @@ export default {
   background-color: #e99d42;
   width: 230px;
   margin: 0 auto;
-  font-size: 14px;
+  font-size: 16px;
   border-radius: 15px;
   color: #101010;
 }

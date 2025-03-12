@@ -31,7 +31,6 @@
   }
 
   .nav-bar-title {
-    font-size: 20px;
     color: #ffffff;
     display: flex;
   }

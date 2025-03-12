@@ -1,13 +1,11 @@
 <template>
   <view class="pages detail" :style="{ height: `${safeAreaHeight}px` }">
     <view class="nav-bar-header">
-      <uni-icons class="nav-bar-back" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
+      <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">热点详情</view>
     </view>
-    <view class="detail-content">
-      <view style="color: #ffffff">{{ news.title }}</view>
-      <view class="detail-card">{{ news.details }}</view>
-    </view>
+    <view style="color: #ffffff;font-size: 18px;font-weight: bold;margin-left: 10px">{{ news.title }}</view>
+    <view class="detail-card">{{ news.details }}</view>
     <view class="warning">内容来源网络</view>
     <view class="detail-setting">
       <view class="setting-item">
@@ -61,12 +59,18 @@
         <button class="detail-btn" @click="styleSure">确定</button>
       </view>
     </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..." />
   </view>
 </template>
 
 <script>
+import LoadingVideo from '@/components/loading-video.vue'
+
 export default {
   name: 'Detail',
+  components: {
+    LoadingVideo
+  },
   data() {
     return {
       safeAreaHeight: 0,
@@ -88,7 +92,8 @@ export default {
       styles: [],
       style: {},
       selectedStyle: {},
-      indicatorStyle: `height: 50px;`
+      indicatorStyle: `height: 50px;`,
+      isLoading: false
     }
   },
   onLoad: function (option) {
@@ -140,10 +145,15 @@ export default {
         news_id: this.newsId,
         count: this.word,
       }
-      uni.showLoading({title: '口播文案生成中...', mask: true})
+      // uni.showLoading({title: '口播文案生成中...', mask: true})
+      this.isLoading = true
+      this.$nextTick(() => {
+        this.$refs.loadingVideo.playVideo()
+      })
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
-          uni.hideLoading()
+          // uni.hideLoading()
+          this.isLoading = false
           let userId = uni.getStorageSync('userId')
           uni.setStorageSync(`${userId}_script`, res.data.script)
           uni.navigateTo({
@@ -165,23 +175,13 @@ export default {
 </script>
 
 <style scoped>
-.detail-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100% - 250px);
-}
-
 .detail-card {
   width: 100%;
-  height: calc(100% - 30px);
-  margin-top: 10px;
-  border-radius: 20px;
-  background-color: #303030;
+  height: calc(100% - 290px);
+  margin-top: 15px;
+  font-size: 14px;
   color: #ffffff;
   overflow-y: auto;
-  padding: 10px;
   box-sizing: border-box;
 }
 
@@ -216,7 +216,7 @@ export default {
   background-color: #e99d42;
   width: 230px;
   margin: 0 auto;
-  font-size: 14px;
+  font-size: 16px;
   border-radius: 15px;
   color: #101010;
 }
