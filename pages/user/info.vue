@@ -8,33 +8,26 @@
       <view class="info-item">
         <view class="info-label">头像</view>
         <view class="info-value"><image class="user-avatar" src="/static/test-bg.png"></image></view>
-        <uni-icons style="line-height: 40px" type="right" size="21" color="#9A9A9A" @click="back"></uni-icons>
       </view>
       <view class="info-item">
         <view class="info-label">名字</view>
         <view class="info-value">奇点未来</view>
-        <uni-icons style="line-height: 40px" type="right" size="21" color="#9A9A9A" @click="back"></uni-icons>
       </view>
       <view class="info-item">
         <view class="info-label">账号</view>
         <view class="info-value">17670845180</view>
-        <uni-icons style="line-height: 40px" type="right" size="21" color="#9A9A9A" @click="back"></uni-icons>
       </view>
       <view class="info-item">
         <view class="info-label">性别</view>
         <view class="info-value">男</view>
-        <uni-icons style="line-height: 40px" type="right" size="21" color="#9A9A9A" @click="back"></uni-icons>
       </view>
       <view class="info-item">
         <view class="info-label">地区</view>
         <view class="info-value"></view>
-        <uni-icons style="line-height: 40px" type="right" size="21" color="#9A9A9A" @click="back"></uni-icons>
-      </view>
-      <view class="info-item" style="margin-top: 30px">
-        <view class="info-label">退出登陆</view>
-        <uni-icons style="line-height: 40px" type="right" size="21" color="#9A9A9A" @click="back"></uni-icons>
       </view>
     </view>
+
+    <view class="logout-btn">退出登陆</view>
   </view>
 </template>
 
@@ -57,7 +50,7 @@ export default {
 .info-item {
   display: flex;
   align-items: center;
-  height: 50px;
+  height: 60px;
   border-bottom: 1px solid #222222;
 }
 
@@ -77,5 +70,16 @@ export default {
   width: 35px;
   height: 35px;
   border-radius: 5px;
+}
+
+.logout-btn {
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  color: #fff;
+  margin-top: 60px;
+  font-size: 16px;
+  border-bottom: 1px solid #222222;
+  border-top: 1px solid #222222;
 }
 </style>

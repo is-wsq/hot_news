@@ -7,10 +7,7 @@
       <view class="card figure-bg">形象克隆</view>
       <view class="card voice-bg">声音克隆</view>
     </view>
-    <view style="display: flex;height: 50px;align-items: center">
-      <view style="font-size: 18px; color: #fff;flex: 1">我的作品</view>
-      <uni-icons type="right" size="20" color="#fff"></uni-icons>
-    </view>
+    <view style="font-size: 18px; color: #fff;line-height: 50px">我的作品</view>
     <view class="video-list" style="height: calc(100% - 180px)">
       <view class="video-item" v-for="item in 10" :key="item">
         <image class="item-img" src="/static/test-bg.png"></image>

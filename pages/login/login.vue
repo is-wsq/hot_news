@@ -253,8 +253,10 @@ export default {
 }
 
 .send-sms-button {
-  font-size: 16px;
-  width: 110px;
+  font-size: 15px;
+  line-height: 45px;
+  padding: 0 !important;
+  width: 120px;
   margin-left: 2px;
   border-radius: 5px;
   background: #4A90E2;
