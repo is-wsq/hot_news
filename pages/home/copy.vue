@@ -43,9 +43,14 @@
                      @click="$refs.voicePopup.close"></uni-icons>
         </view>
         <view class="voice-content">
-          <view style="flex: none;text-align: center" v-for="item in voices" :key="item.id"
+          <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
                 @click="selectedVoice = item">
-            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '' }"></view>
+            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '' }">
+              <uni-icons custom-prefix="iconfont" type="icon-play" class="off-on" size="20" color="#ffffff"
+                         v-if="testAudioIndex !== index" @click="previewAudio(item,index)"></uni-icons>
+              <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="20" color="#ffffff"
+                         v-else @click="stopPreviewAudio"></uni-icons>
+            </view>
             <view style="margin-top: 10px;font-size: 14px"
                   :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
@@ -96,6 +101,8 @@ export default {
       figures: [],
       figure: {},
       selectedFigure: {},
+      testAudioContext: null,
+      testAudioIndex: null,
     }
   },
   onLoad: function (option) {
@@ -161,6 +168,28 @@ export default {
           this.title = res.data.title
         }
       })
+    },
+    previewAudio(item, index) {
+      if (this.testAudioContext) {
+        this.stopPreviewAudio()
+      }
+
+      this.testAudioContext = uni.createInnerAudioContext()
+      this.testAudioContext.src = item.filepath
+      this.testAudioContext.autoplay = true;
+      this.testAudioContext.play();
+      this.testAudioContext.onPlay(() => {
+        this.testAudioIndex = index
+      })
+      this.testAudioContext.onEnded(() => {
+        this.stopPreviewAudio()
+      })
+    },
+    stopPreviewAudio() {
+      this.testAudioContext.pause();
+      this.testAudioContext.destroy()
+      this.testAudioContext = null
+      this.testAudioIndex = null
     },
     voiceSure() {
       this.voice = this.selectedVoice
@@ -297,7 +326,17 @@ export default {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #9A9A9A
+  background-color: #9A9A9A;
+  position: relative;
+}
+
+.off-on {
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .figure-content {
