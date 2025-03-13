@@ -27,7 +27,7 @@
       </view>
     </view>
 
-    <view class="logout-btn">退出登陆</view>
+    <view class="logout-btn" @click="logout">退出登陆</view>
   </view>
 </template>
 
@@ -39,6 +39,12 @@ export default {
     }
   },
   methods: {
+    logout() {
+      uni.removeStorageSync('userId')
+      uni.navigateTo({
+        url: '/pages/login/login'
+      })
+    },
     back() {
       uni.navigateBack()
     }
