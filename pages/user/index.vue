@@ -16,11 +16,11 @@
     <view class="asset-text">我的资产</view>
     <view class="asset-list">
       <view class="asset-item">
-        <view class="asset-value">0</view>
+        <view class="asset-value">{{ asset.figure }}</view>
         <view class="asset-name">我的数字人</view>
       </view>
       <view class="asset-item">
-        <view class="asset-value">0</view>
+        <view class="asset-value">{{ asset.voice }}</view>
         <view class="asset-name">我的声音</view>
       </view>
     </view>
@@ -34,7 +34,7 @@
           <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">隐私条款</view>
           <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
         </view>
-        <view style="display: flex">
+        <view style="display: flex" @click="goto('/pages/user/agreement')">
           <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">用户协议</view>
           <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
         </view>
@@ -57,10 +57,36 @@ export default {
   data() {
     return {
       isLoading: false,
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      asset: {
+        figure: 0,
+        voice: 0
+      }
     }
   },
+  mounted() {
+    this.queryFigures()
+    this.queryVoices()
+  },
   methods: {
+    queryFigures() {
+      this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
+        if (res.status === 'success') {
+          this.asset.figure = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
+        } else {
+          this.$tip.toast(res.message)
+        }
+      })
+    },
+    queryVoices() {
+      this.$http.get('/timbres/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
+        if (res.status === 'success') {
+          this.asset.voice = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
+        } else {
+          this.$tip.toast(res.message)
+        }
+      })
+    },
     goto(url) {
       uni.navigateTo({
         url: url

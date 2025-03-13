@@ -61,6 +61,8 @@ export default {
   },
   methods: {
     queryFigures() {
+      this.systems = []
+      this.clones = []
       this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
         if (res.status === 'success') {
           res.data.forEach(item => {
