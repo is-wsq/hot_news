@@ -5,7 +5,7 @@
 <!--    </view>-->
     <view class="clone-cards">
       <view class="card figure-bg">形象克隆</view>
-      <view class="card voice-bg">声音克隆</view>
+      <view class="card voice-bg" @click="goto('/pages/template/voices')">声音克隆</view>
     </view>
     <view style="font-size: 18px; color: #fff;line-height: 50px">我的作品</view>
     <view class="video-list" style="height: calc(100% - 180px)">
@@ -22,11 +22,13 @@ export default {
   name: 'template',
   data() {
     return {
-      safeAreaHeight: 0,
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
     }
   },
-  created() {
-    this.safeAreaHeight = uni.getSystemInfoSync().safeArea.height
+  methods: {
+    goto(path) {
+      uni.navigateTo({ url: path })
+    }
   }
 }
 </script>
