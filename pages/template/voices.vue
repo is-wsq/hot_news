@@ -8,7 +8,7 @@
     <view class="voices-list">
       <view class="voices-item" v-for="item in systems" :key="item.id"
             :class="{ 'active-item': selectedVoice.id === item.id }" @click="previewAudio(item)">
-        <image :src="item.avatar" class="voice-avatar"/>
+        <image :src="item.avatar? item.avatar : '/static/default-avatar1.jpg'" class="voice-avatar"/>
         <view class="voice-name">{{ item.name }}</view>
       </view>
     </view>
@@ -20,16 +20,22 @@
       </view>
       <view class="voices-item" v-for="item in clones" :key="item.id"
             :class="{ 'active-item': selectedVoice.id === item.id }" @click="previewAudio(item)">
-        <image src="/static/test-bg.png" class="voice-avatar"/>
+        <image :src="item.avatar? item.avatar : '/static/default-avatar.jpg'" class="voice-avatar"/>
         <view class="voice-name">{{ item.name }}</view>
       </view>
     </view>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="音色克隆中..."/>
   </view>
 </template>
 
 <script>
+import LoadingVideo from '@/components/loading-video.vue'
+
 export default {
   name: 'voices',
+  components: {
+    LoadingVideo
+  },
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
@@ -38,6 +44,7 @@ export default {
       selectedVoice: {},
       testAudioContext: null,
       testAudioId: null,
+      isLoading: false,
     }
   },
   mounted() {
@@ -63,19 +70,24 @@ export default {
         count: 1,
         extension: ['.mp3', '.wav', '.mp4'],
         success: function (res) {
+          self.isLoading = true
+          self.$nextTick(() => {
+            self.$refs.loadingVideo.playVideo()
+          })
           uni.uploadFile({
             url: 'https://live.tellai.tech/api/news_assistant/timbres/clone',
             filePath: res.tempFilePaths[0],
             name: 'file',
             formData: {'user_id': uni.getStorageSync('userId')},
             success: (result) => {
-              console.log(JSON.parse(result.data))
-              if (result.data.status === 'success') {
+              let data = JSON.parse(result.data)
+              if (data.status === 'success') {
                 self.$tip.toast('克隆成功')
                 self.queryVoices()
               } else {
-                self.$tip.toast(result.data.message)
+                self.$tip.toast(data.message)
               }
+              self.isLoading = false
             }
           });
         }
