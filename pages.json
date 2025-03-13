@@ -20,6 +20,9 @@
       "path": "pages/template/index"
     },
     {
+      "path": "pages/template/figure"
+    },
+    {
       "path": "pages/template/voices"
     },
     {

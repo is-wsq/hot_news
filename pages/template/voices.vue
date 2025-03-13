@@ -64,16 +64,26 @@ export default {
         }
       })
     },
+    startLoading() {
+      this.isLoading = true
+      this.$nextTick(() => {
+        this.$refs.loadingVideo.playVideo()
+      })
+    },
     selectFile() {
       let self = this
       uni.chooseFile({
         count: 1,
-        extension: ['.mp3', '.wav', '.mp4'],
         success: function (res) {
-          self.isLoading = true
-          self.$nextTick(() => {
-            self.$refs.loadingVideo.playVideo()
-          })
+          let allowedExtensions = ['.mp3', '.wav', '.mp4'];
+          let filename = res.tempFiles[0].name.toLowerCase();
+          let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
+          if (!allow) {
+            self.$tip.toast('请选择有效的音频文件')
+            return
+          }
+
+          self.startLoading()
           uni.uploadFile({
             url: 'https://live.tellai.tech/api/news_assistant/timbres/clone',
             filePath: res.tempFilePaths[0],
