@@ -20,7 +20,7 @@
         </view>
       </view>
     </view>
-    <view class="warning">内容由大模型AI生成，禁止从事违法活动</view>
+    <view class="warning">内容由大模型DeepSeek R1生成，禁止从事违法活动</view>
     <view class="copy-setting">
       <view class="setting-item">
         <view style="flex: 1">声音选择</view>
