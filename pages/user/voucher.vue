@@ -64,10 +64,10 @@ export default {
   },
   methods: {
     integralRecharge() {
-
+      uni.navigateTo({ url: '/pages/user/integral' })
     },
     back() {
-      uni.navigateBack()
+      uni.switchTab({ url: '/pages/user/index' })
     }
   }
 }

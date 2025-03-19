@@ -38,6 +38,9 @@
       "path": "pages/user/voucher"
     },
     {
+      "path": "pages/user/integral"
+    },
+    {
       "path": "pages/login/login"
     }
   ],
