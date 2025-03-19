@@ -13,7 +13,8 @@
       </view>
       <view class="tags">
         <view v-for="(item, index) in history" :key="index">
-          <uni-tag circle style="background-color: #303030;border: none" :text="item.keyword"
+          <uni-tag circle style="background-color: #303030;border: none;color: #E5E5E5;min-width: 80px;"
+                   :text="item.keyword"
                    @click="searchByHistory(item.keyword)"></uni-tag>
         </view>
       </view>
@@ -23,6 +24,10 @@
         <view class="search-title">{{ item.title }}</view>
         <view class="search-details">{{ item.details }}</view>
       </view>
+    </view>
+    <view v-else class="custom" @click="toCustom('/pages/home/custom')">
+      <view class="custom-text">自定义文案</view>
+      <uni-icons type="right" size="18" color="#ffffff" class="custom-icon"></uni-icons>
     </view>
   </view>
 </template>
@@ -77,7 +82,7 @@ export default {
           if (this.searchList.length === 0) {
             this.$tip.toast('没有找到相关新闻')
           }
-        }else {
+        } else {
           this.$tip.toast('搜索失败')
         }
       })
@@ -86,6 +91,9 @@ export default {
       uni.navigateTo({
         url: '/pages/home/detail?id=' + id
       })
+    },
+    toCustom(url) {
+      uni.navigateTo({ url: url })
     },
     back() {
       uni.switchTab({url: '/pages/home/index'})
@@ -156,5 +164,30 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  border-radius: 20px;
+  background-color: #303030;
+}
+
+.custom-text {
+  color: #fff;
+  font-size: 14px;
+  height: 38px;
+  line-height: 38px;
+}
+
+.custom-icon {
+  position: absolute;
+  right: 15px;
 }
 </style>

@@ -2,9 +2,6 @@
   "pages": [
     //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
-      "path": "pages/login/login"
-    },
-    {
       "path": "pages/home/index"
     },
     {
@@ -15,6 +12,9 @@
     },
     {
       "path": "pages/home/copy"
+    },
+    {
+      "path": "pages/home/custom"
     },
     {
       "path": "pages/template/index"
@@ -33,6 +33,9 @@
     },
     {
       "path": "pages/user/agreement"
+    },
+    {
+      "path": "pages/login/login"
     }
   ],
   "tabBar": {

@@ -1,27 +1,27 @@
 <template>
-  <view class="pages copy" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages custom" :style="{ height: `${safeAreaHeight}px` }">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">口播文案</view>
-      <view class="regenerate" @click="generate">重新生成</view>
     </view>
-    <view class="copy-content">
+    <view class="custom-content">
       <view style="color: #ffffff;display: flex;justify-content: center;align-items: center">
-        <view v-if="!isEdit" style="height: 23px;line-height: 23px">{{ title }}</view>
-        <input style="height: 23px;line-height: 23px" v-else type="text" :focus="focus" v-model="title"
-               placeholder="请输入标题"
-               :style="{ width: String(title).length * 16 + 'px', maxWidth: '200px'}"></input>
+        <view v-if="!isEdit" style="height: 23px;line-height: 23px">{{ title ? title : '请输入标题' }}</view>
+        <input v-else style="height: 23px;line-height: 23px" type="text" :focus="focus" v-model="title"
+               :style="{ width: (String(title).length > 0 ? String(title).length : 1) * 16 + 'px', maxWidth: '200px'}">
+        </input>
         <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>
       </view>
-      <view class="copy-card">
-        <view class="copy-script">{{ script }}</view>
+      <view class="custom-card">
+        <textarea class="custom-script" type="text" v-model="script" placeholder-style="color:#9A9A9A"
+                  placeholder="请输入文案内容"></textarea>
         <view style="height: 20px;text-align: end">
-          <image class="copy-icon" src="/static/copy_icon.png" @click="copy"></image>
+          <image class="custom-icon" src="/static/copy_icon.png" @click="copy"></image>
         </view>
       </view>
     </view>
-    <view class="warning">内容由DeepSeek R1生成，禁止从事违法活动</view>
-    <view class="copy-setting">
+    <view class="warning">内容禁止从事违法活动</view>
+    <view class="custom-setting">
       <view class="setting-item">
         <view style="flex: 1">声音选择</view>
         <view class="setting-name" @click="$refs.voicePopup.open">{{ voice.name }}</view>
@@ -33,7 +33,7 @@
         <uni-icons type="right" size="20" color="#ffffff" @click="$refs.figurePopup.open"></uni-icons>
       </view>
     </view>
-    <button class="copy-btn">口播视频生成</button>
+    <button class="custom-btn">口播视频生成</button>
     <uni-popup ref="voicePopup" :mask-click="false" type="bottom">
       <view class="popup-content">
         <view class="popup-title">
@@ -55,7 +55,7 @@
             </view>
           </view>
         </view>
-        <button class="copy-btn" @click="voiceSure">确定</button>
+        <button class="custom-btn" @click="voiceSure">确定</button>
       </view>
     </uni-popup>
     <uni-popup ref="figurePopup" :mask-click="false" type="bottom">
@@ -75,10 +75,10 @@
             </view>
           </view>
         </view>
-        <button class="copy-btn" @click="figureSure">确定</button>
+        <button class="custom-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..." />
+    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
   </view>
 </template>
 
@@ -117,7 +117,6 @@ export default {
     this.styleId = option.style
   },
   mounted() {
-    this.queryTitleAndScript()
     this.queryVoices()
     this.queryFigures()
   },
@@ -147,36 +146,6 @@ export default {
           }
         } else {
           this.$tip.toast(res.message)
-        }
-      })
-    },
-    generate() {
-      let params = {
-        style_id: this.styleId,
-        news_id: this.newsId,
-        count: this.word,
-      }
-      // uni.showLoading({title: '口播文案生成中...', mask: true})
-      this.isLoading = true
-      this.$nextTick(() => {
-        this.$refs.loadingVideo.playVideo()
-      })
-      this.$http.post('/copywriting/voice', params, 300000).then(res => {
-        if (res.status === 'success') {
-          this.script = res.data.script
-          // uni.hideLoading()
-          this.isLoading = false
-        } else {
-          this.$tip.toast(res.message)
-        }
-      })
-    },
-    queryTitleAndScript() {
-      let userId = uni.getStorageSync('userId')
-      this.script = uni.getStorageSync(`${userId}_script`)
-      this.$http.get('/news/query', {id: this.newsId}).then(res => {
-        if (res.status === 'success') {
-          this.title = res.data.title
         }
       })
     },
@@ -235,13 +204,7 @@ export default {
 </script>
 
 <style scoped>
-.regenerate {
-  position: absolute;
-  right: 5px;
-  color: #ffffff;
-}
-
-.copy-content {
+.custom-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -249,7 +212,7 @@ export default {
   height: calc(100% - 250px);
 }
 
-.copy-card {
+.custom-card {
   width: 100%;
   height: calc(100% - 30px);
   margin-top: 10px;
@@ -259,14 +222,16 @@ export default {
   box-sizing: border-box;
 }
 
-.copy-script {
+.custom-script {
   height: calc(100% - 20px);
+  line-height: 23px;
+  width: 100%;
   overflow-y: auto;
   font-size: 14px;
   color: #9A9A9A;
 }
 
-.copy-icon {
+.custom-icon {
   width: 18px;
   height: 18px;
   margin-top: 5px;
@@ -279,7 +244,7 @@ export default {
   margin: 10px 0;
 }
 
-.copy-setting {
+.custom-setting {
   margin-bottom: 10px;
   margin-left: 10px;
 }
@@ -300,7 +265,7 @@ export default {
   margin-right: 5px;
 }
 
-.copy-btn {
+.custom-btn {
   background-color: #e99d42;
   width: 230px;
   margin: 0 auto;
