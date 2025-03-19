@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docx 预览</title>
+    <script src="https://unpkg.com/docx-preview@0.1.12/dist/docx-preview.min.js" defer></script>
+    <style>
+        #docx-container {
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div id="docx-container">加载中...</div>
+<script>
+    window.onload = function () {
+        console.log('docxPreview:', window.DOCXPreview);
+        if (typeof window.DOCXPreview === 'undefined') {
+            document.getElementById('docx-container').innerText = 'docx-preview 库未正确加载';
+            throw new Error('docxPreview 未定义');
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const docxUrl = urlParams.get('url') || '/static/figure.docx';
+
+        fetch(docxUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('无法加载 docx 文件: ' + response.statusText);
+                }
+                return response.arrayBuffer();
+            })
+            .then(buffer => {
+                const container = document.getElementById('docx-container');
+                window.docxPreview.renderAsync(buffer, container)
+                    .then(() => console.log('Docx 渲染完成'))
+                    .catch(err => console.error('渲染失败:', err));
+            })
+            .catch(err => {
+                console.error('加载 docx 文件失败:', err);
+                document.getElementById('docx-container').innerText = '加载文档失败，请检查文件路径或网络。';
+            });
+    };
+</script>
+</body>
+</html>

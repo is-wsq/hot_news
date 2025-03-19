@@ -109,6 +109,7 @@ export default {
       testAudioContext: null,
       testAudioIndex: null,
       isLoading: false,
+      scriptList: [],
     }
   },
   onLoad: function (option) {
@@ -156,7 +157,6 @@ export default {
         news_id: this.newsId,
         count: this.word,
       }
-      // uni.showLoading({title: '口播文案生成中...', mask: true})
       this.isLoading = true
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
@@ -164,7 +164,8 @@ export default {
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
           this.script = res.data.script
-          // uni.hideLoading()
+          this.scriptList.push(res.data.script)
+          uni.setStorageSync(`${this.userId}_${this.newsId}_script`, this.scriptList)
           this.isLoading = false
         } else {
           this.$tip.toast(res.message)
@@ -174,6 +175,7 @@ export default {
     queryTitleAndScript() {
       let userId = uni.getStorageSync('userId')
       this.script = uni.getStorageSync(`${userId}_script`)
+      this.scriptList = uni.getStorageSync(`${userId}_${this.newsId}_script`)
       this.$http.get('/news/query', {id: this.newsId}).then(res => {
         if (res.status === 'success') {
           this.title = res.data.title

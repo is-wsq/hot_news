@@ -163,6 +163,9 @@ export default {
         if (res.status === 'success') {
           this.isLoading = false
           uni.setStorageSync(`${this.userId}_script`, res.data.script)
+          let scriptList = uni.getStorageSync(`${this.userId}_${this.newsId}_script`)
+          scriptList.push(res.data.script)
+          uni.setStorageSync(`${this.userId}_${this.newsId}_script`, scriptList)
           uni.navigateTo({
             url: '/pages/home/copy?' +'newsId=' +  this.newsId +'&word=' + this.word + '&style=' + this.style.id
           })
