@@ -9,8 +9,18 @@
     </view>
     <view class="identity-card">
       <view style="display: flex">
-        <view style="color: #BBBBBB; font-size: 14px;flex: 1">普通用户</view>
+        <view style="color: #BBBBBB; font-size: 14px;flex: 1"></view>
         <button class="membership">开通VIP</button>
+      </view>
+      <view class="identity-detail">
+        <view style="text-align: center">
+          <view class="detail-value">5</view>
+          <view class="detail-name">数字人额度</view>
+        </view>
+        <view style="text-align: center">
+          <view class="detail-value">12000</view>
+          <view class="detail-name">积分余额</view>
+        </view>
       </view>
     </view>
     <view class="asset-text">我的资产</view>
@@ -26,26 +36,30 @@
     </view>
     <view class="function-list">
       <view style="background-color: #282828;border-radius: 10px;padding: 5px 20px;box-sizing: border-box">
-        <view style="display: flex">
-          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">新手引导</view>
-          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
+        <view style="display: flex" v-for="item in functions" :key="item.name" @click="goto(item.path)">
+          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">{{ item.name }}</view>
+          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c"></uni-icons>
         </view>
-        <view style="display: flex">
-          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">隐私条款</view>
-          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
-        </view>
-        <view style="display: flex" @click="goto('/pages/user/agreement')">
-          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">用户协议</view>
-          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
-        </view>
-        <view style="display: flex">
-          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">订单管理</view>
-          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
-        </view>
-        <view style="display: flex">
-          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">联系客服</view>
-          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>
-        </view>
+        <!--        <view style="display: flex">-->
+        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">新手引导</view>-->
+        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
+        <!--        </view>-->
+        <!--        <view style="display: flex">-->
+        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">隐私条款</view>-->
+        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
+        <!--        </view>-->
+        <!--        <view style="display: flex" @click="goto('/pages/user/agreement')">-->
+        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">用户协议</view>-->
+        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
+        <!--        </view>-->
+        <!--        <view style="display: flex">-->
+        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">订单管理</view>-->
+        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
+        <!--        </view>-->
+        <!--        <view style="display: flex">-->
+        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">联系客服</view>-->
+        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
+        <!--        </view>-->
       </view>
     </view>
   </view>
@@ -61,7 +75,14 @@ export default {
       asset: {
         figure: 0,
         voice: 0
-      }
+      },
+      functions: [
+        {name: '新手引导', path: ''},
+        {name: '隐私条款', path: ''},
+        {name: '用户协议', path: '/pages/user/agreement'},
+        {name: '订单管理', path: ''},
+        {name: '联系客服', path: ''},
+      ]
     }
   },
   mounted() {
@@ -88,9 +109,9 @@ export default {
       })
     },
     goto(url) {
-      uni.navigateTo({
-        url: url
-      })
+      if (url === '')
+        return
+      uni.navigateTo({url: url})
     }
   }
 }
@@ -133,19 +154,39 @@ export default {
 
 .identity-card {
   height: 130px;
-  background-image: url('/static/identity-bg.png');
+  background-image: url('/static/identity-bg1.png');
   background-size: cover;
   padding: 15px;
   box-sizing: border-box;
+  border-radius: 15px;
 }
 
 .membership {
   width: 80px;
   height: 35px;
-  background-image: url('/static/identity-bg.png');
+  background-image: url('/static/identity-bg1.png');
   background-size: 80px 35px;
   color: #fff;
   font-size: 14px;
+}
+
+.identity-detail {
+  color: #fff;
+  display: flex;
+  height: 54px;
+  margin-top: 15px;
+  gap: 25px;
+}
+
+.detail-value {
+  line-height: 31px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.detail-name {
+  line-height: 23px;
+  font-size: 12px;
 }
 
 .asset-text {
