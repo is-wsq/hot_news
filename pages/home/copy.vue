@@ -23,14 +23,14 @@
     <view class="warning">内容由DeepSeek R1生成，禁止从事违法活动</view>
     <view class="copy-setting">
       <view class="setting-item">
-        <view style="flex: 1">声音选择</view>
+        <view style="color: #E5E5E5;">声音选择</view>
         <view class="setting-name" @click="$refs.voicePopup.open">{{ voice.name }}</view>
-        <uni-icons type="right" size="20" color="#ffffff" @click="$refs.voicePopup.open"></uni-icons>
+        <uni-icons type="right" size="20" color="#E5E5E5;" @click="$refs.voicePopup.open"></uni-icons>
       </view>
       <view class="setting-item">
-        <view style="flex: 1">形象选择</view>
+        <view style="color: #E5E5E5;">形象选择</view>
         <view class="setting-name" @click="$refs.figurePopup.open">{{ figure.name }}</view>
-        <uni-icons type="right" size="20" color="#ffffff" @click="$refs.figurePopup.open"></uni-icons>
+        <uni-icons type="right" size="20" color="#E5E5E5;" @click="$refs.figurePopup.open"></uni-icons>
       </view>
     </view>
     <button class="copy-btn">口播视频生成</button>
@@ -294,10 +294,12 @@ export default {
 }
 
 .setting-name {
-  width: 80px;
+  flex: 1;
   overflow-x: auto;
   white-space: nowrap;
-  margin-right: 5px;
+  margin-right: 20px;
+  text-align: right;
+  color: #E5E5E5;
 }
 
 .copy-btn {

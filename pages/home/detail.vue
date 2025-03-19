@@ -9,14 +9,14 @@
     <view class="warning">内容来源网络</view>
     <view class="detail-setting">
       <view class="setting-item">
-        <view style="flex: 1">字数设置</view>
-        <view class="setting-name" @click="showWordPopup">{{ word }}</view>
-        <uni-icons type="right" size="20" color="#ffffff" @click="showWordPopup"></uni-icons>
+        <view style="color: #E5E5E5;">字数设置</view>
+        <view class="setting-name" @click="showWordPopup">{{ word + ' ' + introduce }}</view>
+        <uni-icons type="right" size="20" color="#E5E5E5;" @click="showWordPopup"></uni-icons>
       </view>
       <view class="setting-item">
-        <view style="flex: 1">文案风格</view>
+        <view style="color: #E5E5E5;">文案风格</view>
         <view class="setting-name" @click="showStylePopup">{{ style.name }}</view>
-        <uni-icons type="right" size="20" color="#ffffff" @click="showStylePopup"></uni-icons>
+        <uni-icons type="right" size="20" color="#E5E5E5;" @click="showStylePopup"></uni-icons>
       </view>
     </view>
     <button class="detail-btn" @click="generate">口播文案生成</button>
@@ -32,7 +32,7 @@
             <picker-view-column>
               <view class="picker-item" :value="value" v-for="(item, index) in words" :key="index"
                     :class="{ option: true, active: item.count === selectedWord }">
-                {{ item.count + item.introduce }}
+                {{ item.count + ' ' + item.introduce }}
               </view>
             </picker-view-column>
           </picker-view>
@@ -81,14 +81,13 @@ export default {
       },
       value: [300],
       words: [
-        {count: 300, introduce: '（口播约1分钟）'},
-        {count: 400, introduce: '（口播约2分钟）'},
-        {count: 500, introduce: '（口播约3分钟）'},
-        {count: 600, introduce: '（口播约4分钟）'},
-        {count: 700, introduce: '（口播约5分钟）'},
+        {count: 300, introduce: '(约2分钟)'},
+        {count: 400, introduce: '(约4分钟)'},
       ],
       word: 300,
-      selectedWord: 300,
+      introduce: '(约2分钟)',
+      selectedWord: null,
+      selectedIntroduce: '',
       styles: [],
       style: {},
       selectedStyle: {},
@@ -123,6 +122,8 @@ export default {
     showWordPopup() {
       this.$refs.wordPopup.open()
       this.value = [this.word]
+      this.selectedWord = this.word
+      this.selectedIntroduce = this.introduce
     },
     showStylePopup() {
       this.$refs.stylePopup.open()
@@ -130,9 +131,11 @@ export default {
     bindChange(e) {
       let val = e.detail.value[0]
       this.selectedWord = this.words[val].count
+      this.selectedIntroduce = this.words[val].introduce
     },
     wordSure() {
       this.word = this.selectedWord
+      this.introduce = this.selectedIntroduce
       this.$refs.wordPopup.close()
     },
     styleSure() {
@@ -206,10 +209,12 @@ export default {
 }
 
 .setting-name {
-  width: 80px;
+  flex: 1;
   overflow-x: auto;
   white-space: nowrap;
-  margin-right: 5px;
+  margin-right: 20px;
+  text-align: right;
+  color: #E5E5E5;
 }
 
 .detail-btn {
@@ -273,7 +278,7 @@ export default {
 }
 
 .active {
-  font-size: 18px;
+  font-size: 19px;
   height: 50px;
   border-radius: 20px;
   background-color: #303030;
