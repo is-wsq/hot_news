@@ -10,7 +10,7 @@
     <view class="identity-card">
       <view style="display: flex">
         <view style="color: #BBBBBB; font-size: 14px;flex: 1"></view>
-        <button class="membership">开通VIP</button>
+        <button class="membership" @click="goto('/pages/user/voucher')">开通VIP</button>
       </view>
       <view class="identity-detail">
         <view style="text-align: center">
@@ -164,8 +164,9 @@ export default {
 .membership {
   width: 80px;
   height: 35px;
-  background-image: url('/static/identity-bg1.png');
-  background-size: 80px 35px;
+  background-image: url('/static/voucher-bg.jpg');
+  background-position: bottom;
+  background-repeat: no-repeat; /* 避免图片重复 */
   color: #fff;
   font-size: 14px;
 }

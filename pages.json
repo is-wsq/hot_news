@@ -35,6 +35,9 @@
       "path": "pages/user/agreement"
     },
     {
+      "path": "pages/user/voucher"
+    },
+    {
       "path": "pages/login/login"
     }
   ],

@@ -32,6 +32,7 @@
 
   .nav-bar-title {
     color: #ffffff;
+    font-size: 18px;
     display: flex;
   }
 
