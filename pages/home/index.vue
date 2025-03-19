@@ -24,12 +24,11 @@ export default {
   name: 'Home',
   data() {
     return {
-      safeAreaHeight: 0,
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       news: []
     }
   },
-  mounted() {
-   this.safeAreaHeight = uni.getSystemInfoSync().safeArea.height
+  onShow() {
     this.queryNews()
   },
   methods: {

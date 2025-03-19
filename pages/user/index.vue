@@ -92,7 +92,7 @@ export default {
       ]
     }
   },
-  mounted() {
+  onShow() {
     this.userId = uni.getStorageSync('userId') || ''
     if (this.userId !== '') {
       this.queryUserInfo()
