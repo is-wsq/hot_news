@@ -73,7 +73,8 @@ export default {
   },
   data() {
     return {
-      safeAreaHeight: 0,
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
       newsId: null,
       news: {
         title: '标题',
@@ -106,6 +107,7 @@ export default {
   },
   mounted() {
     this.queryStyles()
+    this.userId = uni.getStorageSync('userId') || ''
   },
   methods: {
     queryStyles() {
@@ -143,22 +145,24 @@ export default {
       this.$refs.stylePopup.close()
     },
     generate() {
+      if (this.userId === '') {
+        this.$tip.toast('请先登录')
+        uni.navigateTo({ url: '/pages/login/login' })
+        return
+      }
       let params = {
         style_id: this.style.id,
         news_id: this.newsId,
         count: this.word,
       }
-      // uni.showLoading({title: '口播文案生成中...', mask: true})
       this.isLoading = true
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
       })
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
-          // uni.hideLoading()
           this.isLoading = false
-          let userId = uni.getStorageSync('userId')
-          uni.setStorageSync(`${userId}_script`, res.data.script)
+          uni.setStorageSync(`${this.userId}_script`, res.data.script)
           uni.navigateTo({
             url: '/pages/home/copy?' +'newsId=' +  this.newsId +'&word=' + this.word + '&style=' + this.style.id
           })
@@ -170,9 +174,6 @@ export default {
     back() {
       uni.switchTab({url: '/pages/home/index'})
     }
-  },
-  created() {
-    this.safeAreaHeight = uni.getSystemInfoSync().safeArea.height
   }
 }
 </script>

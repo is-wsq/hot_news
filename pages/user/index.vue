@@ -1,10 +1,16 @@
 <template>
   <view class="pages user" :style="{ height: `${safeAreaHeight - 70}px` }">
-    <view class="user-info">
-      <image class="user-avatar" src="/static/test-bg.png" mode="aspectFit" @click="goto('/pages/user/info')"></image>
+    <view class="user-info" v-if="userId !== ''">
+      <image class="user-avatar" :src="userInfo.avatar" mode="aspectFit" @click="goto('/pages/user/info')"></image>
       <view class="user-account">
-        <view class="user-phone">17670845180</view>
+        <view class="user-phone">{{ userInfo.phone }}</view>
         <view class="user-identity">普通用户</view>
+      </view>
+    </view>
+    <view class="user-info" v-else>
+      <view class="user-avatar" @click="goto('/pages/login/login')"></view>
+      <view class="user-account">
+        <view class="user-phone">暂未登录</view>
       </view>
     </view>
     <view class="identity-card">
@@ -14,11 +20,11 @@
       </view>
       <view class="identity-detail">
         <view style="text-align: center">
-          <view class="detail-value">5</view>
+          <view class="detail-value">{{ userInfo.figureBalance || 0 }}</view>
           <view class="detail-name">数字人额度</view>
         </view>
         <view style="text-align: center">
-          <view class="detail-value">12000</view>
+          <view class="detail-value">{{ userInfo.integralBalance || 0 }}</view>
           <view class="detail-name">积分余额</view>
         </view>
       </view>
@@ -26,11 +32,11 @@
     <view class="asset-text">我的资产</view>
     <view class="asset-list">
       <view class="asset-item">
-        <view class="asset-value">{{ asset.figure }}</view>
+        <view class="asset-value">{{ userInfo.figure || 0 }}</view>
         <view class="asset-name">我的数字人</view>
       </view>
       <view class="asset-item">
-        <view class="asset-value">{{ asset.voice }}</view>
+        <view class="asset-value">{{ userInfo.voice || 0 }}</view>
         <view class="asset-name">我的声音</view>
       </view>
     </view>
@@ -70,12 +76,13 @@ export default {
   name: 'user',
   data() {
     return {
-      isLoading: false,
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
       asset: {
         figure: 0,
         voice: 0
       },
+      userInfo: {},
       functions: [
         {name: '新手引导', path: ''},
         {name: '隐私条款', path: ''},
@@ -86,14 +93,25 @@ export default {
     }
   },
   mounted() {
-    this.queryFigures()
-    this.queryVoices()
+    this.userId = uni.getStorageSync('userId') || ''
+    if (this.userId !== '') {
+      this.queryUserInfo()
+      this.queryFigures()
+      this.queryVoices()
+    }
   },
   methods: {
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: this.userId}).then(res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+        }
+      })
+    },
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
         if (res.status === 'success') {
-          this.asset.figure = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
+          this.userInfo.figure = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
         } else {
           this.$tip.toast(res.message)
         }
@@ -102,7 +120,7 @@ export default {
     queryVoices() {
       this.$http.get('/timbres/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
         if (res.status === 'success') {
-          this.asset.voice = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
+          this.userInfo.voice = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
         } else {
           this.$tip.toast(res.message)
         }

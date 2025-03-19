@@ -35,20 +35,20 @@
 export default {
   data() {
     return {
-      safeAreaHeight: 0,
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
       keyword: '',
       history: [],
       searchList: [],
     }
   },
   mounted() {
-    this.safeAreaHeight = uni.getSystemInfoSync().safeArea.height
+    this.userId = uni.getStorageSync('userId') || ''
     this.queryHistory()
   },
   methods: {
     clearHistory() {
-      let userId = uni.getStorageSync('userId')
-      uni.removeStorageSync(`${userId}_history`)
+      uni.removeStorageSync(`${this.userId}_history`)
       this.queryHistory()
     },
     searchByHistory(keyword) {
@@ -56,8 +56,7 @@ export default {
       this.search()
     },
     queryHistory() {
-      let userId = uni.getStorageSync('userId')
-      this.history = uni.getStorageSync(`${userId}_history`) || []
+      this.history = uni.getStorageSync(`${this.userId}_history`) || []
     },
     keyInput() {
       if (this.keyword.length === 0) {
@@ -70,11 +69,10 @@ export default {
         this.searchList = []
         return
       }
-      let userId = uni.getStorageSync('userId')
-      let history = uni.getStorageSync(`${userId}_history`) || []
+      let history = uni.getStorageSync(`${this.userId}_history`) || []
       if (history.findIndex(item => item.keyword === this.keyword) === -1) {
         history.unshift({keyword: this.keyword})
-        uni.setStorageSync(`${userId}_history`, history)
+        uni.setStorageSync(`${this.userId}_history`, history)
       }
       this.$http.get('/news/search', {keyword: this.keyword}).then(res => {
         if (res.status === 'success') {
@@ -93,6 +91,11 @@ export default {
       })
     },
     toCustom(url) {
+      if (this.userId === '') {
+        this.$tip.toast('请先登录')
+        uni.navigateTo({ url: '/pages/login/login' })
+        return
+      }
       uni.navigateTo({ url: url })
     },
     back() {
