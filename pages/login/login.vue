@@ -1,8 +1,8 @@
 <template>
   <view class="login" :style="{height: safe.height + 'px'}">
-    <image class="logo-img" src="/static/login/bg.jpg" :style="{height: safe.width + 'px'}"></image>
+    <image class="logo-img" src="/static/login/bg-black.png" :style="{height: safe.width + 'px'}"></image>
 
-    <view class="title"><span style="color: #6286ED;">奇</span><span style="color: white">点</span></view>
+    <view class="title"><span style="color: #fff;">奇</span><span style="color: #E1C59CD9">点</span></view>
 
     <view class="login-box" v-if="isLogin">
       <text class="welcome">欢迎回来！</text>
@@ -11,14 +11,10 @@
         <uni-forms-item name="phone" label="手机号">
           <input type="number" class="form-input" v-model="loginFormData.phone"/>
         </uni-forms-item>
-        <uni-forms-item name="password" :label="loginType === 0? '密码':'验证码'">
+        <uni-forms-item name="password" :label="loginType === 0? '密码':'验证码'" style="position: relative">
           <input v-if="loginType === 0" type="text" class="form-input" v-model="loginFormData.password" password/>
-          <view v-else style="display: flex">
-            <input type="text" class="form-input" style="flex: 1" v-model="loginFormData.sms" password/>
-            <button class="send-sms-button" :disabled="!isSendSMSEnable" @click="onSMSSend">
-              {{ getSendBtnText }}
-            </button>
-          </view>
+          <input v-else type="text" class="form-input" v-model="loginFormData.sms" password/>
+          <view @click="onSMSSend" v-if="loginType === 1" class="send-sms-button">{{ getSendBtnText }}</view>
         </uni-forms-item>
       </uni-forms>
       <view style="width: 100%;display: flex;justify-content: space-between">
@@ -31,7 +27,7 @@
 
     <view class="login-box" v-else>
       <text class="welcome">创建账户</text>
-      <text class="subtitle" style="margin-bottom: 20px !important;">注册后继续</text>
+      <text class="subtitle" style="margin-bottom: 16px !important;">注册后继续</text>
       <uni-forms ref="form" label-position="top">
         <uni-forms-item name="phone" label="手机号">
           <input type="number" class="form-input" v-model="registerFormData.phone"/>
@@ -130,6 +126,9 @@ export default {
       console.log(222)
     },
     onSMSSend() {
+      if (!this.isSendSMSEnable) {
+        return;
+      }
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
       if (!this.loginFormData.phone || this.loginFormData.phone.length === 0) {
         this.$tip.toast('请填写手机号');
@@ -211,8 +210,17 @@ export default {
   left: calc(50% - 60px);
 }
 
+.login >>> .uni-forms-item {
+  margin-bottom: 20px;
+}
+
 .login >>> .uni-forms-item__label {
-  color: #000
+  font-size: 14px;
+  color: #FFFFFF
+}
+
+.login >>> .uni-forms-item.is-direction-top .uni-forms-item__label{
+  padding: 0 0 6px !important;
 }
 
 .logo-img {
@@ -223,7 +231,7 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
-  background-color: #fff;
+  background-color: #292929;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
   padding: 30px 30px 30px 30px;
@@ -236,58 +244,58 @@ export default {
   font-size: 22px;
   font-weight: bold;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #888;
-  margin-bottom: 40px;
+  color: #BBBBBB;
+  margin-bottom: 39px;
 }
 
 .form-input {
-  height: 45px;
+  height: 48px;
   padding: 0 10px;
   border-radius: 5px;
   box-sizing: border-box;
-  border: 2px solid rgba(143, 146, 161, 0.2);
-}
-
-.send-sms-button {
-  font-size: 15px;
-  line-height: 45px;
-  padding: 0 !important;
-  width: 120px;
-  margin-left: 2px;
-  border-radius: 5px;
-  background: #4A90E2;
+  background-color: #5f5f5f;
   color: #fff;
 }
 
-.forgot-password {
+.send-sms-button {
+  position: absolute;
+  top: 0;
+  right: 12px;
+  color: #DB3020;
   font-size: 16px;
-  color: #4A90E2;
+  line-height: 48px;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #BBBBBB;
   cursor: pointer;
   margin: 0 auto;
 }
 
 .login-button {
   width: 100%;
-  height: 60px;
-  line-height: 60px;
-  background: #4A90E2;
+  height: 58px;
+  line-height: 58px;
+  background: #e99d42;
   color: #fff;
   font-size: 16px;
-  border-radius: 10px;
+  border-radius: 12px;
   margin: 20px 0;
 }
 
 .signup-button {
   width: 100%;
-  height: 60px;
-  line-height: 60px;
-  background: transparent;
-  border: 1px solid rgba(143, 146, 161, 0.2);
+  height: 58px;
+  line-height: 58px;
+  background: #ffffff;
+  color: #1E1F20;
   font-size: 16px;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 </style>
