@@ -85,8 +85,8 @@ export default {
       userInfo: {},
       functions: [
         {name: '新手引导', path: ''},
-        {name: '隐私条款', path: ''},
-        {name: '用户协议', path: '/pages/user/agreement'},
+        {name: '隐私条款', path: '/pages/agreement/privacy?type=switchTab'},
+        {name: '用户协议', path: '/pages/agreement/user?type=switchTab'},
         {name: '订单管理', path: ''},
         {name: '联系客服', path: ''},
       ]
@@ -96,8 +96,6 @@ export default {
     this.userId = uni.getStorageSync('userId') || ''
     if (this.userId !== '') {
       this.queryUserInfo()
-      this.queryFigures()
-      this.queryVoices()
     }
   },
   methods: {
@@ -105,11 +103,13 @@ export default {
       this.$http.get('/user/query', {user_id: this.userId}).then(res => {
         if (res.status ==='success') {
           this.userInfo = res.data
+          this.queryFigures()
+          this.queryVoices()
         }
       })
     },
     queryFigures() {
-      this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
+      this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.userInfo.figure = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
         } else {
@@ -118,7 +118,7 @@ export default {
       })
     },
     queryVoices() {
-      this.$http.get('/timbres/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
+      this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.userInfo.voice = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
         } else {

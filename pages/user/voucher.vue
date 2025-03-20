@@ -3,7 +3,7 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">充值服务</view>
-      <view class="integralRecharge" @click="integralRecharge">积分充值</view>
+      <view class="integralRecharge" @click="goto('/pages/user/integral')">积分充值</view>
     </view>
     <view class="voucher-content">
       <view class="voucher-list">
@@ -25,7 +25,12 @@
       </view>
     </view>
     <button class="buy-btn">立即购买</button>
-    <view class="voucher-footer">购买即同意《用户协议》与《隐私条款》</view>
+    <view class="voucher-footer">
+      购买即同意
+      <view @click="goto('/pages/agreement/user?type=navigateTo')">《用户协议》</view>
+      与
+      <view @click="goto('/pages/agreement/privacy?type=navigateTo')">《隐私条款》</view>
+    </view>
   </view>
 </template>
 
@@ -48,23 +53,23 @@ export default {
           {name: '后续积分购买9折优惠'}
         ],
         [
-          {name: '定制版数字人形象×5'},
-          {name: '定制版声音克隆×5'},
-          {name: '赠送5000积分'},
+          {name: '定制版数字人形象×2'},
+          {name: '定制版声音克隆×2'},
+          {name: '赠送3000积分'},
           {name: '后续积分购买8折优惠'}
         ],
         [
-          {name: '定制版数字人形象×20'},
-          {name: '定制版声音克隆×20'},
-          {name: '赠送20000积分'},
-          {name: '后续积分购买8折优惠'}
+          {name: '定制版数字人形象×5'},
+          {name: '定制版声音克隆×5'},
+          {name: '赠送8000积分'},
+          {name: '后续积分购买7折优惠'}
         ],
       ]
     }
   },
   methods: {
-    integralRecharge() {
-      uni.navigateTo({ url: '/pages/user/integral' })
+    goto(path) {
+      uni.navigateTo({ url: path })
     },
     back() {
       uni.switchTab({ url: '/pages/user/index' })
@@ -187,7 +192,8 @@ export default {
 .voucher-footer {
   color: #9A9A9A;
   font-size: 14px;
-  text-align: center;
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 </style>

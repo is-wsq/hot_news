@@ -32,13 +32,16 @@
       "path": "pages/user/info"
     },
     {
-      "path": "pages/user/agreement"
-    },
-    {
       "path": "pages/user/voucher"
     },
     {
       "path": "pages/user/integral"
+    },
+    {
+      "path": "pages/agreement/user"
+    },
+    {
+      "path": "pages/agreement/privacy"
     },
     {
       "path": "pages/login/login"

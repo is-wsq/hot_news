@@ -1,6 +1,6 @@
 <template>
   <view class="pages agreement" :style="{ height: `${safeAreaHeight}px` }">
-    <web-view src="/static/pdf-view.html?url=/static/figure.pdf&height=300px&width=100%"></web-view>
+    <web-view src="/static/pdf-view.html"></web-view>
   </view>
 </template>
 
@@ -9,18 +9,25 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      backType: ''
     }
   },
   created() {
     window.addEventListener("message", this.handleMessage);
   },
-  mounted() {
-
+  onLoad: function (option) {
+    this.backType = option.type
   },
   methods: {
     handleMessage(event) {
       if (event.data === 'back') {
-        uni.switchTab({url: '/pages/user/index'})
+        if (this.backType === 'navigateTo') {
+          console.log('navigateTo')
+          uni.navigateBack()
+        }else {
+          console.log('switchTab')
+          uni.switchTab({url: '/pages/user/index'})
+        }
       }
     },
   }
