@@ -14,7 +14,7 @@
     </view>
     <view class="figure-type-name">克隆形象</view>
     <view class="figure-list">
-      <view class="figure-item" @click="selectFile">
+      <view class="figure-item" @click="cloneFigure">
         <uni-icons type="plusempty" class="figure-avatar clone-figure-icon" size="25" color="#e99d42"></uni-icons>
         <view class="figure-name" style="color: #e99d42 !important;">克隆形象</view>
       </view>
@@ -27,16 +27,40 @@
     <uni-popup ref="previewPopup" :mask-click="false" type="bottom">
       <view class="preview-content" :style="{ height: `${safeAreaHeight}px` }">
         <view class="preview-title">
-          <view style="color: #ffffff; font-size: 16px;">[ {{selectedFigure.name}} ] 形象预览</view>
+          <view style="color: #ffffff; font-size: 16px;">[ {{ selectedFigure.name }} ] 形象预览</view>
           <uni-icons class="preview-close" type="closeempty" size="20" color="#ffffff"
                      @click="popupClose"></uni-icons>
         </view>
         <view style="height: calc(100% - 30px);position: relative;">
           <uni-icons class="preview-close" type="closeempty" size="20" color="#ffffff"
                      @click="popupClose"></uni-icons>
-          <video ref="video" style="width: 100%; height: 100%;" :src="src" :controls="false" :show-center-play-btn="false"></video>
+          <video ref="video" style="width: 100%; height: 100%;" :src="src" :controls="false"
+                 :show-center-play-btn="false"></video>
           <uni-icons custom-prefix="iconfont" type="icon-play" class="play-icon" size="20" color="#ffffff"
                      @click="controlVideo" v-if="!isPlaying"></uni-icons>
+        </view>
+      </view>
+    </uni-popup>
+    <uni-popup ref="clonePopup" :mask-click="false" type="center" style="width: 100%">
+      <view class="clone-content" :style="{ width: `${safeAreaWidth * 0.8}px` }">
+        <view class="clone-title">克隆形象</view>
+        <view style="padding: 30px;box-sizing: border-box;">
+          <button v-if="!selectedFile" @click="selectFile" size="mini" style="font-size: 14px">选择文件</button>
+          <view v-else style="display: flex">
+            <view class="file-name">{{ selectedFile.name }}</view>
+            <uni-icons style="margin-left: 10px;line-height: 36px;" type="trash-filled" size="20" color="#9a9a9a"
+                       @click="selectedFile = null"></uni-icons>
+          </view>
+          <view style="margin-top: 10px;display: flex;align-items: center;">
+            <checkbox-group @change="cloneSound = !cloneSound">
+              <checkbox color="#42B983" style="transform:scale(0.7)"/>
+            </checkbox-group>
+            <view style="font-size: 14px;">同时克隆声音</view>
+          </view>
+        </view>
+        <view style="display: flex;">
+          <view class="clone-btn" style="border-right: 1px solid #f5f5f5;" @click="clonePopupClose">取消</view>
+          <view class="clone-btn" style="color: #007aff" @click="clone">克隆</view>
         </view>
       </view>
     </uni-popup>
@@ -49,11 +73,14 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      safeAreaWidth: uni.getSystemInfoSync().safeArea.width,
       systems: [],
       clones: [],
       selectedFigure: {},
       src: 'https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/2minute-demo.mp4',
       isPlaying: false,
+      cloneSound: false,
+      selectedFile: null
     }
   },
   onShow() {
@@ -66,7 +93,7 @@ export default {
       this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
         if (res.status === 'success') {
           res.data.forEach(item => {
-            item.type === 'system'? this.systems.push(item) : this.clones.push(item)
+            item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
           })
         } else {
           this.$tip.toast(res.message)
@@ -86,14 +113,27 @@ export default {
       this.$refs.video.pause();
       this.$refs.previewPopup.close();
     },
+    cloneFigure() {
+      this.$refs.clonePopup.open()
+    },
     selectFile() {
       let self = this
       uni.chooseFile({
         count: 1,
         success: function (res) {
           console.log(res)
+          self.selectedFile = res.tempFiles[0]
         }
       });
+    },
+    clone() {  //克隆方法
+      console.log(this.selectedFile)
+      console.log(this.cloneSound)
+    },
+    clonePopupClose() {
+      this.selectedFile = null
+      this.cloneSound = false
+      this.$refs.clonePopup.close()
     },
     back() {
       uni.navigateBack()
@@ -186,5 +226,38 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.clone-content {
+  background: #fff;
+  border-radius: 11px;
+  padding-top: 20px;
+  box-sizing: border-box;
+}
+
+.clone-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #909399;
+  text-align: center;
+}
+
+.file-name {
+  font-size: 14px;
+  line-height: 36px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clone-btn {
+  flex: 1;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 0 0 0 11px;
+  border-top: 1px solid #f5f5f5;
 }
 </style>
