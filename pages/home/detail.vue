@@ -59,7 +59,7 @@
         <button class="detail-btn" @click="styleSure">确定</button>
       </view>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..." />
+    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
   </view>
 </template>
 
@@ -89,7 +89,9 @@ export default {
       introduce: '(约2分钟)',
       selectedWord: null,
       selectedIntroduce: '',
-      styles: [],
+      styles: [
+        {id: 'default', name: '无'}
+      ],
       style: {},
       selectedStyle: {},
       indicatorStyle: `height: 50px;`,
@@ -112,12 +114,10 @@ export default {
   methods: {
     queryStyles() {
       this.$http.get('/copywriting/styles/query/all').then(res => {
-        if (res.status ==='success') {
-          this.styles = res.data
-          if (this.styles.length > 0) {
-            this.style = this.styles[0]
-            this.selectedStyle = this.styles[0]
-          }
+        if (res.status === 'success') {
+          this.styles = this.styles.concat(res.data)
+          this.style = this.styles[0]
+          this.selectedStyle = this.styles[0]
         }
       })
     },
@@ -147,7 +147,7 @@ export default {
     generate() {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({ url: '/pages/login/login?type=usual' })
+        uni.navigateTo({url: '/pages/login/login?type=usual'})
         return
       }
       let params = {
@@ -166,7 +166,7 @@ export default {
           scriptList.push(res.data.script)
           uni.setStorageSync(`${this.userId}_${this.newsId}_script`, scriptList)
           uni.navigateTo({
-            url: '/pages/home/copy?' +'newsId=' +  this.newsId +'&word=' + this.word + '&style=' + this.style.id
+            url: '/pages/home/copy?' + 'newsId=' + this.newsId + '&word=' + this.word + '&style=' + this.style.id
           })
         } else {
           this.$tip.toast(res.message)
