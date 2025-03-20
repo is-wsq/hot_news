@@ -181,9 +181,10 @@ export default {
 .membership {
   width: 80px;
   height: 35px;
-  background-image: url('/static/voucher-bg.jpg');
-  background-position: bottom;
-  background-repeat: no-repeat; /* 避免图片重复 */
+  background-image: url('/static/voucher-bg.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: revert;
   color: #fff;
   font-size: 14px;
 }

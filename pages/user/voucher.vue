@@ -145,10 +145,10 @@ export default {
   min-height: 280px;
   margin: 20px 20px 0;
   border-radius: 15px;
-  background-image: url('/static/voucher-bg.jpg');
-  background-position: bottom; /* 图片底部对齐容器底部 */
-  background-repeat: no-repeat; /* 避免图片重复 */
-  background-size: cover; /* 图片填充 */
+  background-image: url('/static/voucher-bg.png');
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-size: cover;
   padding: 30px;
   box-sizing: border-box;
 }
