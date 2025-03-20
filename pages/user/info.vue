@@ -42,7 +42,7 @@ export default {
     logout() {
       uni.removeStorageSync('userId')
       uni.navigateTo({
-        url: '/pages/login/login'
+        url: '/pages/login/login?type=home'
       })
     },
     back() {

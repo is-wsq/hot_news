@@ -42,8 +42,10 @@ export default {
       searchList: [],
     }
   },
-  mounted() {
+  onShow() {
     this.userId = uni.getStorageSync('userId') || ''
+  },
+  mounted() {
     this.queryHistory()
   },
   methods: {
@@ -93,7 +95,7 @@ export default {
     toCustom(url) {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({ url: '/pages/login/login' })
+        uni.navigateTo({ url: '/pages/login/login?type=usual' })
         return
       }
       uni.navigateTo({ url: url })

@@ -105,9 +105,11 @@ export default {
       }
     })
   },
+  onShow() {
+    this.userId = uni.getStorageSync('userId') || ''
+  },
   mounted() {
     this.queryStyles()
-    this.userId = uni.getStorageSync('userId') || ''
   },
   methods: {
     queryStyles() {
@@ -147,7 +149,7 @@ export default {
     generate() {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({ url: '/pages/login/login' })
+        uni.navigateTo({ url: '/pages/login/login?type=usual' })
         return
       }
       let params = {

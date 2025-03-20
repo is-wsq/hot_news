@@ -62,7 +62,8 @@ export default {
         password: '',
         rePassword: '',
       },
-      smsCountDown: 0
+      smsCountDown: 0,
+      routeTo: ''
     };
   },
   computed: {
@@ -79,6 +80,9 @@ export default {
   },
   created() {
     this.safe = uni.getSystemInfoSync().safeArea
+  },
+  onLoad: function (option) {
+    this.routeTo = option.type
   },
   methods: {
     login() {
@@ -110,9 +114,13 @@ export default {
       this.$http.post('/user/login', params).then(res => {
         if (res.status === 'success') {
           uni.setStorageSync('userId', res.data.user_id)
-          uni.switchTab({
-            url: '/pages/home/index'
-          })
+          if (this.routeTo === 'home') {
+            uni.switchTab({ url: '/pages/home/index' })
+          }else if (this.routeTo === 'user') {
+            uni.switchTab({ url: '/pages/user/index' })
+          }else {
+            uni.navigateBack()
+          }
         }else {
           this.$tip.toast(res.message);
         }

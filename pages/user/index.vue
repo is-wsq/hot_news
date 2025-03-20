@@ -8,7 +8,7 @@
       </view>
     </view>
     <view class="user-info" v-else>
-      <view class="user-avatar" @click="goto('/pages/login/login')"></view>
+      <view class="user-avatar" @click="goto('/pages/login/login?type=user')"></view>
       <view class="user-account">
         <view class="user-phone">暂未登录</view>
       </view>
