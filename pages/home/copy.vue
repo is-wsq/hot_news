@@ -15,7 +15,16 @@
       </view>
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
-        <view style="height: 20px;text-align: end">
+        <view style="height: 40px;display: flex;align-items: end">
+          <view style="margin-left: 18px;width: calc(100% - 36px);color: #d3d3d3;display: flex;justify-content: center;align-items: center">
+            <template v-if="scriptList.length > 1">
+              <uni-icons type="left" size="18" color="#d3d3d3" @click="prevScript"></uni-icons>
+              <view style="margin: 0 10px"> {{ scriptIndex }}</view>
+              <view> / </view>
+              <view style="margin: 0 10px"> {{ scriptList.length }}</view>
+              <uni-icons type="right" size="18" color="#d3d3d3" @click="nextScript"></uni-icons>
+            </template>
+          </view>
           <image class="copy-icon" src="/static/copy_icon.png" @click="copy"></image>
         </view>
       </view>
@@ -93,6 +102,7 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
       newsId: null,
       word: 0,
       styleId: '',
@@ -100,6 +110,8 @@ export default {
       focus: false,
       title: '',
       script: '',
+      scriptIndex: 0,
+      scriptList: [],
       voices: [],
       voice: {},
       selectedVoice: {},
@@ -109,7 +121,6 @@ export default {
       testAudioContext: null,
       testAudioIndex: null,
       isLoading: false,
-      scriptList: [],
     }
   },
   onLoad: function (option) {
@@ -118,14 +129,14 @@ export default {
     this.styleId = option.style
   },
   onShow() {
+    this.userId = uni.getStorageSync('userId')
     this.queryTitleAndScript()
     this.queryVoices()
     this.queryFigures()
   },
   methods: {
     queryFigures() {
-      let userId = uni.getStorageSync('userId')
-      this.$http.get('/figure/query/user', {user_id: userId}).then(res => {
+      this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.figures = res.data
           if (this.figures.length > 0) {
@@ -138,8 +149,7 @@ export default {
       })
     },
     queryVoices() {
-      let userId = uni.getStorageSync('userId')
-      this.$http.get('/timbres/query/user', {user_id: userId}).then(res => {
+      this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.voices = res.data
           if (this.voices.length > 0) {
@@ -165,6 +175,7 @@ export default {
         if (res.status === 'success') {
           this.script = res.data.script
           this.scriptList.push(res.data.script)
+          this.scriptIndex = this.scriptList.length
           uni.setStorageSync(`${this.userId}_${this.newsId}_script`, this.scriptList)
           this.isLoading = false
         } else {
@@ -173,9 +184,11 @@ export default {
       })
     },
     queryTitleAndScript() {
-      let userId = uni.getStorageSync('userId')
-      this.script = uni.getStorageSync(`${userId}_script`)
-      this.scriptList = uni.getStorageSync(`${userId}_${this.newsId}_script`)
+      this.scriptList = uni.getStorageSync(`${this.userId}_${this.newsId}_script`) || []
+      if (this.scriptList.length > 0) {
+        this.scriptIndex = this.scriptList.length
+        this.script = this.scriptList[this.scriptIndex - 1]
+      }
       this.$http.get('/news/query', {id: this.newsId}).then(res => {
         if (res.status === 'success') {
           this.title = res.data.title
@@ -222,6 +235,22 @@ export default {
         }
       });
     },
+    prevScript() {
+      if (this.scriptIndex > 1) {
+        this.script = this.scriptList[this.scriptIndex - 2]
+        this.scriptIndex = this.scriptIndex - 1
+      }else {
+        this.$tip.toast('已经是第一条口播文案了')
+      }
+    },
+    nextScript() {
+      if (this.scriptIndex < this.scriptList.length) {
+        this.script = this.scriptList[this.scriptIndex]
+        this.scriptIndex = this.scriptIndex + 1
+      }else {
+        this.$tip.toast('已经是最后一条口播文案了')
+      }
+    },
     back() {
       uni.navigateBack()
     },
@@ -259,7 +288,7 @@ export default {
 }
 
 .copy-script {
-  height: calc(100% - 20px);
+  height: calc(100% - 40px);
   overflow-y: auto;
   font-size: 14px;
   color: #9A9A9A;

@@ -136,7 +136,7 @@ export default {
       this.$refs.clonePopup.close()
     },
     back() {
-      uni.navigateBack()
+      uni.switchTab({ url: '/pages/template/index' })
     }
   }
 }

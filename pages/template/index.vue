@@ -1,5 +1,5 @@
 <template>
-  <view class="pages template" :style="{ height: `${safeAreaHeight - 70}px` }">
+  <view class="pages templates" :style="{ height: `${safeAreaHeight - 70}px` }">
 <!--    <view class="nav-bar-header">-->
 <!--      <view class="nav-bar-title">模板</view>-->
 <!--    </view>-->
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  name: 'template',
+  name: 'templates',
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
