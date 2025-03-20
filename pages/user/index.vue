@@ -32,11 +32,11 @@
     <view class="asset-text">我的资产</view>
     <view class="asset-list">
       <view class="asset-item">
-        <view class="asset-value">{{ userInfo.figure || 0 }}</view>
+        <view class="asset-value">{{ userInfo.figure }}</view>
         <view class="asset-name">我的数字人</view>
       </view>
       <view class="asset-item">
-        <view class="asset-value">{{ userInfo.voice || 0 }}</view>
+        <view class="asset-value">{{ userInfo.voice }}</view>
         <view class="asset-name">我的声音</view>
       </view>
     </view>
@@ -78,10 +78,6 @@ export default {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
-      asset: {
-        figure: 0,
-        voice: 0
-      },
       userInfo: {},
       functions: [
         {name: '新手引导', path: ''},
@@ -100,29 +96,32 @@ export default {
   },
   methods: {
     queryUserInfo() {
-      this.$http.get('/user/query', {user_id: this.userId}).then(res => {
+      this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
         if (res.status ==='success') {
           this.userInfo = res.data
-          this.queryFigures()
-          this.queryVoices()
+          this.userInfo.figure = await this.queryFigures()
+          this.userInfo.voice = await this.queryVoices()
+          this.$forceUpdate()
         }
       })
     },
     queryFigures() {
-      this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
+      return this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
-          this.userInfo.figure = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
+          return res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
         } else {
           this.$tip.toast(res.message)
+          return 0
         }
       })
     },
     queryVoices() {
-      this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
+      return this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
-          this.userInfo.voice = res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
+          return res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
         } else {
           this.$tip.toast(res.message)
+          return 0
         }
       })
     },
