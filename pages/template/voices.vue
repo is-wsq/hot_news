@@ -47,7 +47,7 @@ export default {
       isLoading: false,
     }
   },
-  mounted() {
+  onShow() {
     this.queryVoices()
   },
   methods: {

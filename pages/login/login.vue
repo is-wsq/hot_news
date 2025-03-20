@@ -49,7 +49,7 @@
 export default {
   data() {
     return {
-      safe: null,
+      safe: uni.getSystemInfoSync().safeArea,
       isLogin: true,
       loginType: 0,
       loginFormData: {
@@ -78,11 +78,14 @@ export default {
       }
     },
   },
-  created() {
-    this.safe = uni.getSystemInfoSync().safeArea
-  },
   onLoad: function (option) {
     this.routeTo = option.type
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, null, document.URL);
+      window.addEventListener('popstate', function () {
+        window.history.pushState(null, null, document.URL);
+      });
+    }
   },
   methods: {
     login() {

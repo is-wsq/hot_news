@@ -107,8 +107,6 @@ export default {
   },
   onShow() {
     this.userId = uni.getStorageSync('userId') || ''
-  },
-  mounted() {
     this.queryStyles()
   },
   methods: {

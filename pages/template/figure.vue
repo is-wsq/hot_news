@@ -56,7 +56,7 @@ export default {
       isPlaying: false,
     }
   },
-  mounted() {
+  onShow() {
     this.queryFigures()
   },
   methods: {

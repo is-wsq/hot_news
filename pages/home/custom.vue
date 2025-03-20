@@ -92,7 +92,7 @@ export default {
   },
   data() {
     return {
-      safeAreaHeight: 0,
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       newsId: null,
       word: 0,
       styleId: '',
@@ -116,7 +116,7 @@ export default {
     this.word = option.word
     this.styleId = option.style
   },
-  mounted() {
+  onShow() {
     this.queryVoices()
     this.queryFigures()
   },
@@ -196,9 +196,6 @@ export default {
       this.focus = !this.focus
       this.isEdit = !this.isEdit
     }
-  },
-  created() {
-    this.safeAreaHeight = uni.getSystemInfoSync().safeArea.height
   }
 }
 </script>
