@@ -1,10 +1,10 @@
 <template>
   <view class="pages user" :style="{ height: `${safeAreaHeight - 70}px` }">
     <view class="user-info" v-if="userId !== ''">
-      <image class="user-avatar" :src="userInfo.avatar" mode="aspectFit" @click="goto('/pages/user/info')"></image>
+      <image class="user-avatar" :src="userInfo.avatar" @click="goto('/pages/user/info')"></image>
       <view class="user-account">
         <view class="user-phone">{{ userInfo.phone }}</view>
-        <view class="user-identity">普通用户</view>
+        <view class="user-identity">{{ userTypeName }}</view>
       </view>
     </view>
     <view class="user-info" v-else>
@@ -24,7 +24,7 @@
           <view class="detail-name">数字人额度</view>
         </view>
         <view style="text-align: center">
-          <view class="detail-value">{{ userInfo.integralBalance || 0 }}</view>
+          <view class="detail-value">{{ userInfo.points || 0 }}</view>
           <view class="detail-name">积分余额</view>
         </view>
       </view>
@@ -36,7 +36,7 @@
         <view class="asset-name">我的数字人</view>
       </view>
       <view class="asset-item">
-        <view class="asset-value">{{ userInfo.voice }}</view>
+        <view class="asset-value">{{ userInfo.timbre }}</view>
         <view class="asset-name">我的声音</view>
       </view>
     </view>
@@ -46,26 +46,6 @@
           <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">{{ item.name }}</view>
           <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c"></uni-icons>
         </view>
-        <!--        <view style="display: flex">-->
-        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">新手引导</view>-->
-        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
-        <!--        </view>-->
-        <!--        <view style="display: flex">-->
-        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">隐私条款</view>-->
-        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
-        <!--        </view>-->
-        <!--        <view style="display: flex" @click="goto('/pages/user/agreement')">-->
-        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">用户协议</view>-->
-        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
-        <!--        </view>-->
-        <!--        <view style="display: flex">-->
-        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">订单管理</view>-->
-        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
-        <!--        </view>-->
-        <!--        <view style="display: flex">-->
-        <!--          <view style="flex: 1;color: #fff;font-size: 14px;line-height: 40px">联系客服</view>-->
-        <!--          <uni-icons style="line-height: 40px" type="right" size="15" color="#8c8c8c" ></uni-icons>-->
-        <!--        </view>-->
       </view>
     </view>
   </view>
@@ -79,6 +59,13 @@ export default {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
       userInfo: {},
+      userTypeNames: [
+        { type: 0, name: '普通用户' },
+        { type: 1, name: '月会员' },
+        { type: 2, name: '季会员' },
+        { type: 3, name: '年会员' },
+      ],
+      userTypeName: '',
       functions: [
         {name: '新手引导', path: ''},
         {name: '隐私条款', path: '/pages/agreement/privacy?type=switchTab'},
@@ -100,29 +87,7 @@ export default {
       this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
         if (res.status ==='success') {
           this.userInfo = res.data
-          this.userInfo.figure = await this.queryFigures()
-          this.userInfo.voice = await this.queryVoices()
-          this.$forceUpdate()
-        }
-      })
-    },
-    queryFigures() {
-      return this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
-        if (res.status === 'success') {
-          return res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
-        } else {
-          this.$tip.toast(res.message)
-          return 0
-        }
-      })
-    },
-    queryVoices() {
-      return this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
-        if (res.status === 'success') {
-          return res.data.reduce((count, item) => item.type === 'clone' ? count + 1 : count, 0);
-        } else {
-          this.$tip.toast(res.message)
-          return 0
+          this.userTypeName = this.userTypeNames.find(item => item.type === this.userInfo.userType).name
         }
       })
     },

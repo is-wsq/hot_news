@@ -38,6 +38,9 @@
       "path": "pages/user/integral"
     },
     {
+      "path": "pages/user/previewAvatar"
+    },
+    {
       "path": "pages/agreement/user"
     },
     {

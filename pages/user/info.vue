@@ -5,9 +5,9 @@
       <view class="nav-bar-title">个人资料</view>
     </view>
     <view class="info-list">
-      <view class="info-item">
+      <view class="info-item" @click="previewAvatar">
         <view class="info-label">头像</view>
-        <view class="info-value"><image class="user-avatar" src="/static/test-bg.png"></image></view>
+        <view class="info-value"><image class="user-avatar" :src="userInfo.avatar"></image></view>
       </view>
       <view class="info-item">
         <view class="info-label">名字</view>
@@ -35,10 +35,28 @@
 export default {
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height
+      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
+      userInfo: {}
+    }
+  },
+  onShow() {
+    this.userId = uni.getStorageSync('userId') || ''
+    if (this.userId !== '') {
+      this.queryUserInfo()
     }
   },
   methods: {
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+        }
+      })
+    },
+    previewAvatar() {
+      uni.navigateTo({ url: `/pages/user/previewAvatar` })
+    },
     logout() {
       uni.removeStorageSync('userId')
       uni.navigateTo({
