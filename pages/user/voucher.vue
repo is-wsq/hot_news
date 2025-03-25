@@ -27,6 +27,8 @@
     <button class="buy-btn">立即购买</button>
     <view class="voucher-footer">
       购买即同意
+      <view @click="goto('/pages/agreement/user?type=navigateTo')">《付费服务协议》</view>
+      、
       <view @click="goto('/pages/agreement/user?type=navigateTo')">《用户协议》</view>
       与
       <view @click="goto('/pages/agreement/privacy?type=navigateTo')">《隐私条款》</view>
@@ -191,7 +193,7 @@ export default {
 
 .voucher-footer {
   color: #9A9A9A;
-  font-size: 14px;
+  font-size: 13px;
   margin-top: 20px;
   display: flex;
   justify-content: center;
