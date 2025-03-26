@@ -42,7 +42,7 @@
         <uni-icons type="right" size="20" color="#E5E5E5;" @click="$refs.figurePopup.open"></uni-icons>
       </view>
     </view>
-    <button class="copy-btn">口播视频生成</button>
+    <button class="copy-btn" @click="generateVideo">口播视频生成</button>
     <uni-popup ref="voicePopup" :mask-click="false" type="bottom">
       <view class="popup-content">
         <view class="popup-title">
@@ -59,7 +59,7 @@
               <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="20" color="#ffffff"
                          v-else @click="stopPreviewAudio"></uni-icons>
             </view>
-            <view style="margin-top: 10px;font-size: 14px"
+            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 80px;"
                   :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
           </view>
@@ -76,10 +76,10 @@
         </view>
         <view class="figure-content">
           <view style="flex: none;text-align: center" v-for="item in figures" :key="item.id"
-                @click="selectedFigure = item">
+                @click="selectFigure(item)">
             <image :src="item.picture" class="figure-item"
                    :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
-            <view style="margin-top: 10px;font-size: 14px"
+            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;"
                   :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
           </view>
@@ -87,7 +87,7 @@
         <button class="copy-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..." />
+    <loading-video ref="loadingVideo" v-if="isLoading" :text="loadingText" />
   </view>
 </template>
 
@@ -121,6 +121,7 @@ export default {
       testAudioContext: null,
       testAudioIndex: null,
       isLoading: false,
+      loadingText: ''
     }
   },
   onLoad: function (option) {
@@ -168,6 +169,7 @@ export default {
         count: this.word,
       }
       this.isLoading = true
+      this.loadingText = '口播文案生成中...'
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
       })
@@ -180,6 +182,42 @@ export default {
           this.isLoading = false
         } else {
           this.$tip.toast(res.message)
+        }
+      })
+    },
+    generateVideo() {
+      let params = {
+        text: this.script,
+        user_id: this.userId,
+        voice_id: this.voice.voice_id,
+        video_id: this.figure.video_id
+      }
+      this.isLoading = true
+      this.loadingText = '口播视频生成中...'
+      this.$nextTick(() => {
+        this.$refs.loadingVideo.playVideo()
+      })
+      this.$http.post('/figure/generate_video',params, 1800000).then(res => {
+        if (res.status === 'success') {
+          this.isLoading = false
+          uni.downloadFile({
+            url: res.data.video_path, //仅为示例，并非真实的资源
+            timeout: 1800000,
+            success: (res) => {
+              if (res.statusCode === 200) {
+                uni.saveFile({
+                  tempFilePath: res.tempFilePath,
+                  success: function (result) {
+                    console.log('下载成功');
+                    console.log(result.savedFilePath);
+                  }
+                });
+              }
+            },
+            fail: (err) => {
+              console.log('下载失败', err)
+            }
+          });
         }
       })
     },
@@ -220,6 +258,13 @@ export default {
     voiceSure() {
       this.voice = this.selectedVoice
       this.$refs.voicePopup.close()
+    },
+    selectFigure(item) {
+      if (item.status !== 'success') {
+        this.$tip.toast('当前形象正在克隆中，暂不可选择')
+        return
+      }
+      this.selectedFigure = item
     },
     figureSure() {
       this.figure = this.selectedFigure

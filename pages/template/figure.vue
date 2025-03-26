@@ -20,7 +20,7 @@
       </view>
       <view class="figure-item" v-for="item in clones" :key="item.id"
             :class="{ 'figure-item': selectedFigure.id === item.id }" @click="previewFigure(item)">
-        <image :src="item.avatar" class="figure-avatar"/>
+        <image :src="item.picture" class="figure-avatar"/>
         <view class="figure-name">{{ item.name }}</view>
       </view>
     </view>
@@ -34,7 +34,7 @@
         <view style="height: calc(100% - 30px);position: relative;">
           <uni-icons class="preview-close" type="closeempty" size="20" color="#ffffff"
                      @click="popupClose"></uni-icons>
-          <video ref="video" style="width: 100%; height: 100%;" :src="src" :controls="false"
+          <video ref="video" style="width: 100%; height: 100%;" :src="selectedFigure.filepath" :controls="false"
                  :show-center-play-btn="false"></video>
           <uni-icons custom-prefix="iconfont" type="icon-play" class="play-icon" size="20" color="#ffffff"
                      @click="controlVideo" v-if="!isPlaying"></uni-icons>
@@ -66,12 +66,16 @@
         </view>
       </view>
     </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="视频克隆中..."/>
   </view>
 </template>
 
 <script>
+import LoadingVideo from "../../components/loading-video.vue";
+
 export default {
   name: 'Figure',
+  components: {LoadingVideo},
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
@@ -82,10 +86,11 @@ export default {
       src: 'https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/2minute-demo.mp4',
       isPlaying: false,
       cloneSound: false,
-      selectedFile: null
+      selectedFile: null,
+      isLoading: false
     }
   },
-  onShow() {
+  mounted() {
     this.queryFigures()
   },
   methods: {
@@ -103,6 +108,10 @@ export default {
       })
     },
     previewFigure(item) {
+      if (item.status !== 'success') {
+        this.$tip.toast('形象还未克隆完成，暂时无法预览')
+        return
+      }
       this.selectedFigure = item
       this.$refs.previewPopup.open()
     },
@@ -131,6 +140,33 @@ export default {
     clone() {  //克隆方法
       console.log(this.selectedFile)
       console.log(this.cloneSound)
+      let self = this
+      self.isLoading = true
+      self.$nextTick(() => {
+        self.$refs.loadingVideo.playVideo()
+      })
+      self.$refs.clonePopup.close()
+      uni.uploadFile({
+        url: 'https://live.tellai.tech/api/news_assistant/figure/clone',
+        filePath: self.selectedFile.path,
+        name: 'file',
+        timeout: 1800000,
+        formData: {
+          'user_id': uni.getStorageSync('userId'),
+          // cloneSound: self.cloneSound
+          'cloneSound': false
+        },
+        success: (result) => {
+          let data = JSON.parse(result.data)
+          if (data.status === 'success') {
+            self.$tip.toast('克隆成功')
+            self.queryFigures()
+          } else {
+            self.$tip.toast(data.message)
+          }
+          self.isLoading = false
+        }
+      });
     },
     clonePopupClose() {
       this.selectedFile = null
