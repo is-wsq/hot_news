@@ -80,12 +80,12 @@ export default {
   },
   onLoad: function (option) {
     this.routeTo = option.type
-    if (window.history && window.history.pushState) {
-      window.history.pushState(null, null, document.URL);
-      window.addEventListener('popstate', function () {
-        window.history.pushState(null, null, document.URL);
-      });
-    }
+    // if (window.history && window.history.pushState) {
+    //   window.history.pushState(null, null, document.URL);
+    //   window.addEventListener('popstate', function () {
+    //     window.history.pushState(null, null, document.URL);
+    //   });
+    // }
   },
   methods: {
     login() {

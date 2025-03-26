@@ -206,7 +206,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: calc(100% - 250px);
+  height: calc(100% - 235px);
 }
 
 .custom-card {

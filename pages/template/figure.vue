@@ -45,10 +45,12 @@
       <view class="clone-content" :style="{ width: `${safeAreaWidth * 0.8}px` }">
         <view class="clone-title">克隆形象</view>
         <view style="padding: 30px;box-sizing: border-box;">
-          <button v-if="!selectedFile" @click="selectFile" size="mini" style="font-size: 14px">选择文件</button>
+          <view v-if="!selectedFile" style="text-align: center">
+            <button @click="selectFile" size="mini" style="font-size: 14px">选择文件</button>
+          </view>
           <view v-else style="display: flex">
             <view class="file-name">{{ selectedFile.name }}</view>
-            <uni-icons style="margin-left: 10px;line-height: 36px;" type="trash-filled" size="20" color="#9a9a9a"
+            <uni-icons style="margin-left: 10px;line-height: 38px;" type="trash-filled" size="20" color="#9a9a9a"
                        @click="selectedFile = null"></uni-icons>
           </view>
           <view style="margin-top: 10px;display: flex;align-items: center;">

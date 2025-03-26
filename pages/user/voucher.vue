@@ -82,9 +82,8 @@ export default {
 
 <style scoped>
 .voucher {
-  min-height: 710px;
+  overflow-y: auto;
 }
-
 .integralRecharge {
   position: absolute;
   right: 5px;
@@ -92,11 +91,12 @@ export default {
 }
 
 .voucher-content {
-  height: calc(100% - 200px);
+  height: calc(100% - 160px);
+  min-height: 450px;
   border-radius: 15px;
   background: linear-gradient(to bottom, rgba(233, 157, 66, 0.2), rgba(233, 157, 157, 0));
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.4);
-  padding-top: 38px;
+  padding-top: 20px;
   box-sizing: border-box;
 }
 
@@ -151,7 +151,7 @@ export default {
   background-position: bottom right;
   background-repeat: no-repeat;
   background-size: cover;
-  padding: 30px;
+  padding: 20px 30px 0;
   box-sizing: border-box;
 }
 
@@ -164,7 +164,7 @@ export default {
 
 .vip-interest-list {
   margin-left: 15px;
-  margin-top: 15px;
+  margin-top: 10px;
   color: #ffffff;
   font-size: 16px;
 }
@@ -185,7 +185,7 @@ export default {
   width: 255px;
   height: 35px;
   line-height: 35px;
-  margin: 25px auto 0;
+  margin: 20px auto 0;
   font-size: 14px;
   border-radius: 15px;
   color: #101010;

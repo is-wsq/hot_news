@@ -113,6 +113,7 @@ export default {
   },
   methods: {
     queryStyles() {
+      this.styles = [{id: 'default', name: '无'}]
       this.$http.get('/copywriting/styles/query/all').then(res => {
         if (res.status === 'success') {
           this.styles = this.styles.concat(res.data)
@@ -183,7 +184,7 @@ export default {
 <style scoped>
 .detail-card {
   width: 100%;
-  height: calc(100% - 290px);
+  height: calc(100% - 275px);
   margin-top: 15px;
   font-size: 14px;
   color: #ffffff;

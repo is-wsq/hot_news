@@ -32,11 +32,11 @@
     <view class="asset-text">我的资产</view>
     <view class="asset-list">
       <view class="asset-item">
-        <view class="asset-value">{{ userInfo.figure }}</view>
+        <view class="asset-value">{{ userInfo.figure || 0 }}</view>
         <view class="asset-name">我的数字人</view>
       </view>
       <view class="asset-item">
-        <view class="asset-value">{{ userInfo.timbre }}</view>
+        <view class="asset-value">{{ userInfo.timbre || 0 }}</view>
         <view class="asset-name">我的声音</view>
       </view>
     </view>
@@ -102,7 +102,7 @@ export default {
 
 <style scoped>
 .user-info {
-  height: 120px;
+  height: 80px;
   padding: 10px;
   display: flex;
   align-items: center;
@@ -110,8 +110,8 @@ export default {
 }
 
 .user-avatar {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   margin-right: 25px;
   background-color: #ccc;
   border-radius: 50%;
@@ -136,21 +136,24 @@ export default {
 }
 
 .identity-card {
-  height: 130px;
-  background-image: url('/static/identity-bg1.png');
+  height: 110px;
+  background-image: url('/static/voucher-bg.jpg');
   background-size: cover;
-  padding: 15px;
+  background-position: 0 190px;
+  padding: 10px 15px;
   box-sizing: border-box;
-  border-radius: 15px;
+  border-radius: 12px;
 }
 
 .membership {
   width: 80px;
   height: 35px;
-  background-image: url('/static/voucher-bg.png');
-  background-position: center;
-  background-repeat: no-repeat;
+  border-radius: 8px;
+  background-image: url('/static/voucher-bg.jpg');
+  background-position: 0 40px;
   background-size: revert;
+  background-color: #E5E5E5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 14px;
 }
@@ -159,7 +162,7 @@ export default {
   color: #fff;
   display: flex;
   height: 54px;
-  margin-top: 15px;
+  margin-top: 5px;
   gap: 25px;
 }
 
@@ -175,7 +178,7 @@ export default {
 }
 
 .asset-text {
-  margin-top: 20px;
+  margin-top: 5px;
   margin-left: 30px;
   color: #fff;
   font-size: 16px;
@@ -183,7 +186,7 @@ export default {
 }
 
 .asset-list {
-  height: 90px;
+  margin-top: 5px;
   display: flex;
   gap: 22px;
   justify-content: center;
@@ -217,7 +220,7 @@ export default {
 
 .function-list {
   margin-top: 15px;
-  height: calc(100% - 430px);
+  height: calc(100% - 330px);
   overflow-y: auto;
 }
 </style>

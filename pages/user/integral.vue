@@ -11,7 +11,7 @@
           <view style="font-size: 20px">716</view>
         </view>
         <view style="flex: 1;"></view>
-        <view style="margin-top: 26px;width: 115px">
+        <view style="margin-top: 20px;width: 115px">
           <view style="display: flex">
             <image src="/static/royal.png" class="vip-icon"></image>
             <!--            <image src="/static/royal.png" class="vip-icon"></image>-->
@@ -33,7 +33,7 @@
           </view>
         </view>
         <view class="top_up-desc">
-          <view style="margin-bottom: 10px">充值说明：</view>
+          <view style="margin-bottom: 5px">充值说明：</view>
           <view>1.充值未完成时，请不要切换账户或者退出软件，请等待充值结束，否则可能会出现账户未到账的情况。若出现此类情况，请咨询客服。</view>
           <view>2.充值成功后不可提现，如其他问题，请联系客服。</view>
           <view>3.如特殊情况需要退款，请联系客服。</view>
@@ -61,7 +61,7 @@ export default {
       integralList: [1000, 2000, 3000, 5000, 10000, 20000],
       unit: 0.003,
       selected: 1000,
-      introduce: '',
+      introduce: '可享9折充值优惠',
     }
   },
   mounted() {
@@ -72,7 +72,7 @@ export default {
       uni.navigateTo({url: path})
     },
     back() {
-      uni.switchTab({url: '/pages/user/index'})
+      uni.navigateBack()
     }
   }
 }
@@ -115,13 +115,13 @@ export default {
 }
 
 .integral-content {
-  height: calc(100% - 215px);
-  min-height: 440px;
-  margin-top: 25px;
+  height: calc(100% - 195px);
+  min-height: 400px;
+  margin-top: 10px;
   border-radius: 15px;
   background: linear-gradient(to bottom, rgba(233, 157, 66, 0.2), rgba(233, 157, 157, 0));
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.4);
-  padding: 34px 5px 0;
+  padding: 20px 5px 5px;
   box-sizing: border-box;
 }
 
@@ -165,7 +165,7 @@ export default {
 
 .top_up-desc {
   color: #CECECE;
-  margin-top: 20px;
+  margin-top: 15px;
   padding: 0 10px;
   box-sizing: border-box;
 }
@@ -175,7 +175,7 @@ export default {
   width: 255px;
   height: 35px;
   line-height: 35px;
-  margin: 25px auto 0;
+  margin: 20px auto 0;
   font-size: 14px;
   border-radius: 15px;
   color: #101010;
