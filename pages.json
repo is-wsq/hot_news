@@ -47,6 +47,9 @@
       "path": "pages/agreement/privacy"
     },
     {
+      "path": "pages/agreement/membership"
+    },
+    {
       "path": "pages/login/login"
     }
   ],
