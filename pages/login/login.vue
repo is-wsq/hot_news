@@ -117,12 +117,10 @@ export default {
       this.$http.post('/user/login', params).then(res => {
         if (res.status === 'success') {
           uni.setStorageSync('userId', res.data.user_id)
-          if (this.routeTo === 'home') {
-            uni.switchTab({ url: '/pages/home/index' })
-          }else if (this.routeTo === 'user') {
-            uni.switchTab({ url: '/pages/user/index' })
-          }else {
+          if (this.routeTo === 'usual') {
             uni.navigateBack()
+          }else {
+            uni.switchTab({ url: `/pages/${this.routeTo}/index` })
           }
         }else {
           this.$tip.toast(res.message);

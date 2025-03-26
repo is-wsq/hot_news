@@ -8,14 +8,14 @@
       <view style="display: flex;color: #fff">
         <view class="integral-header">
           <view style="line-height: 37px">积分余额</view>
-          <view style="font-size: 20px">716</view>
+          <view style="font-size: 20px">{{ userInfo.points }}</view>
         </view>
         <view style="flex: 1;"></view>
         <view style="margin-top: 20px;width: 115px">
           <view style="display: flex">
-            <image src="/static/royal.png" class="vip-icon"></image>
-            <!--            <image src="/static/royal.png" class="vip-icon"></image>-->
-            <view class="vip-type">普通会员</view>
+            <image v-if="userInfo.userType === 0" src="/static/royal.png" class="vip-icon"></image>
+            <image v-else src="/static/royal.png" class="vip-icon"></image>
+            <view class="vip-type">{{ userTypeName }}</view>
           </view>
           <view class="vip-desc">{{ introduce }}</view>
         </view>
@@ -29,7 +29,7 @@
               <image v-if="item === selected" src="/static/amount-active.png" class="integral-icon"></image>
               <image v-else src="/static/amount.png" class="integral-icon"></image>
             </view>
-            <view class="integral-price">{{ item * unit }}￥</view>
+            <view class="integral-price">{{ (item * unit / 1000).toFixed(1) }}￥</view>
           </view>
         </view>
         <view class="top_up-desc">
@@ -59,15 +59,39 @@ export default {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       integralList: [1000, 2000, 3000, 5000, 10000, 20000],
-      unit: 0.003,
+      defaultUnit: 3,
+      unit: 3,
       selected: 1000,
       introduce: '可享9折充值优惠',
+      discount: 1,
+      userInfo: {},
+      userTypeNames: [
+        { type: 0, name: '普通用户', discount: 1 },
+        { type: 1, name: '月会员', discount: 0.9 },
+        { type: 2, name: '季会员', discount: 0.8 },
+        { type: 3, name: '年会员', discount: 0.7 },
+      ],
+      userTypeName: '',
     }
   },
-  mounted() {
-
+  onShow() {
+    this.userId = uni.getStorageSync('userId') || ''
+    if (this.userId !== '') {
+      this.queryUserInfo()
+    }
   },
   methods: {
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+          this.userTypeName = this.userTypeNames.find(item => item.type === this.userInfo.userType).name
+          this.discount = this.userTypeNames.find(item => item.type === this.userInfo.userType).discount
+          this.introduce = this.discount === 1 ? '' : `可享${this.discount * 10}折充值优惠`
+          this.unit = (this.defaultUnit * this.discount * 10) / 10
+        }
+      })
+    },
     goto(path) {
       uni.navigateTo({url: path})
     },

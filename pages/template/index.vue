@@ -27,6 +27,12 @@ export default {
   },
   methods: {
     goto(path) {
+      let userId = uni.getStorageSync('userId') || ''
+      if (userId === '') {
+        this.$tip.toast('请先登录')
+        uni.navigateTo({url: '/pages/login/login?type=template'})
+        return
+      }
       uni.navigateTo({ url: path })
     }
   }

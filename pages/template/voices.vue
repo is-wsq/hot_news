@@ -47,7 +47,7 @@ export default {
       isLoading: false,
     }
   },
-  onShow() {
+  mounted() {
     this.queryVoices()
   },
   methods: {
@@ -88,6 +88,7 @@ export default {
             url: 'https://live.tellai.tech/api/news_assistant/timbres/clone',
             filePath: res.tempFilePaths[0],
             name: 'file',
+            timeout: 600000,
             formData: {'user_id': uni.getStorageSync('userId')},
             success: (result) => {
               let data = JSON.parse(result.data)
