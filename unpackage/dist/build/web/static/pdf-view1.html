@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF 预览</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+        }
+        #pdf-header {
+            height: 50px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        #pdf-container {
+            width: 100%;
+            height: calc(100vh - 50px);
+            box-sizing: border-box;
+            overflow-y: auto; /* 启用垂直滚动 */
+        }
+        .page {
+            display: block;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            width: 100% !important; /* 确保页面宽度适配容器 */
+            box-sizing: border-box;
+        }
+
+        .page:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        canvas {
+            width: 100% !important; /* 宽度适配 */
+            height: auto !important; /* 高度自适应 */
+        }
+
+        .back {
+            position: absolute;
+            line-height: 50px;
+            left: 10px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+<div id="pdf-header">
+    <div class="back" onclick="goBack()">
+        <svg t="1742262310062" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+             p-id="2859" width="16" height="16">
+            <path d="M375.779817 513.565749l407.094801-407.094801c25.051988-25.051988 25.051988-62.629969 0-87.681957-25.051988-25.051988-62.629969-25.051988-87.681957 0l-438.409786 435.278287c-6.262997 3.131498-12.525994 6.262997-15.657493 12.525994-25.051988 25.051988-25.051988 65.761468 0 87.681957l3.131499 3.131499L692.061162 1005.211009c25.051988 25.051988 65.761468 21.920489 87.681957 0 25.051988-25.051988 21.920489-65.761468 0-87.681957L375.779817 513.565749z"
+                  fill="#ffffff" p-id="2860"></path>
+        </svg>
+    </div>
+    <div id="pdf-title"></div>
+</div>
+<div id="pdf-container"></div>
+<script>
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+        return false;
+    }
+
+    // 配置 PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+    // 获取容器和按钮
+    const container = document.getElementById('pdf-container');
+
+    let pdf_title = getQueryVariable('title');
+    if (pdf_title) {
+        document.getElementById('pdf-title').innerText = pdf_title;
+    }
+
+    // 默认显示 timbre.pdf
+    // let currentPdf = '/static/timbre.pdf';
+    let currentPdf = getQueryVariable('pdfUrl');
+
+    // 获取设备像素密度
+    const devicePixelRatio = window.devicePixelRatio || 1;
+
+    // 动态计算适配屏幕宽度的 scale
+    function getScale(page) {
+        const screenWidth = window.innerWidth || document.documentElement.clientWidth;
+        const defaultWidth = page.getViewport({ scale: 1 }).width;
+        const baseScale = screenWidth / defaultWidth;
+        return baseScale * devicePixelRatio;
+    }
+
+    // 渲染页面
+    function renderPage(pageNum, pdfDoc) {
+        pdfDoc.getPage(pageNum).then(page => {
+            const scale = getScale(page);
+            const viewport = page.getViewport({ scale: scale });
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.className = 'page';
+
+            // 设置 canvas 实际像素尺寸
+            canvas.height = viewport.height * devicePixelRatio;
+            canvas.width = viewport.width * devicePixelRatio;
+
+            // 设置 canvas 显示尺寸
+            canvas.style.width = `${viewport.width}px`;
+            canvas.style.height = `${viewport.height}px`;
+
+            // 缩放 context 以匹配设备像素密度
+            context.scale(devicePixelRatio, devicePixelRatio);
+
+            // 渲染页面
+            page.render({ canvasContext: context, viewport: viewport });
+
+            // 添加到容器
+            container.appendChild(canvas);
+
+            // 递归渲染下一页
+            if (pageNum < pdfDoc.numPages) {
+                renderPage(pageNum + 1, pdfDoc);
+            }
+        }).catch(err => {
+            console.error('渲染页面失败:', err);
+        });
+    }
+
+    // 加载和渲染 PDF
+    function loadPdf(pdfUrl) {
+        container.innerHTML = '<p>加载中...</p>';
+        pdfjsLib.getDocument(pdfUrl).promise.then(pdfDoc => {
+            container.innerHTML = ''; // 清空加载提示
+            renderPage(1, pdfDoc);
+        }).catch(err => {
+            console.error('加载 PDF 失败:', err);
+            container.innerHTML = '<p>加载 PDF 失败，请检查文件路径。</p>';
+        });
+    }
+
+    // 初始加载默认 PDF
+    loadPdf(currentPdf);
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', () => {
+        container.innerHTML = '';
+        loadPdf(currentPdf);
+    });
+
+    function goBack() {
+        window.parent.postMessage('back');
+    }
+</script>
+</body>
+</html>
