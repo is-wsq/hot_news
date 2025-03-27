@@ -1,6 +1,6 @@
 <template>
   <view class="pages agreement" :style="{ height: `${safeAreaHeight}px` }">
-    <web-view src="/static/pdf-view.html"></web-view>
+    <web-view src="/static/pdf/pdf-view.html"></web-view>
   </view>
 </template>
 
