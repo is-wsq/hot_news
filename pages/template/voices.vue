@@ -75,7 +75,7 @@ export default {
       uni.chooseFile({
         count: 1,
         success: function (res) {
-          let allowedExtensions = ['.mp3', '.wav', '.mp4'];
+          let allowedExtensions = ['.mp3', '.wav', '.m4a', '.mp4', '.mov'];
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
