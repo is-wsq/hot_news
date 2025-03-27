@@ -27,7 +27,7 @@
     <uni-popup ref="previewPopup" :mask-click="false" type="bottom">
       <view class="preview-content" :style="{ height: `${safeAreaHeight}px` }">
         <view class="preview-title">
-          <view style="color: #ffffff; font-size: 16px;">[ {{ selectedFigure.name }} ] 形象预览</view>
+          <view style="color: #ffffff; font-size: 16px;">{{ selectedFigure.name }} 形象预览</view>
           <uni-icons class="preview-close" type="closeempty" size="20" color="#ffffff"
                      @click="popupClose"></uni-icons>
         </view>

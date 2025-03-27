@@ -1,6 +1,6 @@
 <template>
   <view class="pages privacy" :style="{ height: `${safeAreaHeight}px` }">
-    <web-view src="/static/pdf/pdf-view1.html?pdfUrl=/static/pay.pdf&title=隐私条款"></web-view>
+    <web-view src="/static/pdf/pdf-view1.html?pdfUrl=/static/pdf/privacy.pdf&title=隐私条款"></web-view>
   </view>
 </template>
 

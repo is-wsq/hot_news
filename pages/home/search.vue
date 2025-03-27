@@ -2,8 +2,8 @@
   <view class="search" :style="{ height: `${safeAreaHeight}px` }">
     <view class="search-header">
       <uni-icons class="icon" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
-      <input class="search-input" v-model="keyword" placeholder="搜索你需要的新闻" :focus="true"
-             @input="keyInput"></input>
+      <input class="search-input" v-model="keyword" placeholder="输入关键字" :focus="true"
+             @input="keyInput" @confirm="search"></input>
       <uni-icons class="icon" type="search" size="24" color="#ffffff" @click="search"></uni-icons>
     </view>
     <view class="history" v-if="searchList.length === 0">

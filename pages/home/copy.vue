@@ -16,11 +16,12 @@
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
         <view style="height: 40px;display: flex;align-items: end">
-          <view style="margin-left: 18px;width: calc(100% - 36px);color: #d3d3d3;display: flex;justify-content: center;align-items: center">
+          <view
+              style="margin-left: 18px;width: calc(100% - 36px);color: #d3d3d3;display: flex;justify-content: center;align-items: center">
             <template v-if="scriptList.length > 1">
               <uni-icons type="left" size="18" color="#d3d3d3" @click="prevScript"></uni-icons>
               <view style="margin: 0 10px"> {{ scriptIndex }}</view>
-              <view> / </view>
+              <view> /</view>
               <view style="margin: 0 10px"> {{ scriptList.length }}</view>
               <uni-icons type="right" size="18" color="#d3d3d3" @click="nextScript"></uni-icons>
             </template>
@@ -59,8 +60,9 @@
               <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="20" color="#ffffff"
                          v-else @click="stopPreviewAudio"></uni-icons>
             </view>
-            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 80px;"
-                  :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            <view
+                style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 80px;"
+                :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
           </view>
         </view>
@@ -79,15 +81,21 @@
                 @click="selectFigure(item)">
             <image :src="item.picture" class="figure-item"
                    :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
-            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;"
-                  :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            <view
+                style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;"
+                :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
           </view>
         </view>
         <button class="copy-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" :text="loadingText" />
+    <uni-popup ref="alertDialog" type="dialog">
+      <uni-popup-dialog type="info" cancelText="关闭" confirmText="下载" @confirm="downloadFile"
+                        content="口播视频生成成功,可点击下载按钮跳转至下载页面,也可在我的作品中查看">
+      </uni-popup-dialog>
+    </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" :text="loadingText"/>
   </view>
 </template>
 
@@ -102,6 +110,7 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      safeAreaWidth: uni.getSystemInfoSync().safeArea.width,
       userId: '',
       newsId: null,
       word: 0,
@@ -121,7 +130,8 @@ export default {
       testAudioContext: null,
       testAudioIndex: null,
       isLoading: false,
-      loadingText: ''
+      loadingText: '',
+      fileInfo: {}
     }
   },
   onLoad: function (option) {
@@ -190,36 +200,27 @@ export default {
         text: this.script,
         user_id: this.userId,
         voice_id: this.voice.voice_id,
-        video_id: this.figure.video_id
+        video_id: this.figure.video_id,
+        filename: this.title
       }
       this.isLoading = true
       this.loadingText = '口播视频生成中...'
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
       })
-      this.$http.post('/figure/generate_video',params, 1800000).then(res => {
+      this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         if (res.status === 'success') {
           this.isLoading = false
-          uni.downloadFile({
-            url: res.data.video_path, //仅为示例，并非真实的资源
-            timeout: 1800000,
-            success: (res) => {
-              if (res.statusCode === 200) {
-                uni.saveFile({
-                  tempFilePath: res.tempFilePath,
-                  success: function (result) {
-                    console.log('下载成功');
-                    console.log(result.savedFilePath);
-                  }
-                });
-              }
-            },
-            fail: (err) => {
-              console.log('下载失败', err)
-            }
-          });
+          this.fileInfo = res.data
+          this.$refs.alertDialog.open()
         }
       })
+    },
+    downloadFile() {
+      let filename = this.fileInfo.video_name
+      let filepath = this.fileInfo.video_path
+      let path = `/pages/download?filepath=${filepath}&filename=${filename}`
+      uni.navigateTo({ url: path })
     },
     queryTitleAndScript() {
       this.scriptList = uni.getStorageSync(`${this.userId}_${this.newsId}_script`) || []
@@ -284,7 +285,7 @@ export default {
       if (this.scriptIndex > 1) {
         this.script = this.scriptList[this.scriptIndex - 2]
         this.scriptIndex = this.scriptIndex - 1
-      }else {
+      } else {
         this.$tip.toast('已经是第一条口播文案了')
       }
     },
@@ -292,7 +293,7 @@ export default {
       if (this.scriptIndex < this.scriptList.length) {
         this.script = this.scriptList[this.scriptIndex]
         this.scriptIndex = this.scriptIndex + 1
-      }else {
+      } else {
         this.$tip.toast('已经是最后一条口播文案了')
       }
     },

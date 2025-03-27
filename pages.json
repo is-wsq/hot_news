@@ -51,6 +51,9 @@
     },
     {
       "path": "pages/login/login"
+    },
+    {
+      "path": "pages/download"
     }
   ],
   "tabBar": {
@@ -86,7 +89,9 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "新闻热榜",
     "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#000000"
+    "backgroundColor": "#000000",
+    "backgroundColorTop": "#000000",
+    "backgroundColorBottom": "#000000"
   },
   "uniIdRouter": {}
 }

@@ -14,6 +14,16 @@
 
 <style>
 @import "/static/iconfont.css";
+
+  .uni-pull-to-refresh {
+    background-color: #000000 !important; /* 设置为你想要的背景色，例如 #ffffff */
+  }
+
+  /* 如果有下拉刷新提示区域，也可调整其背景色 */
+  .uni-pull-to-refresh .uni-pull-to-refresh__layer {
+    background-color: #000000 !important;
+  }
+
 	/*每个页面公共css */
   .pages {
     background-color: #000000;
