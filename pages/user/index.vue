@@ -16,7 +16,7 @@
     <view class="identity-card">
       <view style="display: flex">
         <view style="color: #BBBBBB; font-size: 14px;flex: 1"></view>
-        <button class="membership" @click="goto('/pages/user/voucher')">开通VIP</button>
+        <button class="membership" @click="openVIP">开通VIP</button>
       </view>
       <view class="identity-detail">
         <view style="text-align: center">
@@ -90,6 +90,14 @@ export default {
           this.userTypeName = this.userTypeNames.find(item => item.type === this.userInfo.userType).name
         }
       })
+    },
+    openVIP() {
+      if (this.userId === '') {
+        this.$tip.toast('请先登录')
+        uni.navigateTo({url: '/pages/login/login?type=user'})
+        return
+      }
+      this.goto('/pages/user/voucher')
     },
     goto(url) {
       if (url === '')

@@ -66,7 +66,7 @@
         </view>
       </view>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="视频克隆中..."/>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="视频上传中..."/>
   </view>
 </template>
 
@@ -165,7 +165,7 @@ export default {
         success: (result) => {
           let data = JSON.parse(result.data)
           if (data.status === 'success') {
-            self.$tip.toast('克隆成功')
+            self.$tip.toast('视频上传成功，后台正在处理克隆任务')
             self.queryFigures()
           } else {
             self.$tip.toast(data.message)

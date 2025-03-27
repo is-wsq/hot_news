@@ -14,7 +14,7 @@
       </view>
       <view class="custom-card">
         <textarea class="custom-script" type="text" v-model="script" placeholder-style="color:#9A9A9A"
-                  placeholder="请输入文案内容"></textarea>
+                  placeholder="请输入文案内容" :maxlength="400"></textarea>
         <view style="height: 20px;text-align: end">
           <image class="custom-icon" src="/static/copy_icon.png" @click="copy"></image>
         </view>
