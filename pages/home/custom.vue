@@ -33,7 +33,7 @@
         <uni-icons type="right" size="20" color="#E5E5E5;" @click="$refs.figurePopup.open"></uni-icons>
       </view>
     </view>
-    <button class="custom-btn">口播视频生成</button>
+    <button class="custom-btn" @click="generateVideo">口播视频生成</button>
     <uni-popup ref="voicePopup" :mask-click="false" type="bottom">
       <view class="popup-content">
         <view class="popup-title">
@@ -50,7 +50,7 @@
               <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="20" color="#ffffff"
                          v-else @click="stopPreviewAudio"></uni-icons>
             </view>
-            <view style="margin-top: 10px;font-size: 14px"
+            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 80px;"
                   :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
           </view>
@@ -70,7 +70,7 @@
                 @click="selectedFigure = item">
             <image :src="item.picture" class="figure-item"
                    :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
-            <view style="margin-top: 10px;font-size: 14px"
+            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;"
                   :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
           </view>
@@ -78,7 +78,12 @@
         <button class="custom-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
+    <uni-popup ref="alertDialog" type="dialog">
+      <uni-popup-dialog type="info" cancelText="关闭" confirmText="下载" @confirm="downloadFile"
+                        content="口播视频生成成功,可点击下载按钮跳转至下载页面,也可在我的作品中查看">
+      </uni-popup-dialog>
+    </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="口播视频生成中..."/>
   </view>
 </template>
 
@@ -93,6 +98,7 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
       newsId: null,
       word: 0,
       styleId: '',
@@ -116,14 +122,14 @@ export default {
     this.word = option.word
     this.styleId = option.style
   },
-  onShow() {
+  mounted() {
+    this.userId = uni.getStorageSync('userId')
     this.queryVoices()
     this.queryFigures()
   },
   methods: {
     queryFigures() {
-      let userId = uni.getStorageSync('userId')
-      this.$http.get('/figure/query/user', {user_id: userId}).then(res => {
+      this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.figures = res.data
           if (this.figures.length > 0) {
@@ -136,8 +142,7 @@ export default {
       })
     },
     queryVoices() {
-      let userId = uni.getStorageSync('userId')
-      this.$http.get('/timbres/query/user', {user_id: userId}).then(res => {
+      this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.voices = res.data
           if (this.voices.length > 0) {
@@ -188,6 +193,33 @@ export default {
           self.$tip.toast('复制成功')
         }
       });
+    },
+    generateVideo() {
+      let params = {
+        text: this.script,
+        user_id: this.userId,
+        voice_id: this.voice.voice_id,
+        video_id: this.figure.video_id,
+        filename: this.title
+      }
+      this.isLoading = true
+      this.loadingText = '口播视频生成中...'
+      this.$nextTick(() => {
+        this.$refs.loadingVideo.playVideo()
+      })
+      this.$http.post('/figure/generate_video', params, 1800000).then(res => {
+        if (res.status === 'success') {
+          this.isLoading = false
+          this.fileInfo = res.data
+          this.$refs.alertDialog.open()
+        }
+      })
+    },
+    downloadFile() {
+      let filename = this.fileInfo.filename
+      let filepath = this.fileInfo.video_path
+      let path = `/pages/download?filepath=${filepath}&filename=${filename}`
+      uni.navigateTo({ url: path })
     },
     back() {
       uni.navigateBack()

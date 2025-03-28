@@ -9,9 +9,9 @@
     </view>
     <view style="font-size: 18px; color: #fff;line-height: 50px">我的作品</view>
     <view class="video-list" style="height: calc(100% - 180px)">
-      <view class="video-item" v-for="item in 10" :key="item" @click="downloadVideo(item)">
-        <image class="item-img" src="/static/test-bg.png"></image>
-        <view class="item-title">暴雪中的美国中产</view>
+      <view class="video-item" v-for="item in showReel" :key="item.id" @click="downloadVideo(item)">
+        <image class="item-img" :src="item.picture"></image>
+        <view class="item-title">{{ item.filename }}</view>
       </view>
     </view>
   </view>
@@ -23,11 +23,28 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      userId: '',
+      showReel: []
     }
   },
+  mounted() {
+    this.userId = uni.getStorageSync('userId') || ''
+    this.queryReel()
+  },
   methods: {
+    queryReel() {
+      if (this.userId === '') {
+        return
+      }
+      this.$http.get('/video_record/query', {user_id: this.userId}).then(res => {
+        if (res.status === 'success') {
+          this.showReel = res.data
+          console.log(this.showReel)
+        }
+      })
+    },
     downloadVideo(data) {
-      this.goto(`/pages/download?filepath=${data.video_path}&filename=${data.video_name}`)
+      this.goto(`/pages/download?filepath=${data.video_path}&filename=${data.filename}`)
     },
     goto(path) {
       let userId = uni.getStorageSync('userId') || ''

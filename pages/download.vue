@@ -44,13 +44,16 @@ export default {
       if (this.isWeChat()) {
         this.$refs.dialog.open()
       }else {
-        const link = document.createElement('a');
-        link.href = this.filepath;
-        link.download = this.filename + '.mp4'; // 设置下载文件名
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link); // 下载后移除元素
-        this.$tip.toast('下载完成')
+        fetch(this.filepath).then(response => response.blob()) // 获取二进制数据
+          .then(blob => {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob); // 创建 Blob URL
+            link.download = this.filename + '.mp4'; // 指定下载文件名
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href); // 释放 URL
+          }).catch(error => console.error("视频下载失败", error));
       }
     },
     back() {
