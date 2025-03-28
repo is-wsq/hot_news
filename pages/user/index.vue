@@ -158,7 +158,7 @@ export default {
   height: 35px;
   border-radius: 8px;
   background-image: url('/static/voucher-bg.jpg');
-  background-position: 0 40px;
+  background-position: 80px 170px;
   background-size: revert;
   background-color: #E5E5E5;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);

@@ -147,7 +147,7 @@ export default {
   min-height: 280px;
   margin: 20px 20px 0;
   border-radius: 15px;
-  background-image: url('/static/voucher-bg.png');
+  background-image: url('/static/voucher-bg-200kb.jpg');
   background-position: bottom right;
   background-repeat: no-repeat;
   background-size: cover;

@@ -20,7 +20,7 @@
       </view>
       <view class="voices-item" v-for="item in clones" :key="item.id"
             :class="{ 'active-item': selectedVoice.id === item.id }" @click="previewAudio(item)">
-        <image :src="item.avatar? item.avatar : '/static/default-avatar.jpg'" class="voice-avatar"/>
+        <image :src="item.avatar" class="voice-avatar"/>
         <view class="voice-name">{{ item.name }}</view>
       </view>
     </view>
