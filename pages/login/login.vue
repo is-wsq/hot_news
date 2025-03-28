@@ -1,6 +1,7 @@
 <template>
   <view class="login" :style="{height: safe.height + 'px'}">
-    <image class="logo-img" src="/static/login/bg-black.png" :style="{height: safe.width + 'px'}"></image>
+<!--    <image class="logo-img" src="/static/login/bg-black.png" :style="{height: safe.width + 'px'}"></image>-->
+    <view class="logo-img" :style="{height: safe.width + 'px'}"></view>
 
     <view class="title"><span style="color: #fff;">奇</span><span style="color: #E1C59CD9">点</span></view>
 
@@ -210,6 +211,7 @@ export default {
 <style scoped>
 .login {
   position: relative;
+  background-color: #000000;
 }
 
 .title {
@@ -234,6 +236,10 @@ export default {
 
 .logo-img {
   width: 100%;
+  background-image: url('/static/login/bg-black.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .login-box {
