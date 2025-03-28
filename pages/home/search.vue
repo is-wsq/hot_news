@@ -6,7 +6,7 @@
              @input="keyInput" @confirm="search"></input>
       <uni-icons class="icon" type="search" size="24" color="#ffffff" @click="search"></uni-icons>
     </view>
-    <view class="history" v-if="searchList.length === 0">
+    <view class="history" v-if="!searchNews.newsTitle">
       <view class="history-title">
         <view style="color: #ffffff;margin-left: 10px;width: calc(100% - 40px);">历史搜索</view>
         <uni-icons type="trash-filled" size="20" color="#9a9a9a" @click="clearHistory"></uni-icons>
@@ -19,32 +19,38 @@
         </view>
       </view>
     </view>
-    <view v-if="searchList.length > 0">
-      <view class="search-list" v-for="item in searchList" :key="item.id" @click="goto(item.id)">
-        <view class="search-title">{{ item.title }}</view>
-        <view class="search-details">{{ item.details }}</view>
+    <view v-if="searchNews.newsTitle">
+      <view class="search-list" @click="goto()">
+        <view class="search-title">{{ searchNews.newsTitle }}</view>
+        <view class="search-details">{{ searchNews.newsDetails }}</view>
       </view>
     </view>
     <view v-else class="custom" @click="toCustom('/pages/home/custom')">
       <view class="custom-text">自定义文案</view>
       <uni-icons type="right" size="18" color="#ffffff" class="custom-icon"></uni-icons>
     </view>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="联网搜索中..."/>
   </view>
 </template>
 <script>
+import LoadingVideo from "../../components/loading-video.vue";
+
 export default {
+  components: {LoadingVideo},
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
       keyword: '',
       history: [],
-      searchList: [],
+      searchNews: {},
+      isLoading: false
     }
   },
   onShow() {
     this.userId = uni.getStorageSync('userId') || ''
     this.queryHistory()
+    uni.removeStorageSync(`${this.userId}_script`)
   },
   methods: {
     clearHistory() {
@@ -60,13 +66,11 @@ export default {
     },
     keyInput() {
       if (this.keyword.length === 0) {
-        this.searchList = []
         this.queryHistory()
       }
     },
     search() {
       if (this.keyword.length === 0) {
-        this.searchList = []
         return
       }
       let history = uni.getStorageSync(`${this.userId}_history`) || []
@@ -74,20 +78,27 @@ export default {
         history.unshift({keyword: this.keyword})
         uni.setStorageSync(`${this.userId}_history`, history)
       }
-      this.$http.get('/news/search', {keyword: this.keyword}).then(res => {
+      this.isLoading = true
+      this.$nextTick(() => {
+        this.$refs.loadingVideo.playVideo()
+      })
+      this.$http.get('/news/online_search', {keyword: this.keyword},300000).then(res => {
         if (res.status === 'success') {
-          this.searchList = res.data
-          if (this.searchList.length === 0) {
-            this.$tip.toast('没有找到相关新闻')
-          }
+          this.searchNews = res.data
+          this.isLoading = false
         } else {
           this.$tip.toast('搜索失败')
         }
       })
     },
-    goto(id) {
+    goto() {
+      let newsDetail = {
+        title: this.searchNews.newsTitle,
+        details: this.searchNews.newsDetails,
+      }
+      uni.setStorageSync('newsDetail', newsDetail)
       uni.navigateTo({
-        url: '/pages/home/detail?id=' + id
+        url: '/pages/home/detail'
       })
     },
     toCustom(url) {
@@ -157,6 +168,9 @@ export default {
   line-height: 30px;
   height: 30px;
   color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search-details {

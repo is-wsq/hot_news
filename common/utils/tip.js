@@ -50,13 +50,13 @@ export default class Tips {
     });
   }
 
-  static toast(title, onHide, icon = "none") {
+  static toast(title, duration = 5000, onHide, icon = "none") {
     setTimeout(() => {
       uni.showToast({
         title: title,
         icon: icon,
         mask: true,
-        duration:5000
+        duration:duration
       });
     }, 300);
 

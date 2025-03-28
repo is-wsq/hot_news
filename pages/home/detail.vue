@@ -4,8 +4,10 @@
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">热点详情</view>
     </view>
-    <view style="color: #ffffff;font-size: 18px;font-weight: bold;margin-left: 10px">{{ news.title }}</view>
-    <view class="detail-card">{{ news.details }}</view>
+    <view class="detail-title">{{ news.title }}</view>
+    <view class="detail-card">
+      <rich-text :nodes="htmlContent"></rich-text>
+    </view>
     <view class="warning">内容来源网络</view>
     <view class="detail-setting">
       <view class="setting-item">
@@ -65,19 +67,24 @@
 
 <script>
 import LoadingVideo from '@/components/loading-video.vue'
+import {marked} from "marked";
 
 export default {
   name: 'Detail',
   components: {
     LoadingVideo
   },
+  computed: {
+    htmlContent() {
+      return marked(this.news.details);
+    }
+  },
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
-      newsId: null,
       news: {
-        title: '标题',
+        title: '',
         details: ''
       },
       value: [300],
@@ -98,17 +105,9 @@ export default {
       isLoading: false
     }
   },
-  onLoad: function (option) {
-    let self = this
-    self.newsId = option.id
-    this.$http.get('/news/query', {id: option.id}).then(res => {
-      if (res.status === 'success') {
-        this.news = res.data
-      }
-    })
-  },
-  onShow() {
+  mounted() {
     this.userId = uni.getStorageSync('userId') || ''
+    this.news = uni.getStorageSync('newsDetail')
     this.queryStyles()
   },
   methods: {
@@ -153,7 +152,7 @@ export default {
       }
       let params = {
         style_id: this.style.id,
-        news_id: this.newsId,
+        news_details: this.news.details,
         count: this.word,
       }
       this.isLoading = true
@@ -163,12 +162,12 @@ export default {
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
           this.isLoading = false
-          let scriptList = uni.getStorageSync(`${this.userId}_${this.newsId}_script`) || []
+          let scriptList = uni.getStorageSync(`${this.userId}_script`) || []
           scriptList.push(res.data.script)
-          uni.setStorageSync(`${this.userId}_${this.newsId}_script`, scriptList)
-          uni.navigateTo({
-            url: '/pages/home/copy?' + 'newsId=' + this.newsId + '&word=' + this.word + '&style=' + this.style.id
-          })
+          uni.setStorageSync(`${this.userId}_script`, scriptList)
+          uni.setStorageSync('wordSetting', this.word)
+          uni.setStorageSync('styleId', this.style.id)
+          uni.navigateTo({url: '/pages/home/copy'})
         } else {
           this.$tip.toast(res.message)
         }
@@ -182,6 +181,16 @@ export default {
 </script>
 
 <style scoped>
+.detail-title {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .detail-card {
   width: 100%;
   height: calc(100% - 275px);

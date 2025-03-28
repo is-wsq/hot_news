@@ -7,7 +7,7 @@
     </view>
     <view class="copy-content">
       <view style="color: #ffffff;display: flex;justify-content: center;align-items: center">
-        <view v-if="!isEdit" style="height: 23px;line-height: 23px">{{ title }}</view>
+        <view v-if="!isEdit" class="copy-title">{{ title }}</view>
         <input style="height: 23px;line-height: 23px" v-else type="text" :focus="focus" v-model="title"
                placeholder="请输入标题"
                :style="{ width: String(title).length * 16 + 'px', maxWidth: '200px'}"></input>
@@ -112,7 +112,7 @@ export default {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       safeAreaWidth: uni.getSystemInfoSync().safeArea.width,
       userId: '',
-      newsId: null,
+      news: {},
       word: 0,
       styleId: '',
       isEdit: false,
@@ -134,13 +134,11 @@ export default {
       fileInfo: {}
     }
   },
-  onLoad: function (option) {
-    this.newsId = option.newsId
-    this.word = option.word
-    this.styleId = option.style
-  },
-  onShow() {
+  mounted() {
     this.userId = uni.getStorageSync('userId')
+    this.news = uni.getStorageSync('newsDetail')
+    this.word = uni.getStorageSync('wordSetting')
+    this.styleId = uni.getStorageSync('styleId')
     this.queryTitleAndScript()
     this.queryVoices()
     this.queryFigures()
@@ -175,7 +173,7 @@ export default {
     generate() {
       let params = {
         style_id: this.styleId,
-        news_id: this.newsId,
+        news_details: this.news.details,
         count: this.word,
       }
       this.isLoading = true
@@ -188,7 +186,7 @@ export default {
           this.script = res.data.script
           this.scriptList.push(res.data.script)
           this.scriptIndex = this.scriptList.length
-          uni.setStorageSync(`${this.userId}_${this.newsId}_script`, this.scriptList)
+          uni.setStorageSync(`${this.userId}_script`, this.scriptList)
           this.isLoading = false
         } else {
           this.$tip.toast(res.message)
@@ -212,6 +210,7 @@ export default {
         if (res.status === 'success') {
           this.isLoading = false
           this.fileInfo = res.data
+          uni.removeStorageSync(`${this.userId}_script`)
           this.$refs.alertDialog.open()
         }
       })
@@ -220,19 +219,15 @@ export default {
       let filename = this.fileInfo.video_name
       let filepath = this.fileInfo.video_path
       let path = `/pages/download?filepath=${filepath}&filename=${filename}`
-      uni.navigateTo({ url: path })
+      uni.navigateTo({url: path})
     },
     queryTitleAndScript() {
-      this.scriptList = uni.getStorageSync(`${this.userId}_${this.newsId}_script`) || []
+      this.scriptList = uni.getStorageSync(`${this.userId}_script`) || []
       if (this.scriptList.length > 0) {
         this.scriptIndex = this.scriptList.length
         this.script = this.scriptList[this.scriptIndex - 1]
       }
-      this.$http.get('/news/query', {id: this.newsId}).then(res => {
-        if (res.status === 'success') {
-          this.title = res.data.title
-        }
-      })
+      this.title = this.news.title
     },
     previewAudio(item, index) {
       if (this.testAudioContext) {
@@ -321,6 +316,15 @@ export default {
   align-items: center;
   justify-content: center;
   height: calc(100% - 230px);
+}
+
+.copy-title {
+  height: 23px;
+  line-height: 23px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .copy-card {
