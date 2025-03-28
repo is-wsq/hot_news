@@ -18,8 +18,7 @@
         <uni-icons type="plusempty" class="figure-avatar clone-figure-icon" size="25" color="#e99d42"></uni-icons>
         <view class="figure-name" style="color: #e99d42 !important;">克隆形象</view>
       </view>
-      <view class="figure-item" v-for="item in clones" :key="item.id"
-            :class="{ 'figure-item': selectedFigure.id === item.id }" @click="previewFigure(item)">
+      <view class="figure-item" v-for="item in clones" :key="item.id" @click="previewFigure(item)">
         <image :src="item.picture" class="figure-avatar"/>
         <view class="figure-name">{{ item.name }}</view>
       </view>
@@ -108,12 +107,15 @@ export default {
       })
     },
     previewFigure(item) {
-      if (item.status !== 'success') {
-        this.$tip.toast('形象还未克隆完成，暂时无法预览')
-        return
-      }
-      this.selectedFigure = item
-      this.$refs.previewPopup.open()
+      this.$http.get('/figure/clone_status', {figure_id: item.id}).then(res => {
+        let figure = res.data || {}
+        if (figure.status && figure.status === 'success') {
+          this.selectedFigure = figure
+          this.$refs.previewPopup.open()
+        }else {
+          this.$tip.toast('形象还未克隆完成，暂时无法预览')
+        }
+      })
     },
     controlVideo() {
       this.$refs.video.play();

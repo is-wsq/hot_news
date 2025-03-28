@@ -1,8 +1,5 @@
 <template>
   <view class="pages templates" :style="{ height: `${safeAreaHeight - 70}px` }">
-<!--    <view class="nav-bar-header">-->
-<!--      <view class="nav-bar-title">模板</view>-->
-<!--    </view>-->
     <view class="clone-cards">
       <view class="card figure-bg" @click="goto('/pages/template/figure')">形象克隆</view>
       <view class="card voice-bg" @click="goto('/pages/template/voices')">声音克隆</view>
@@ -105,5 +102,8 @@ export default {
   width: 160px;
   text-align: center;
   margin-top: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>
