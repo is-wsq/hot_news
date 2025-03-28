@@ -56,7 +56,7 @@ export default class Tips {
         title: title,
         icon: icon,
         mask: true,
-        duration:1000
+        duration:5000
       });
     }, 300);
 
