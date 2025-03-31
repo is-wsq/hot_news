@@ -1,5 +1,5 @@
 <template>
-  <view class="pages avatar"  :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages avatar">
     <view class="nav-bar-header">
       <uni-icons style="position: absolute;left: 10px;" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">头像</view>
@@ -48,7 +48,10 @@ export default {
       })
     },
     back() {
-      uni.navigateBack()
+      // uni.navigateBack()
+      uni.redirectTo({
+        url: '/pages/user/info'
+      })
     },
     more() {
       this.$refs.popup.open("bottom")
@@ -85,7 +88,7 @@ export default {
 <style scoped>
 .avatar {
   padding: 0 !important;
-  height: 100%;
+  height: 100vh;
   background-color: #000;
   box-sizing: border-box;
 }

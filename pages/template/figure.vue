@@ -1,5 +1,5 @@
 <template>
-  <view class="pages figure" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages figure">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">形象列表</view>
@@ -189,6 +189,10 @@ export default {
 </script>
 
 <style scoped>
+.figure {
+  height: 100vh;
+}
+
 .figure-type-name {
   color: #ffffff;
   font-size: 16px;

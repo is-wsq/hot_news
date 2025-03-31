@@ -57,7 +57,10 @@ export default {
       }
     },
     back() {
-      uni.navigateBack()
+      // uni.navigateBack()
+      uni.switchTab({
+        url: '/pages/template/index'
+      })
     }
   }
 }

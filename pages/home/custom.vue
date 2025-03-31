@@ -1,5 +1,5 @@
 <template>
-  <view class="pages custom" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages custom">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">口播文案</view>
@@ -97,7 +97,6 @@ export default {
   },
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
       newsId: null,
       word: 0,
@@ -219,10 +218,10 @@ export default {
       let filename = this.fileInfo.filename
       let filepath = this.fileInfo.video_path
       let path = `/pages/download?filepath=${filepath}&filename=${filename}`
-      uni.navigateTo({ url: path })
+      uni.redirectTo({ url: path })
     },
     back() {
-      uni.navigateBack()
+      uni.redirectTo({ url: '/pages/home/search' })
     },
     edit() {
       this.focus = !this.focus
@@ -233,6 +232,10 @@ export default {
 </script>
 
 <style scoped>
+.custom {
+  height: 100vh;
+}
+
 .custom-content {
   display: flex;
   flex-direction: column;

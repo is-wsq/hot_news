@@ -1,5 +1,5 @@
 <template>
-  <view class="pages detail" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages detail">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">热点详情</view>
@@ -81,7 +81,6 @@ export default {
   },
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
       news: {
         title: '',
@@ -102,13 +101,19 @@ export default {
       style: {},
       selectedStyle: {},
       indicatorStyle: `height: 50px;`,
-      isLoading: false
+      isLoading: false,
+      type: ''
     }
   },
   mounted() {
     this.userId = uni.getStorageSync('userId') || ''
     this.news = uni.getStorageSync('newsDetail')
     this.queryStyles()
+  },
+  onLoad: function (option) {
+    if (option.type){
+      this.type = option.type
+    }
   },
   methods: {
     queryStyles() {
@@ -147,7 +152,7 @@ export default {
     generate() {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({url: '/pages/login/login?type=usual'})
+        uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/detail'})
         return
       }
       let params = {
@@ -167,7 +172,7 @@ export default {
           uni.setStorageSync(`${this.userId}_script`, scriptList)
           uni.setStorageSync('wordSetting', this.word)
           uni.setStorageSync('styleId', this.style.id)
-          uni.navigateTo({url: '/pages/home/copy'})
+          uni.redirectTo({url: '/pages/home/copy'})
         } else {
           this.$tip.toast(res.message,5000)
         }
@@ -181,6 +186,10 @@ export default {
 </script>
 
 <style scoped>
+.detail {
+  height: 100vh;
+}
+
 .detail-title {
   color: #ffffff;
   font-size: 18px;

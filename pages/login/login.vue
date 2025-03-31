@@ -1,12 +1,15 @@
 <template>
-  <view class="login" :style="{height: safe.height + 'px'}">
-<!--    <image class="logo-img" src="/static/login/bg-black.png" :style="{height: safe.width + 'px'}"></image>-->
-    <view class="logo-img" :style="{height: safe.width + 'px'}"></view>
+  <view class="login">
+    <view class="logo-img">
+      <image src="/static/login/bg-black.jpeg" style="width: 100%" mode="widthFix"></image>
+      <view class="title">
+        <span style="color: #fff;">奇</span>
+        <span style="color: #E1C59CD9;margin-left: 6px">点</span>
+      </view>
+    </view>
 
-    <view class="title"><span style="color: #fff;">奇</span><span style="color: #E1C59CD9">点</span></view>
-
-    <view class="login-box" v-if="isLogin">
-      <text class="welcome">欢迎回来！</text>
+    <view class="login-box">
+      <text class="welcome">欢迎回来 !</text>
       <text class="subtitle">登陆后继续</text>
       <uni-forms ref="loginForm" label-position="top">
         <uni-forms-item name="phone" label="手机号">
@@ -23,25 +26,7 @@
         <text class="forgot-password" @click="loginType = 1 - loginType">{{ loginType === 0? '短信登陆':'密码登陆' }}</text>
       </view>
       <button class="login-button" @click="login">登陆</button>
-      <button class="signup-button" @click="isLogin = false">创建账户</button>
-    </view>
-
-    <view class="login-box" v-else>
-      <text class="welcome">创建账户</text>
-      <text class="subtitle" style="margin-bottom: 16px !important;">注册后继续</text>
-      <uni-forms ref="form" label-position="top">
-        <uni-forms-item name="phone" label="手机号">
-          <input type="number" class="form-input" v-model="registerFormData.phone"/>
-        </uni-forms-item>
-        <uni-forms-item name="password" label="密码">
-          <input type="text" class="form-input" v-model="registerFormData.password" password/>
-        </uni-forms-item>
-        <uni-forms-item name="rePassword" label="确认密码">
-          <input type="text" class="form-input" v-model="registerFormData.rePassword" password/>
-        </uni-forms-item>
-      </uni-forms>
-      <button class="login-button" style="margin: 10px 0 0 0 !important;" @click="register">创建账户</button>
-      <text class="forgot-password" @click="isLogin = true" style="margin-top: 7px">已有账户？登陆</text>
+      <button class="signup-button" @click="gotoRegister">创建账户</button>
     </view>
   </view>
 </template>
@@ -51,7 +36,6 @@ export default {
   data() {
     return {
       safe: uni.getSystemInfoSync().safeArea,
-      isLogin: true,
       loginType: 0,
       loginFormData: {
         phone: '',
@@ -63,8 +47,9 @@ export default {
         password: '',
         rePassword: '',
       },
-      smsCountDown: 0,
-      routeTo: ''
+      smsCountDown: 0, //0 密码登陆， 1 短信登陆
+      type: '',
+      path: ''
     };
   },
   computed: {
@@ -80,13 +65,8 @@ export default {
     },
   },
   onLoad: function (option) {
-    this.routeTo = option.type
-    // if (window.history && window.history.pushState) {
-    //   window.history.pushState(null, null, document.URL);
-    //   window.addEventListener('popstate', function () {
-    //     window.history.pushState(null, null, document.URL);
-    //   });
-    // }
+    this.type = option.type
+    this.path = option.path
   },
   methods: {
     login() {
@@ -106,6 +86,11 @@ export default {
         this.onSMSLogin()
       }
     },
+    gotoRegister() {
+      uni.redirectTo({
+        url: '/pages/login/register',
+      })
+    },
     onPasswordLogin() {
       if (!this.loginFormData.password) {
         this.$tip.toast('请输入密码',2000);
@@ -118,10 +103,10 @@ export default {
       this.$http.post('/user/login', params).then(res => {
         if (res.status === 'success') {
           uni.setStorageSync('userId', res.data.user_id)
-          if (this.routeTo === 'usual') {
-            uni.navigateBack()
+          if (this.type === 'switchTab') {
+            uni.switchTab({ url: this.path })
           }else {
-            uni.switchTab({ url: `/pages/${this.routeTo}/index` })
+            uni.redirectTo({ url: this.path })
           }
         }else {
           this.$tip.toast(res.message,5000);
@@ -159,49 +144,12 @@ export default {
         }
       }, 1000);
     },
-    register() {
-      let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
-      if (!this.registerFormData.phone || this.registerFormData.phone.length === 0) {
-        this.$tip.toast('请填写手机号',2000);
-        return
-      }
-      if (!checkPhone.test(this.registerFormData.phone)) {
-        this.$tip.toast('请输入正确的手机号',2000);
-        return
-      }
-      if (!this.registerFormData.password || this.registerFormData.password.length === 0) {
-        this.$tip.toast('请填写密码',2000);
-        return
-      }
-      if (this.registerFormData.password !== this.registerFormData.rePassword) {
-        this.$tip.toast('两次密码不一致',2000);
-        return
-      }
-      let params = {
-        phone: this.registerFormData.phone,
-        password: this.registerFormData.password,
-      }
-      this.$http.post('/user/register', params).then(res => {
-        if (res.status === 'success') {
-          this.$tip.toast('注册成功，请登录');
-          this.resetData();
-        } else {
-          this.$tip.toast(res.message,5000);
-        }
-      })
-    },
     resetData() {
-      this.isLogin = true
       this.loginType = 0
       this.loginFormData = {
         phone: '',
         password: '',
         sms: '',
-      };
-      this.registerFormData = {
-        phone: '',
-        password: '',
-        rePassword: '',
       };
     }
   },
@@ -212,13 +160,15 @@ export default {
 .login {
   position: relative;
   background-color: #000000;
+  height: 100vh !important;
 }
 
 .title {
-  position: absolute;
   font-size: 60px;
-  bottom: 580px;
-  left: calc(50% - 60px);
+  font-weight: bold;
+  position: absolute;
+  top: calc(50% - 50px);
+  left: calc(50% - 63px);
 }
 
 .login >>> .uni-forms-item {
@@ -236,20 +186,18 @@ export default {
 
 .logo-img {
   width: 100%;
-  background-image: url('/static/login/bg-black.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: relative;
 }
 
 .login-box {
   position: absolute;
   bottom: 0;
   width: 100%;
+  height: 528px;
   background-color: #292929;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
-  padding: 30px 30px 30px 30px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -259,13 +207,15 @@ export default {
   font-size: 22px;
   font-weight: bold;
   margin-bottom: 10px;
+  text-align: center;
   color: #fff;
 }
 
 .subtitle {
   font-size: 14px;
   color: #BBBBBB;
-  margin-bottom: 39px;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .form-input {
@@ -281,7 +231,7 @@ export default {
   position: absolute;
   top: 0;
   right: 12px;
-  color: #DB3020;
+  color: #FFFFFF;
   font-size: 16px;
   line-height: 48px;
 }
@@ -295,19 +245,19 @@ export default {
 
 .login-button {
   width: 100%;
-  height: 58px;
-  line-height: 58px;
+  height: 50px;
+  line-height: 50px;
   background: #e99d42;
   color: #fff;
   font-size: 16px;
   border-radius: 12px;
-  margin: 20px 0;
+  margin: 25px 0;
 }
 
 .signup-button {
   width: 100%;
-  height: 58px;
-  line-height: 58px;
+  height: 50px;
+  line-height: 50px;
   background: #ffffff;
   color: #1E1F20;
   font-size: 16px;

@@ -8,7 +8,7 @@
       </view>
     </view>
     <view class="user-info" v-else>
-      <view class="user-avatar" @click="goto('/pages/login/login?type=user')"></view>
+      <view class="user-avatar" @click="goto('/pages/login/login?type=switchTab&path=/pages/user/index')"></view>
       <view class="user-account">
         <view class="user-phone">暂未登录</view>
       </view>
@@ -94,7 +94,7 @@ export default {
     openVIP() {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({url: '/pages/login/login?type=user'})
+        uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/user/index'})
         return
       }
       this.goto('/pages/user/voucher')
@@ -102,7 +102,7 @@ export default {
     goto(url) {
       if (url === '')
         return
-      uni.navigateTo({url: url})
+      uni.redirectTo({url: url})
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <view class="pages voices" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages voices">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">音色列表</view>
@@ -38,7 +38,6 @@ export default {
   },
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       systems: [],
       clones: [],
       selectedVoice: {},
@@ -132,13 +131,20 @@ export default {
       this.testAudioId = null
     },
     back() {
-      uni.navigateBack()
+      // uni.navigateBack()
+      uni.switchTab({
+        url: '/pages/template/index'
+      })
     }
   }
 }
 </script>
 
 <style scoped>
+.voices {
+  height: 100vh;
+}
+
 .voice-type-name {
   color: #ffffff;
   font-size: 16px;

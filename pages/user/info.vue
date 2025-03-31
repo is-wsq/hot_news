@@ -1,5 +1,5 @@
 <template>
-  <view class="pages info" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages info">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">个人资料</view>
@@ -40,7 +40,7 @@ export default {
       userInfo: {}
     }
   },
-  onShow() {
+  mounted() {
     this.userId = uni.getStorageSync('userId') || ''
     if (this.userId !== '') {
       this.queryUserInfo()
@@ -55,22 +55,30 @@ export default {
       })
     },
     previewAvatar() {
-      uni.navigateTo({ url: `/pages/user/previewAvatar` })
+      uni.redirectTo({
+        url: `/pages/user/previewAvatar`
+      })
     },
     logout() {
       uni.removeStorageSync('userId')
-      uni.navigateTo({
-        url: '/pages/login/login?type=home'
+      uni.redirectTo({
+        url: '/pages/login/login?type=redirectTo&path=/pages/user/info'
       })
     },
     back() {
-      uni.navigateBack()
+      uni.switchTab({
+        url: '/pages/user/index'
+      })
     }
   }
 }
 </script>
 
 <style scoped>
+.info {
+  height: 100vh;
+}
+
 .info-item {
   display: flex;
   align-items: center;

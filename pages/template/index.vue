@@ -47,10 +47,10 @@ export default {
       let userId = uni.getStorageSync('userId') || ''
       if (userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({url: '/pages/login/login?type=template'})
+        uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/template/index'})
         return
       }
-      uni.navigateTo({ url: path })
+      uni.redirectTo({ url: path })
     }
   }
 }

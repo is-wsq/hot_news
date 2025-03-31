@@ -1,5 +1,5 @@
 <template>
-  <view class="pages copy" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages copy">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">口播文案</view>
@@ -109,8 +109,6 @@ export default {
   },
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      safeAreaWidth: uni.getSystemInfoSync().safeArea.width,
       userId: '',
       news: {},
       word: 0,
@@ -293,7 +291,7 @@ export default {
       }
     },
     back() {
-      uni.navigateBack()
+      uni.redirectTo({url: '/pages/home/detail'})
     },
     edit() {
       this.focus = !this.focus
@@ -304,6 +302,10 @@ export default {
 </script>
 
 <style scoped>
+.copy {
+  height: 100vh;
+}
+
 .regenerate {
   position: absolute;
   right: 5px;

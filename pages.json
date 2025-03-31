@@ -53,6 +53,9 @@
       "path": "pages/login/login"
     },
     {
+      "path": "pages/login/register"
+    },
+    {
       "path": "pages/download"
     }
   ],

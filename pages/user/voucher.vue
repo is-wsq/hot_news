@@ -1,5 +1,5 @@
 <template>
-  <view class="pages voucher" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages voucher">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">充值服务</view>
@@ -71,10 +71,12 @@ export default {
   },
   methods: {
     goto(path) {
-      uni.navigateTo({ url: path })
+      uni.redirectTo({ url: path })
     },
     back() {
-      uni.switchTab({ url: '/pages/user/index' })
+      uni.switchTab({
+        url: '/pages/user/index'
+      })
     }
   }
 }
@@ -82,6 +84,7 @@ export default {
 
 <style scoped>
 .voucher {
+  height: 100vh;
   overflow-y: auto;
 }
 .integralRecharge {
@@ -91,7 +94,7 @@ export default {
 }
 
 .voucher-content {
-  height: calc(100% - 160px);
+  height: calc(100% - 180px);
   min-height: 450px;
   border-radius: 15px;
   background: linear-gradient(to bottom, rgba(233, 157, 66, 0.2), rgba(233, 157, 157, 0));

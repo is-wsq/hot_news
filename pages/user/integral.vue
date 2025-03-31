@@ -1,5 +1,5 @@
 <template>
-  <view class="pages integral" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="pages integral">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">积分充值</view>
@@ -93,10 +93,13 @@ export default {
       })
     },
     goto(path) {
-      uni.navigateTo({url: path})
+      uni.redirectTo({url: path})
     },
     back() {
-      uni.navigateBack()
+      // uni.navigateBack()
+      uni.redirectTo({
+        url: '/pages/user/voucher'
+      })
     }
   }
 }
@@ -104,7 +107,7 @@ export default {
 
 <style scoped>
 .integral {
-  height: 100%;
+  height: 100vh;
 }
 
 .integral-container {

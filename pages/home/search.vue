@@ -1,5 +1,5 @@
 <template>
-  <view class="search" :style="{ height: `${safeAreaHeight}px` }">
+  <view class="search">
     <view class="search-header">
       <uni-icons class="icon" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
       <input class="search-input" v-model="keyword" placeholder="输入关键字" :focus="true"
@@ -97,17 +97,17 @@ export default {
         details: this.searchNews.newsDetails,
       }
       uni.setStorageSync('newsDetail', newsDetail)
-      uni.navigateTo({
-        url: '/pages/home/detail'
+      uni.redirectTo({
+        url: '/pages/home/detail?type=redirectTo'
       })
     },
     toCustom(url) {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.navigateTo({ url: '/pages/login/login?type=usual' })
+        uni.redirectTo({ url: '/pages/login/login?type=redirectTo&path=/pages/home/search' })
         return
       }
-      uni.navigateTo({ url: url })
+      uni.redirectTo({ url: url })
     },
     back() {
       uni.switchTab({url: '/pages/home/index'})
@@ -118,6 +118,7 @@ export default {
 
 <style scoped>
 .search {
+  height: 100vh;
   background-color: #000000;
 }
 
