@@ -75,7 +75,7 @@ export default {
       });
     },
     viewLastAvatar() {
-      this.$tip.toast('暂未开放')
+      this.$tip.toast('暂未开放',2000)
       this.$refs.popup.close();
     }
   }

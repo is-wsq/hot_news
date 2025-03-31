@@ -1,5 +1,5 @@
 <template>
-  <view class="pages templates" :style="{ height: `${safeAreaHeight - 70}px` }">
+  <view class="pages templates" :style="{ height: `${safeAreaHeight - 69.8}px` }">
     <view class="clone-cards">
       <view class="card figure-bg" @click="goto('/pages/template/figure')">形象克隆</view>
       <view class="card voice-bg" @click="goto('/pages/template/voices')">声音克隆</view>

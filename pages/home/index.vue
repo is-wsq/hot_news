@@ -1,5 +1,5 @@
 <template>
-  <view class="pages home" :style="{ height: `${safeAreaHeight - 70}px` }">
+  <view class="pages home" :style="{ height: `${safeAreaHeight - 69.8}px` }">
     <view class="header">
       <input class="search-input" placeholder="搜索您需要的新闻或自定义口播文案" @focus="goto('/pages/home/search')"></input>
       <uni-icons class="search" type="search" size="24" color="#ffffff" @click="goto('/pages/home/search')"></uni-icons>
@@ -38,7 +38,7 @@ export default {
         if (res.status === 'success') {
           this.news = res.data
         }else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message, 5000)
         }
       })
     },

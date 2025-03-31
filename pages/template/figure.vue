@@ -102,7 +102,7 @@ export default {
             item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
           })
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },
@@ -113,7 +113,7 @@ export default {
           this.selectedFigure = figure
           this.$refs.previewPopup.open()
         }else {
-          this.$tip.toast('形象还未克隆完成，暂时无法预览')
+          this.$tip.toast('形象还未克隆完成，暂时无法预览',2000)
         }
       })
     },
@@ -138,7 +138,7 @@ export default {
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
-            self.$tip.toast('请选择有效的视频文件')
+            self.$tip.toast('请选择有效的视频文件',2000)
             return
           }
           self.selectedFile = res.tempFiles[0]
@@ -167,10 +167,10 @@ export default {
         success: (result) => {
           let data = JSON.parse(result.data)
           if (data.status === 'success') {
-            self.$tip.toast('视频上传成功，后台正在处理克隆任务')
+            self.$tip.toast('视频上传成功，后台正在处理克隆任务',2000)
             self.queryFigures()
           } else {
-            self.$tip.toast(data.message)
+            self.$tip.toast(data.message,5000)
           }
           self.isLoading = false
         }

@@ -137,7 +137,7 @@ export default {
             this.selectedFigure = this.figures[0]
           }
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },
@@ -150,7 +150,7 @@ export default {
             this.selectedVoice = this.voices[0]
           }
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },

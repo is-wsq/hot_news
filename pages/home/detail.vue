@@ -169,7 +169,7 @@ export default {
           uni.setStorageSync('styleId', this.style.id)
           uni.navigateTo({url: '/pages/home/copy'})
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },

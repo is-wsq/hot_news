@@ -60,7 +60,7 @@ export default {
             item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
           })
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },
@@ -79,7 +79,7 @@ export default {
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
-            self.$tip.toast('请选择有效的音频文件')
+            self.$tip.toast('请选择有效的音频文件',2000)
             return
           }
 
@@ -96,7 +96,7 @@ export default {
                 self.$tip.toast('克隆成功')
                 self.queryVoices()
               } else {
-                self.$tip.toast(data.message)
+                self.$tip.toast(data.message,5000)
               }
               self.isLoading = false
             }

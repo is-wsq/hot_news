@@ -93,11 +93,11 @@ export default {
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
 
       if(!this.loginFormData.phone || this.loginFormData.phone.length === 0){
-        this.$tip.toast('请填写手机号');
+        this.$tip.toast('请填写手机号',2000);
         return;
       }
       if(!checkPhone.test(this.loginFormData.phone)){
-        this.$tip.toast('请输入正确的手机号');
+        this.$tip.toast('请输入正确的手机号',2000);
         return;
       }
       if (this.loginType === 0) {
@@ -108,7 +108,7 @@ export default {
     },
     onPasswordLogin() {
       if (!this.loginFormData.password) {
-        this.$tip.toast('请输入密码');
+        this.$tip.toast('请输入密码',2000);
         return
       }
       let params = {
@@ -124,13 +124,13 @@ export default {
             uni.switchTab({ url: `/pages/${this.routeTo}/index` })
           }
         }else {
-          this.$tip.toast(res.message);
+          this.$tip.toast(res.message,5000);
         }
       })
     },
     onSMSLogin() {
       if(!this.loginFormData.sms || this.loginFormData.sms.length === 0){
-        this.$tip.toast('请填短信验证码');
+        this.$tip.toast('请填短信验证码',2000);
         return;
       }
       console.log(222)
@@ -141,11 +141,11 @@ export default {
       }
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
       if (!this.loginFormData.phone || this.loginFormData.phone.length === 0) {
-        this.$tip.toast('请填写手机号');
+        this.$tip.toast('请填写手机号',2000);
         return
       }
       if (!checkPhone.test(this.loginFormData.phone)) {
-        this.$tip.toast('请输入正确的手机号');
+        this.$tip.toast('请输入正确的手机号',2000);
         return
       }
       this.smsCountDown = 60;
@@ -162,19 +162,19 @@ export default {
     register() {
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
       if (!this.registerFormData.phone || this.registerFormData.phone.length === 0) {
-        this.$tip.toast('请填写手机号');
+        this.$tip.toast('请填写手机号',2000);
         return
       }
       if (!checkPhone.test(this.registerFormData.phone)) {
-        this.$tip.toast('请输入正确的手机号');
+        this.$tip.toast('请输入正确的手机号',2000);
         return
       }
       if (!this.registerFormData.password || this.registerFormData.password.length === 0) {
-        this.$tip.toast('请填写密码');
+        this.$tip.toast('请填写密码',2000);
         return
       }
       if (this.registerFormData.password !== this.registerFormData.rePassword) {
-        this.$tip.toast('两次密码不一致');
+        this.$tip.toast('两次密码不一致',2000);
         return
       }
       let params = {
@@ -186,7 +186,7 @@ export default {
           this.$tip.toast('注册成功，请登录');
           this.resetData();
         } else {
-          this.$tip.toast(res.message);
+          this.$tip.toast(res.message,5000);
         }
       })
     },

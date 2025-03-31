@@ -87,7 +87,7 @@ export default {
           this.searchNews = res.data
           this.isLoading = false
         } else {
-          this.$tip.toast('搜索失败')
+          this.$tip.toast(res.message, 5000)
         }
       })
     },

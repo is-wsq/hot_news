@@ -60,9 +60,11 @@
     "color": "#9A9A9A",
     "selectedColor": "#ffffff",
     "borderStyle": "black",
-    "backgroundColor": "#000000",
+    "backgroundColor": "#222222",
     "height": "70px",
-    "iconWidth": "30px",
+    "iconWidth": "32px",
+    "spacing": "0",
+    "fontSize": "12px",
     "list": [
       {
         "pagePath": "pages/home/index",

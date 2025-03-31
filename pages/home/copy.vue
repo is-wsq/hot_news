@@ -153,7 +153,7 @@ export default {
             this.selectedFigure = this.figures[0]
           }
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },
@@ -166,7 +166,7 @@ export default {
             this.selectedVoice = this.voices[0]
           }
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },
@@ -189,7 +189,7 @@ export default {
           uni.setStorageSync(`${this.userId}_script`, this.scriptList)
           this.isLoading = false
         } else {
-          this.$tip.toast(res.message)
+          this.$tip.toast(res.message,5000)
         }
       })
     },
@@ -257,7 +257,7 @@ export default {
     },
     selectFigure(item) {
       if (item.status !== 'success') {
-        this.$tip.toast('当前形象正在克隆中，暂不可选择')
+        this.$tip.toast('当前形象正在克隆中，暂不可选择',2000)
         return
       }
       this.selectedFigure = item

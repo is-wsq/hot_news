@@ -1,5 +1,5 @@
 <template>
-  <view class="pages user" :style="{ height: `${safeAreaHeight - 70}px` }">
+  <view class="pages user" :style="{ height: `${safeAreaHeight - 69.8}px` }">
     <view class="user-info" v-if="userId !== ''">
       <image class="user-avatar" :src="userInfo.avatar" @click="goto('/pages/user/info')"></image>
       <view class="user-account">
