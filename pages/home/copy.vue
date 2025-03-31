@@ -49,7 +49,7 @@
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">声音</view>
           <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="$refs.voicePopup.close"></uni-icons>
+                     @click="closeVoicePopup"></uni-icons>
         </view>
         <view class="voice-content">
           <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
@@ -250,7 +250,12 @@ export default {
       this.testAudioIndex = null
     },
     voiceSure() {
+      this.stopPreviewAudio()
       this.voice = this.selectedVoice
+      this.$refs.voicePopup.close()
+    },
+    closeVoicePopup() {
+      this.stopPreviewAudio()
       this.$refs.voicePopup.close()
     },
     selectFigure(item) {

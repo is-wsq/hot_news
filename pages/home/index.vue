@@ -1,5 +1,5 @@
 <template>
-  <view class="pages home" :style="{ height: `${safeAreaHeight - 70}px` }">
+  <view class="pages home" :style="{ height: `${safeAreaHeight - 69.8}px` }">
     <view class="header">
       <input class="search-input" placeholder="搜索新闻/更多功能" @focus="goto('/pages/home/search')"></input>
       <uni-icons class="search" type="search" size="24" color="#ffffff" @click="goto('/pages/home/search')"></uni-icons>
