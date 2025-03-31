@@ -22,7 +22,7 @@
       </view>
     </view>
     <button class="detail-btn" @click="generate">口播文案生成</button>
-    <uni-popup ref="wordPopup" :mask-click="false" type="bottom">
+    <uni-popup ref="wordPopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">字数设置</view>
@@ -42,7 +42,7 @@
         <button class="detail-btn" @click="wordSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="stylePopup" :mask-click="false" type="bottom">
+    <uni-popup ref="stylePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">文案风格</view>
@@ -88,11 +88,11 @@ export default {
       },
       value: [300],
       words: [
-        {count: 300, introduce: '(约2分钟)'},
-        {count: 400, introduce: '(约4分钟)'},
+        {count: 300, introduce: '(口播约1分钟)'},
+        {count: 400, introduce: '(口播约1分30秒)'},
       ],
       word: 300,
-      introduce: '(约2分钟)',
+      introduce: '(口播约1分钟)',
       selectedWord: null,
       selectedIntroduce: '',
       styles: [

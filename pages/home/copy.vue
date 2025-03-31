@@ -44,7 +44,7 @@
       </view>
     </view>
     <button class="copy-btn" @click="generateVideo">口播视频生成</button>
-    <uni-popup ref="voicePopup" :mask-click="false" type="bottom">
+    <uni-popup ref="voicePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">声音</view>
@@ -69,7 +69,7 @@
         <button class="copy-btn" @click="voiceSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="figurePopup" :mask-click="false" type="bottom">
+    <uni-popup ref="figurePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">形象</view>
