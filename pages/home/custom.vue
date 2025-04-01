@@ -6,11 +6,11 @@
     </view>
     <view class="custom-content">
       <view style="color: #ffffff;display: flex;justify-content: center;align-items: center">
-        <view v-if="!isEdit" style="height: 23px;line-height: 23px">{{ title ? title : '请输入标题' }}</view>
-        <input v-else style="height: 23px;line-height: 23px" type="text" :focus="focus" v-model="title"
-               :style="{ width: (String(title).length > 0 ? String(title).length : 1) * 16 + 'px', maxWidth: '200px'}">
+        <view v-if="!isEdit" style="height: 23px;line-height: 23px" @click="edit">{{ title ? title : '请输入标题' }}</view>
+        <input v-else style="height: 23px;line-height: 23px;text-align: center" type="text" :focus="focus" v-model="title"
+               @blur="isEdit = false">
         </input>
-        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>
+<!--        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>-->
       </view>
       <view class="custom-card">
         <textarea class="custom-script" type="text" v-model="script" placeholder-style="color:#9A9A9A"
@@ -237,8 +237,8 @@ export default {
       uni.redirectTo({ url: '/pages/home/search' })
     },
     edit() {
-      this.focus = !this.focus
-      this.isEdit = !this.isEdit
+      this.isEdit = true
+      this.focus = true
     }
   }
 }

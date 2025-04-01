@@ -7,11 +7,11 @@
     </view>
     <view class="copy-content">
       <view style="color: #ffffff;display: flex;justify-content: center;align-items: center">
-        <view v-if="!isEdit" class="copy-title">{{ title }}</view>
-        <input style="height: 23px;line-height: 23px" v-else type="text" :focus="focus" v-model="title"
-               placeholder="请输入标题"
-               :style="{ width: String(title).length * 16 + 'px', maxWidth: '200px'}"></input>
-        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>
+        <view v-if="!isEdit" class="copy-title" @click="edit">{{ title ? title : '请输入标题' }}</view>
+        <input v-else style="height: 23px;line-height: 23px;text-align: center" type="text" :focus="focus" v-model="title"
+               @blur="isEdit = false">
+        </input>
+<!--        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>-->
       </view>
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
@@ -314,8 +314,8 @@ export default {
       uni.redirectTo({url: `/pages/home/detail?type=${this.type}`})
     },
     edit() {
-      this.focus = !this.focus
-      this.isEdit = !this.isEdit
+      this.focus = true
+      this.isEdit = true
     }
   },
 }
