@@ -152,7 +152,7 @@ export default {
     generate() {
       if (this.userId === '') {
         this.$tip.toast('请先登录')
-        uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/detail'})
+        uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/home/detail?type=${this.type}`})
         return
       }
       let params = {
@@ -172,14 +172,18 @@ export default {
           uni.setStorageSync(`${this.userId}_script`, scriptList)
           uni.setStorageSync('wordSetting', this.word)
           uni.setStorageSync('styleId', this.style.id)
-          uni.redirectTo({url: '/pages/home/copy'})
+          uni.redirectTo({url: `/pages/home/copy?type=${this.type}`})
         } else {
           this.$tip.toast(res.message,5000)
         }
       })
     },
     back() {
-      uni.switchTab({url: '/pages/home/index'})
+      if (this.type === 'redirectTo') {
+        uni.redirectTo({url: '/pages/home/search'})
+      }else {
+        uni.switchTab({url: '/pages/home/index'})
+      }
     }
   }
 }

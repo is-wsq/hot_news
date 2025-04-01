@@ -31,6 +31,7 @@ export default {
   mounted() {
     this.queryNews()
     uni.removeStorageSync(`${this.userId}_script`)
+    uni.removeStorageSync('searchNews')
   },
   methods: {
     queryNews() {
@@ -48,7 +49,6 @@ export default {
       })
     },
     toDetail(item) {
-      console.log(item)
       uni.setStorageSync('newsDetail', item)
       uni.redirectTo({
         url: '/pages/home/detail?type=switchTab'

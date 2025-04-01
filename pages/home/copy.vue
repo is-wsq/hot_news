@@ -95,7 +95,7 @@
                         content="口播视频生成成功,可点击下载按钮跳转至下载页面,也可在我的作品中查看">
       </uni-popup-dialog>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" :text="loadingText"/>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
   </view>
 </template>
 
@@ -128,8 +128,8 @@ export default {
       testAudioContext: null,
       testAudioIndex: null,
       isLoading: false,
-      loadingText: '',
-      fileInfo: {}
+      fileInfo: {},
+      type: ''
     }
   },
   mounted() {
@@ -140,6 +140,11 @@ export default {
     this.queryTitleAndScript()
     this.queryVoices()
     this.queryFigures()
+  },
+  onLoad: function (option) {
+    if (option.type){
+      this.type = option.type
+    }
   },
   methods: {
     queryFigures() {
@@ -175,7 +180,6 @@ export default {
         count: this.word,
       }
       this.isLoading = true
-      this.loadingText = '口播文案生成中...'
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
       })
@@ -191,6 +195,9 @@ export default {
         }
       })
     },
+    generateUniqueId() {
+      return Date.now() + Math.random().toString(36).substr(2, 16);
+    },
     generateVideo() {
       let params = {
         text: this.script,
@@ -199,17 +206,21 @@ export default {
         video_id: this.figure.video_id,
         filename: this.title
       }
-      this.isLoading = true
-      this.loadingText = '口播视频生成中...'
-      this.$nextTick(() => {
-        this.$refs.loadingVideo.playVideo()
-      })
+
+      let task = {
+        name: this.title,
+        type: 'video',
+        id: this.generateUniqueId(),
+        status: 'running'
+      }
+      this.$store.dispatch('task/addTask', task);
+      this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         if (res.status === 'success') {
-          this.isLoading = false
-          this.fileInfo = res.data
+          task.status = 'success'
+          this.$store.dispatch('task/updateTask', task);
           uni.removeStorageSync(`${this.userId}_script`)
-          this.$refs.alertDialog.open()
         }
       })
     },
@@ -296,7 +307,7 @@ export default {
       }
     },
     back() {
-      uni.redirectTo({url: '/pages/home/detail'})
+      uni.redirectTo({url: `/pages/home/detail?type=${this.type}`})
     },
     edit() {
       this.focus = !this.focus

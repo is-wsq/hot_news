@@ -25,7 +25,7 @@
         <view class="search-details">{{ searchNews.newsDetails }}</view>
       </view>
     </view>
-    <view v-else class="custom" @click="toCustom('/pages/home/custom')">
+    <view v-if="!searchNews.newsTitle" class="custom" @click="toCustom('/pages/home/custom')">
       <view class="custom-text">自定义文案</view>
       <uni-icons type="right" size="18" color="#ffffff" class="custom-icon"></uni-icons>
     </view>
@@ -47,7 +47,7 @@ export default {
       isLoading: false
     }
   },
-  onShow() {
+  mounted() {
     this.userId = uni.getStorageSync('userId') || ''
     this.queryHistory()
     uni.removeStorageSync(`${this.userId}_script`)
@@ -63,6 +63,7 @@ export default {
     },
     queryHistory() {
       this.history = uni.getStorageSync(`${this.userId}_history`) || []
+      this.searchNews = uni.getStorageSync('searchNews') || []
     },
     keyInput() {
       if (this.keyword.length === 0) {
@@ -85,6 +86,7 @@ export default {
       this.$http.get('/news/online_search', {keyword: this.keyword},300000).then(res => {
         if (res.status === 'success') {
           this.searchNews = res.data
+          uni.setStorageSync('searchNews', res.data)
           this.isLoading = false
         } else {
           this.$tip.toast(res.message, 5000)
