@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "jszip": "^3.10.1",
+    "mammoth": "^1.9.0",
     "marked": "^15.0.7",
     "pdfjs-dist": "^5.0.375",
     "uuid": "^11.1.0",

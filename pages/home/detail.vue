@@ -52,7 +52,8 @@
         <view class="style-content">
           <view style="flex: none;text-align: center" v-for="item in styles" :key="item.id"
                 @click="selectedStyle = item">
-            <view class="style-item" :style="{ border: item.id === selectedStyle.id? '2px solid #e99d42' : '' }"></view>
+            <image :src="item.avatar" class="style-item"
+                   :style="{ border: item.id === selectedStyle.id? '2px solid #e99d42' : '' }"></image>
             <view style="margin-top: 10px;font-size: 14px"
                   :style="{ color: item.id === selectedStyle.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
             </view>
@@ -336,6 +337,5 @@ export default {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #9A9A9A
 }
 </style>
