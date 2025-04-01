@@ -69,6 +69,9 @@ export default {
         this.$refs.loadingVideo.playVideo()
       })
     },
+    generateUniqueId() {
+      return Date.now() + Math.random().toString(36).substr(2, 16);
+    },
     selectFile() {
       let self = this
       uni.chooseFile({
@@ -81,19 +84,30 @@ export default {
             self.$tip.toast('请选择有效的音频文件',2000)
             return
           }
+          console.log(res.tempFiles[0].name)
+          // self.startLoading()
+          let task = {
+            name: res.tempFiles[0].name,
+            type: 'voice',
+            id: self.generateUniqueId(),
+            status: 'running'
+          }
+          self.$store.dispatch('task/addTask', task);
+          self.$tip.toast(`已创建 ${res.tempFiles[0].name} 音色克隆任务`,2000)
 
-          self.startLoading()
           uni.uploadFile({
             url: 'https://live.tellai.tech/api/news_assistant/timbres/clone',
             filePath: res.tempFilePaths[0],
             name: 'file',
-            timeout: 600000,
+            timeout: 1800000,
             formData: {'user_id': uni.getStorageSync('userId')},
             success: (result) => {
               let data = JSON.parse(result.data)
               if (data.status === 'success') {
-                self.$tip.toast('克隆成功')
-                self.queryVoices()
+                // self.$tip.toast('克隆成功')
+                // self.queryVoices()
+                task.status = 'success'
+                self.$store.dispatch('task/updateTask', task);
               } else {
                 self.$tip.toast(data.message,5000)
               }

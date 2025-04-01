@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "marked": "^15.0.7",
-    "pdfjs-dist": "^5.0.375"
+    "pdfjs-dist": "^5.0.375",
+    "uuid": "^11.1.0",
+    "vuex": "^4.1.0"
   }
 }

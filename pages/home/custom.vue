@@ -83,18 +83,12 @@
                         content="口播视频生成成功,可点击下载按钮跳转至下载页面,也可在我的作品中查看">
       </uni-popup-dialog>
     </uni-popup>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="口播视频生成中..."/>
   </view>
 </template>
 
 <script>
-import LoadingVideo from '@/components/loading-video.vue'
-
 export default {
   name: 'Detail',
-  components: {
-    LoadingVideo
-  },
   data() {
     return {
       userId: '',
@@ -113,7 +107,6 @@ export default {
       selectedFigure: {},
       testAudioContext: null,
       testAudioIndex: null,
-      isLoading: false,
     }
   },
   onLoad: function (option) {
@@ -203,6 +196,10 @@ export default {
       });
     },
     generateVideo() {
+      if (this.title === ''){
+        this.$tip.toast('请输入标题',2000)
+        return
+      }
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -210,18 +207,25 @@ export default {
         video_id: this.figure.video_id,
         filename: this.title
       }
-      this.isLoading = true
-      this.loadingText = '口播视频生成中...'
-      this.$nextTick(() => {
-        this.$refs.loadingVideo.playVideo()
-      })
+
+      let task = {
+        name: this.title,
+        type: 'video',
+        id: this.generateUniqueId(),
+        status: 'running'
+      }
+      this.$store.dispatch('task/addTask', task);
+      this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         if (res.status === 'success') {
-          this.isLoading = false
-          this.fileInfo = res.data
-          this.$refs.alertDialog.open()
+          task.status = 'success'
+          this.$store.dispatch('task/updateTask', task);
         }
       })
+    },
+    generateUniqueId() {
+      return Date.now() + Math.random().toString(36).substr(2, 16);
     },
     downloadFile() {
       let filename = this.fileInfo.filename
