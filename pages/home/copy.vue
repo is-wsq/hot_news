@@ -261,12 +261,16 @@ export default {
       this.testAudioIndex = null
     },
     voiceSure() {
-      this.stopPreviewAudio()
+      if (this.testAudioContext) {
+        this.stopPreviewAudio()
+      }
       this.voice = this.selectedVoice
       this.$refs.voicePopup.close()
     },
     closeVoicePopup() {
-      this.stopPreviewAudio()
+      if (this.testAudioContext) {
+        this.stopPreviewAudio()
+      }
       this.$refs.voicePopup.close()
     },
     selectFigure(item) {

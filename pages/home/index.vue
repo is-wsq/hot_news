@@ -30,7 +30,7 @@ export default {
   },
   mounted() {
     this.queryNews()
-    uni.removeStorageSync(`${this.userId}_script`)
+    uni.removeStorageSync(`${uni.getStorageSync('userId')}_script`)
     uni.removeStorageSync('searchNews')
   },
   methods: {
