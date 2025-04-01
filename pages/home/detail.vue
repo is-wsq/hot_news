@@ -86,18 +86,19 @@ export default {
         title: '',
         details: ''
       },
-      value: [300],
+      value: [200],
       words: [
-        {count: 300, introduce: '(口播约1分钟)'},
-        {count: 400, introduce: '(口播约1分30秒)'},
+        {count: 200, introduce: '(口播约40秒)'},
+        {count: 300, introduce: '(口播约60秒)'},
+        {count: 400, introduce: '(口播约80秒)'},
+        {count: 500, introduce: '(口播约100秒)'},
+        {count: 600, introduce: '(口播约120秒)'},
       ],
-      word: 300,
-      introduce: '(口播约1分钟)',
+      word: 200,
+      introduce: '(口播约40秒)',
       selectedWord: null,
       selectedIntroduce: '',
-      styles: [
-        {id: 'default', name: '无'}
-      ],
+      styles: [],
       style: {},
       selectedStyle: {},
       indicatorStyle: `height: 50px;`,
@@ -117,10 +118,9 @@ export default {
   },
   methods: {
     queryStyles() {
-      this.styles = [{id: 'default', name: '无'}]
       this.$http.get('/copywriting/styles/query/all').then(res => {
         if (res.status === 'success') {
-          this.styles = this.styles.concat(res.data)
+          this.styles = res.data
           this.style = this.styles[0]
           this.selectedStyle = this.styles[0]
         }
