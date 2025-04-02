@@ -11,7 +11,7 @@
       <view class="download-preview">
         <video ref="video" style="width: 100%; height: 100%;" :src="filepath"></video>
       </view>
-      <button class="download-btn" @click="download">下载文件</button>
+      <button class="download-btn" type="primary" @click="download" :loading="loading" :disabled="loading">{{ loading? '下载任务创建中' : '下载文件' }}</button>
     </view>
     <uni-popup ref="dialog" type="dialog">
       <uni-popup-dialog type="info" confirmText="确定" :showClose="false" @confirm="$refs.dialog.close()"
@@ -26,7 +26,8 @@ export default {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       filename: '',
-      filepath: ''
+      filepath: '',
+      loading: false
     }
   },
   onLoad: function (option) {
@@ -44,6 +45,8 @@ export default {
       if (this.isWeChat()) {
         this.$refs.dialog.open()
       }else {
+        let self = this
+        self.loading = true
         fetch(this.filepath).then(response => response.blob()) // 获取二进制数据
           .then(blob => {
             const link = document.createElement("a");
@@ -53,7 +56,11 @@ export default {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(link.href); // 释放 URL
-          }).catch(error => console.error("视频下载失败", error));
+            self.loading = false
+          }).catch(error => {
+            console.error("视频下载失败", error)
+            self.loading = false
+          });
       }
     },
     back() {
@@ -86,8 +93,6 @@ export default {
 
 .download-btn {
   margin-top: 50px;
-  color: #ffffff;
-  background-color: #297aff;
   border-radius: 10px;
   width: 200px;
 }
