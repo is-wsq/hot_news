@@ -9,7 +9,7 @@
       <view class="video-item" v-for="item in runningTask" :key="item.id">
         <view style="position: relative">
           <image class="item-img blurred" :src="item.img"></image>
-          <view class="loading-title">视频生成中。。。</view>
+          <view class="loading-title">视频生成中...</view>
         </view>
         <view class="item-title">{{ item.name }}</view>
       </view>
