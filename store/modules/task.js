@@ -18,6 +18,10 @@ const mutations = {
             uni.setStorageSync(TASK_STORAGE_KEY, state.tasks);
         }
     },
+    REMOVE_TASK(state, id) {
+        state.tasks = state.tasks.filter(task => task.id !== id)
+        uni.setStorageSync(TASK_STORAGE_KEY, state.tasks);
+    },
     SET_TASKS(state, tasks) {
         state.tasks = tasks;
         // 初始化时同步到本地存储
@@ -31,6 +35,9 @@ const actions = {
     },
     updateTask({ commit }, updatedTask) {
         commit('UPDATE_TASK', updatedTask);
+    },
+    removeTask({ commit }, id) {
+        commit('REMOVE_TASK', id);
     },
     loadTasks({ commit }) {
         // 从本地存储读取任务

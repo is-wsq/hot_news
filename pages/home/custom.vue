@@ -195,6 +195,26 @@ export default {
         }
       });
     },
+    // generateVideo() {
+    //   let task = {
+    //     name: this.title,
+    //     type: 'video',
+    //     img: this.figure.picture,
+    //     id: this.generateUniqueId(),
+    //     status: 'running'
+    //   }
+    //   this.$store.dispatch('task/addTask', task);
+    //   // this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+    //   this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+    //     uni.switchTab({
+    //       url: '/pages/template/index'
+    //     })
+    //   })
+    //   setTimeout(() => {
+    //     task.status = 'success'
+    //     this.$store.dispatch('task/updateTask', task);
+    //   },30000)
+    // },
     generateVideo() {
       if (this.title === ''){
         this.$tip.toast('请输入标题',2000)
@@ -211,11 +231,17 @@ export default {
       let task = {
         name: this.title,
         type: 'video',
+        img: this.figure.picture,
         id: this.generateUniqueId(),
         status: 'running'
       }
       this.$store.dispatch('task/addTask', task);
-      this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+      // this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+        uni.switchTab({
+          url: '/pages/template/index'
+        })
+      })
 
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         if (res.status === 'success') {

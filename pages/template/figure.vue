@@ -161,8 +161,7 @@ export default {
         timeout: 1800000,
         formData: {
           'user_id': uni.getStorageSync('userId'),
-          // cloneSound: self.cloneSound
-          'cloneSound': false
+          cloneSound: self.cloneSound
         },
         success: (result) => {
           let data = JSON.parse(result.data)

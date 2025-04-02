@@ -214,7 +214,12 @@ export default {
         status: 'running'
       }
       this.$store.dispatch('task/addTask', task);
-      this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+      // this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
+      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+        uni.switchTab({
+          url: '/pages/template/index'
+        })
+      })
 
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         if (res.status === 'success') {

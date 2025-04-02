@@ -22,12 +22,6 @@ store.watch(
         newTasks.forEach((task) => {
             // 检查任务从 "running" 状态变成了 "success"
             if (lastTaskStatus[task.id] === 'running' && task.status === 'success') {
-                // const pages = getCurrentPages(); // 获取当前页面栈
-                // const currentPage = pages[pages.length - 1]; // 获取栈中的当前页面
-                //
-                // if (currentPage && currentPage.$route === '/pages/template/index') {
-                //     currentPage.queryReel(); // 调用
-                // }
                 // 弹出提示框
                 let taskName = task.type === 'voice'? '音色克隆' : '口播视频生成';
                 uni.showModal({
@@ -37,6 +31,7 @@ store.watch(
                     success: function (res) {
                         if (res.confirm) {
                             console.log('用户点击确定');
+                            store.dispatch('task/removeTask', task.id);
                         }
                     }
                 });

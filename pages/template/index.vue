@@ -6,6 +6,13 @@
     </view>
     <view style="font-size: 18px; color: #fff;line-height: 50px">我的作品</view>
     <view class="video-list" style="height: calc(100% - 180px)">
+      <view class="video-item" v-for="item in runningTask" :key="item.id">
+        <view style="position: relative">
+          <image class="item-img blurred" :src="item.img"></image>
+          <view class="loading-title">视频生成中。。。</view>
+        </view>
+        <view class="item-title">{{ item.name }}</view>
+      </view>
       <view class="video-item" v-for="item in showReel" :key="item.id" @click="downloadVideo(item)">
         <image class="item-img" :src="item.picture"></image>
         <view class="item-title">{{ item.filename }}</view>
@@ -15,20 +22,40 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+
 export default {
   name: 'templates',
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
+      runningTask: [],
       showReel: []
+    }
+  },
+  computed: {
+    ...mapGetters('task', ['allTasks']) // 获取任务列表
+  },
+  watch: {
+    // 监听 Vuex 任务数据的变化，自动更新任务列表
+    allTasks: {
+      handler() {
+        this.processTasks();
+        this.queryReel()
+      },
+      deep: true
     }
   },
   mounted() {
     this.userId = uni.getStorageSync('userId') || ''
+    this.processTasks()
     this.queryReel()
   },
   methods: {
+    processTasks() {
+      this.runningTask = this.allTasks.filter(task => task.type === 'video' && task.status === 'running')
+    },
     queryReel() {
       if (this.userId === '') {
         return
@@ -36,7 +63,6 @@ export default {
       this.$http.get('/video_record/query', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
           this.showReel = res.data
-          console.log(this.showReel)
         }
       })
     },
@@ -94,6 +120,20 @@ export default {
   width: 160px;
   height: 180px;
   border-radius: 10px;
+}
+
+.item-img.blurred {
+  filter: blur(8px);
+}
+
+.loading-title {
+  position: absolute;
+  color: #fff;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  transform: translate(0, -50%);
 }
 
 .item-title {
