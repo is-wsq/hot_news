@@ -87,8 +87,19 @@ export default {
         this.$tip.toast('请输入正确的手机号',2000);
         return
       }
-      this.smsCountDown = 60;
-      this.startSMSTimer();
+      let params = {
+        phone: this.registerFormData.phone,
+        usage: 'register',
+      }
+      this.$http.post('/sms/send', params).then(res => {
+        if (res.status ==='success') {
+          this.smsCountDown = 60;
+          this.startSMSTimer();
+          this.$tip.toast('短信验证码发送成功',2000);
+        }else {
+          this.$tip.toast(res.message,2000);
+        }
+      })
     },
     startSMSTimer() {
       this.smsCountInterval = setInterval(() => {
@@ -108,7 +119,19 @@ export default {
         this.$tip.toast('请输入正确的手机号',2000);
         return
       }
-      this.isVerify = false
+      let params = {
+        phone: this.registerFormData.phone,
+        code: this.registerFormData.sms,
+        usage: 'register',
+      }
+      this.$http.post('/sms/verify', params).then(res => {
+        if (res.status ==='success') {
+          this.$tip.toast('验证成功，请设置密码',1000);
+          this.isVerify = false
+        }else {
+          this.$tip.toast(res.message,2000);
+        }
+      })
     },
     register() {
       if (!this.registerFormData.password || this.registerFormData.password.length === 0) {
@@ -127,6 +150,9 @@ export default {
         if (res.status === 'success') {
           this.$tip.toast('注册成功，请登录');
           this.resetData();
+          uni.redirectTo({
+            url: '/pages/login/login?type=switchTab&path=/pages/home/index'
+          })
         } else {
           this.$tip.toast(res.message,5000);
         }
@@ -134,6 +160,7 @@ export default {
     },
     resetData() {
       this.isVerify = true;
+      this.smsCountDown = 0
       this.registerFormData = {
         phone: '',
         sms: '',

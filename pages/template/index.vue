@@ -47,7 +47,7 @@ export default {
       deep: true
     }
   },
-  mounted() {
+  onShow() {
     this.userId = uni.getStorageSync('userId') || ''
     this.processTasks()
     this.queryReel()

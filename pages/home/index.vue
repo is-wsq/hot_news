@@ -28,7 +28,7 @@ export default {
       news: []
     }
   },
-  mounted() {
+  onShow() {
     this.queryNews()
     uni.removeStorageSync(`${uni.getStorageSync('userId')}_script`)
     uni.removeStorageSync('searchNews')

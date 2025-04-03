@@ -102,6 +102,7 @@ export default {
       }
       this.$http.post('/user/login', params).then(res => {
         if (res.status === 'success') {
+          this.$tip.toast('登陆成功');
           uni.setStorageSync('userId', res.data.user_id)
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
@@ -118,7 +119,24 @@ export default {
         this.$tip.toast('请填短信验证码',2000);
         return;
       }
-      console.log(222)
+      let params = {
+        phone: this.loginFormData.phone,
+        code: this.loginFormData.sms,
+        usage: 'login',
+      }
+      this.$http.post('/sms/verify', params).then(res => {
+        if (res.status ==='success') {
+          this.$tip.toast('登陆成功');
+          uni.setStorageSync('userId', res.data.user_id)
+          if (this.type === 'switchTab') {
+            uni.switchTab({ url: this.path })
+          }else {
+            uni.redirectTo({ url: this.path })
+          }
+        }else {
+          this.$tip.toast(res.message,2000);
+        }
+      })
     },
     onSMSSend() {
       if (!this.isSendSMSEnable) {
@@ -133,8 +151,19 @@ export default {
         this.$tip.toast('请输入正确的手机号',2000);
         return
       }
-      this.smsCountDown = 60;
-      this.startSMSTimer();
+      let params = {
+        phone: this.loginFormData.phone,
+        usage: 'login',
+      }
+      this.$http.post('/sms/send', params).then(res => {
+        if (res.status ==='success') {
+          this.smsCountDown = 60;
+          this.startSMSTimer();
+          this.$tip.toast('短信验证码发送成功',2000);
+        }else {
+          this.$tip.toast(res.message,2000);
+        }
+      })
     },
     startSMSTimer() {
       this.smsCountInterval = setInterval(() => {
