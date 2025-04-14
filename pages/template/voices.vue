@@ -24,18 +24,14 @@
         <view class="voice-name">{{ item.name }}</view>
       </view>
     </view>
-    <loading-video ref="loadingVideo" v-if="isLoading" text="音色克隆中..."/>
   </view>
 </template>
 
 <script>
-import LoadingVideo from '@/components/loading-video.vue'
+import {mapGetters} from "vuex";
 
 export default {
   name: 'voices',
-  components: {
-    LoadingVideo
-  },
   data() {
     return {
       systems: [],
@@ -43,7 +39,21 @@ export default {
       selectedVoice: {},
       testAudioContext: null,
       testAudioId: null,
-      isLoading: false,
+    }
+  },
+  computed: {
+    ...mapGetters('task', ['allTasks']), // 获取任务列表
+    voiceTasks() {
+      return this.allTasks.filter(item => item.type === 'voice')
+    }
+  },
+  watch: {
+    // 监听 Vuex 类型为 voice 的任务数据的变化，自动更新任务列表
+    voiceTasks: {
+      handler() {
+        this.queryVoices()
+      },
+      deep: true
     }
   },
   mounted() {
@@ -63,12 +73,6 @@ export default {
         }
       })
     },
-    startLoading() {
-      this.isLoading = true
-      this.$nextTick(() => {
-        this.$refs.loadingVideo.playVideo()
-      })
-    },
     generateUniqueId() {
       return Date.now() + Math.random().toString(36).substr(2, 16);
     },
@@ -84,8 +88,6 @@ export default {
             self.$tip.toast('请选择有效的音频文件',2000)
             return
           }
-          console.log(res.tempFiles[0].name)
-          // self.startLoading()
           let task = {
             name: res.tempFiles[0].name,
             type: 'voice',
@@ -93,7 +95,7 @@ export default {
             status: 'running'
           }
           self.$store.dispatch('task/addTask', task);
-          self.$tip.toast(`已创建 ${res.tempFiles[0].name} 音色克隆任务`,2000)
+          self.$tip.confirm(`已创建音色克隆任务\n《${res.tempFiles[0].name}》`,false)
 
           uni.uploadFile({
             url: 'https://live.tellai.tech/api/news_assistant/timbres/clone',
@@ -104,14 +106,11 @@ export default {
             success: (result) => {
               let data = JSON.parse(result.data)
               if (data.status === 'success') {
-                // self.$tip.toast('克隆成功')
-                // self.queryVoices()
                 task.status = 'success'
                 self.$store.dispatch('task/updateTask', task);
               } else {
                 self.$tip.toast(data.message,5000)
               }
-              self.isLoading = false
             }
           });
         }
@@ -145,7 +144,6 @@ export default {
       this.testAudioId = null
     },
     back() {
-      // uni.navigateBack()
       uni.switchTab({
         url: '/pages/template/index'
       })
