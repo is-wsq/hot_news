@@ -1,7 +1,7 @@
 const TASK_STORAGE_KEY = 'task_list'; // 存储任务列表的 key
 
 const state = {
-    tasks: uni.getStorageSync(TASK_STORAGE_KEY) || [] // 初始化时读取本地存储的任务
+    tasks: [] // 初始化时读取本地存储的任务
 };
 
 const mutations = {
@@ -41,7 +41,7 @@ const actions = {
     },
     loadTasks({ commit }) {
         // 从本地存储读取任务
-        const tasks = uni.getStorageSync(TASK_STORAGE_KEY) || [];
+        const tasks = [];
         commit('SET_TASKS', tasks);
     }
 };

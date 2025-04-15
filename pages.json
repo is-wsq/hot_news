@@ -20,6 +20,12 @@
       "path": "pages/template/index"
     },
     {
+      "path": "pages/template/figureClone"
+    },
+    {
+      "path": "pages/template/figures"
+    },
+    {
       "path": "pages/template/figure"
     },
     {
