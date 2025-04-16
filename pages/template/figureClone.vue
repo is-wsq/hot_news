@@ -106,7 +106,6 @@ export default {
             return
           }
           self.selectedFile = res.tempFiles[0]
-          console.log(res)
         }
       });
     },
@@ -124,7 +123,7 @@ export default {
         id: self.generateUniqueId(),
         name: self.selectedFile.name,
       };
-      this.$store.dispatch("task/addTask", task);
+      self.$store.dispatch("task/addTask", task);
       self.$tip.confirm(`已创建形象克隆任务\n《${self.selectedFile.name}》`,false).then(res => {
         uni.redirectTo({url: '/pages/template/figures'})
       })
@@ -139,7 +138,7 @@ export default {
           cloneSound: self.cloneSound
         },
         success: (result) => {
-          this.$store.dispatch("task/removeTask", task.id);
+          self.$store.dispatch("task/removeTask", task.id);
           let data = JSON.parse(result.data)
           if (data.status === 'success') {
             self.$tip.confirm(`${task.name}形象克隆任务已完成`,false)

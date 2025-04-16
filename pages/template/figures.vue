@@ -7,7 +7,7 @@
     <view style="font-size: 18px; color: #ffffff;margin-bottom: 10px">系统形象</view>
     <view class="figure-list"
           :style="{ height: heightStyle + 30 + 'px', gridTemplateRows: `repeat(1, ${heightStyle + 30}px)`, gridAutoColumns: `${heightStyle * 3 / 4}px` }">
-      <view v-for="item in systems" :key="item.id">
+      <view v-for="item in systems" :key="item.id" @click="previewFigure(item)">
         <image :src="item.picture"
                :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
         <view class="figure-name" :style="{ width: heightStyle * 3 / 4 + 'px' }">{{ item.name }}</view>

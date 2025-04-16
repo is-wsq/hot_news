@@ -26,11 +26,17 @@
       "path": "pages/template/figures"
     },
     {
-      "path": "pages/template/figure"
+      "path": "pages/template/voicesClone"
     },
     {
-      "path": "pages/template/voices"
+      "path": "pages/template/voice"
     },
+//    {
+//      "path": "pages/template/figure"
+//    },
+//    {
+//      "path": "pages/template/voices"
+//    },
     {
       "path": "pages/user/index"
     },

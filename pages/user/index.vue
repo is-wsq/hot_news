@@ -24,6 +24,10 @@
           <view class="detail-name">数字人额度</view>
         </view>
         <view style="text-align: center">
+          <view class="detail-value">{{ userInfo.timbreBalance || 0 }}</view>
+          <view class="detail-name">声音额度</view>
+        </view>
+        <view style="text-align: center">
           <view class="detail-value">{{ userInfo.points || 0 }}</view>
           <view class="detail-name">积分余额</view>
         </view>
@@ -197,12 +201,10 @@ export default {
   margin-top: 5px;
   display: flex;
   gap: 22px;
-  justify-content: center;
-  align-items: center;
 }
 
 .asset-item {
-  width: 135px;
+  flex: 1;
   height: 75px;
   background-color: #282828;
   border-radius: 10px;
