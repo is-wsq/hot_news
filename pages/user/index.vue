@@ -7,8 +7,8 @@
         <view class="user-identity">{{ userTypeName }}</view>
       </view>
     </view>
-    <view class="user-info" v-else>
-      <view class="user-avatar" @click="goto('/pages/login/login?type=switchTab&path=/pages/user/index')"></view>
+    <view class="user-info" v-else @click="goto('/pages/login/login?type=switchTab&path=/pages/user/index')">
+      <view class="user-avatar"></view>
       <view class="user-account">
         <view class="user-phone">暂未登录</view>
       </view>
@@ -35,11 +35,11 @@
     </view>
     <view class="asset-text">我的资产</view>
     <view class="asset-list">
-      <view class="asset-item">
+      <view class="asset-item" @click="goto('/pages/user/figure')">
         <view class="asset-value">{{ userInfo.figure || 0 }}</view>
         <view class="asset-name">我的数字人</view>
       </view>
-      <view class="asset-item">
+      <view class="asset-item" @click="goto('/pages/user/voice')">
         <view class="asset-value">{{ userInfo.timbre || 0 }}</view>
         <view class="asset-name">我的声音</view>
       </view>
@@ -148,10 +148,10 @@ export default {
 }
 
 .identity-card {
-  height: 110px;
+  height: 130px;
   background-image: url('/static/voucher-bg.jpg');
   background-size: cover;
-  background-position: 0 190px;
+  background-position: 0 210px;
   padding: 10px 15px;
   box-sizing: border-box;
   border-radius: 12px;
@@ -171,10 +171,12 @@ export default {
 }
 
 .identity-detail {
+  width: calc(100% - 50px);
   color: #fff;
   display: flex;
+  justify-content: space-between;
   height: 54px;
-  margin-top: 5px;
+  margin-top: 20px;
   gap: 25px;
 }
 
@@ -191,7 +193,7 @@ export default {
 
 .asset-text {
   margin-top: 5px;
-  margin-left: 30px;
+  margin-left: 15px;
   color: #fff;
   font-size: 16px;
   line-height: 35px;

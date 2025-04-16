@@ -50,6 +50,12 @@
       "path": "pages/user/previewAvatar"
     },
     {
+      "path": "pages/user/figure"
+    },
+    {
+      "path": "pages/user/voice"
+    },
+    {
       "path": "pages/agreement/user"
     },
     {

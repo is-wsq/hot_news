@@ -55,8 +55,19 @@ const del = (url, data = {}, timeout = 60000, header = {}) => {
     });
 };
 
+const put = (url, data = {}, timeout = 60000, header = {}) => {
+    return request({
+        url,
+        method: 'PUT',
+        timeout,
+        data,
+        header
+    });
+};
+
 export default {
     get,
     post,
     del,
+    put
 };
