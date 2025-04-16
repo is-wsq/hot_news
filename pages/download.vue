@@ -65,8 +65,8 @@ export default {
     },
     back() {
       // uni.navigateBack()
-      uni.switchTab({
-        url: '/pages/template/index'
+      uni.redirectTo({
+        url: '/pages/template/videoList'
       })
     }
   }

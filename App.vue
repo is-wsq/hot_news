@@ -83,7 +83,7 @@
 
   .nav-bar-title {
     color: #ffffff;
-    font-size: 18px;
+    font-size: 16px;
     display: flex;
   }
 

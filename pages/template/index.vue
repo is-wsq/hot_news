@@ -1,19 +1,26 @@
 <template>
   <view class="pages templates" :style="{ height: `${safeAreaHeight - 69.8}px` }">
     <view class="clone-cards">
-      <view class="card figure-bg" @click="goto('/pages/template/figure')">形象克隆</view>
-      <view class="card voice-bg" @click="goto('/pages/template/voices')">声音克隆</view>
+      <view class="card figure-bg" @click="goto('/pages/template/figureClone')">形象克隆</view>
+      <view class="card voice-bg" @click="goto('/pages/template/voicesClone')">声音克隆</view>
     </view>
-    <view style="font-size: 18px; color: #fff;line-height: 50px">我的作品</view>
+    <view style="font-size: 18px; color: #fff;line-height: 50px;display: flex">
+      <view style="flex: 1">我的作品</view>
+      <uni-icons type="right" size="21" color="#ffffff" @click="goto('/pages/template/videoList')"></uni-icons>
+    </view>
     <view class="video-list" style="height: calc(100% - 180px)">
-      <view class="video-item" v-for="item in runningTask" :key="item.id">
-        <view style="position: relative">
-          <image class="item-img blurred" :src="item.img"></image>
-          <view class="loading-title">视频生成中...</view>
+      <view class="video-item" v-for="item in videoTasks" :key="item.id">
+        <view class="image-wrapper shining">
+          <image class="item-img" src="/static/img/20.png"></image>
+          <view class="shine-layer"></view>
+          <view class="loading-title">
+            <view>视频生成中</view>
+            <view class="dot">{{ dot }}</view>
+          </view>
         </view>
-        <view class="item-title">{{ item.name }}</view>
+        <view class="item-title" style="margin-top: 1px">{{ item.name }}</view>
       </view>
-      <view class="video-item" v-for="item in showReel" :key="item.id" @click="downloadVideo(item)">
+      <view class="video-item" v-for="item in showReel" :key="item.id">
         <image class="item-img" :src="item.picture"></image>
         <view class="item-title">{{ item.filename }}</view>
       </view>
@@ -30,18 +37,22 @@ export default {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       userId: '',
-      runningTask: [],
-      showReel: []
+      showReel: [],
+      dotCount: 1,
+      dotTimer: null,
+      dot: '.'
     }
   },
   computed: {
-    ...mapGetters('task', ['allTasks']) // 获取任务列表
+    ...mapGetters('task', ['allTasks']), // 获取任务列表
+    videoTasks() {
+      return this.allTasks.filter((item) => item.type === "video");
+    },
   },
   watch: {
     // 监听 Vuex 任务数据的变化，自动更新任务列表
-    allTasks: {
+    videoTasks: {
       handler() {
-        this.processTasks();
         this.queryReel()
       },
       deep: true
@@ -49,12 +60,20 @@ export default {
   },
   onShow() {
     this.userId = uni.getStorageSync('userId') || ''
-    this.processTasks()
     this.queryReel()
+    if (this.videoTasks.length > 0) {
+      this.startDotAnimation();
+    }
+  },
+  onHide() {
+    clearInterval(this.dotTimer);
   },
   methods: {
-    processTasks() {
-      this.runningTask = this.allTasks.filter(task => task.type === 'video' && task.status === 'running')
+    startDotAnimation() {
+      this.dotTimer = setInterval(() => {
+        this.dotCount = this.dotCount % 3 + 1;
+        this.dot = '.'.repeat(this.dotCount);
+      }, 1000);
     },
     queryReel() {
       if (this.userId === '') {
@@ -76,7 +95,7 @@ export default {
         uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/template/index'})
         return
       }
-      uni.redirectTo({ url: path })
+      uni.redirectTo({url: path})
     }
   }
 }
@@ -91,11 +110,12 @@ export default {
 
 .card {
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100px;
   color: #fff;
   font-size: 20px;
-  padding: 20px;
-  box-sizing: border-box;
   border-radius: 10px;
 }
 
@@ -109,21 +129,22 @@ export default {
 
 .video-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  grid-template-rows: 210px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-rows: 230px;
   gap: 10px;
   justify-items: center;
   overflow: auto;
 }
 
 .item-img {
-  width: 160px;
-  height: 180px;
+  width: 150px;
+  height: 200px;
   border-radius: 10px;
 }
 
 .item-img.blurred {
-  filter: blur(8px);
+  filter: blur(15px);
+  opacity: 0.8
 }
 
 .loading-title {
@@ -134,12 +155,23 @@ export default {
   text-align: center;
   top: 50%;
   transform: translate(0, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  width: 20px;
+  text-align: left;
+  margin-left: 5px;
+  font-size: 16px;
+  line-height: 40px;
 }
 
 .item-title {
   font-size: 14px;
   color: #fff;
-  width: 160px;
+  width: 150px;
   text-align: center;
   margin-top: 5px;
   overflow: hidden;

@@ -20,6 +20,9 @@
       "path": "pages/template/index"
     },
     {
+      "path": "pages/template/videoList"
+    },
+    {
       "path": "pages/template/figureClone"
     },
     {
@@ -31,12 +34,6 @@
     {
       "path": "pages/template/voice"
     },
-//    {
-//      "path": "pages/template/figure"
-//    },
-//    {
-//      "path": "pages/template/voices"
-//    },
     {
       "path": "pages/user/index"
     },
