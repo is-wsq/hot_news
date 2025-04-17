@@ -55,6 +55,8 @@
 </template>
 
 <script>
+let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
+
 export default {
   data() {
     return {
@@ -78,37 +80,71 @@ export default {
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
-            self.$tip.toast('请选择有效的音频文件',2000)
+            self.$tip.toast('请选择有效的音频文件', 2000)
             return
           }
-          let task = {
-            name: res.tempFiles[0].name,
-            type: 'voice',
-            id: self.generateUniqueId(),
-          }
-          self.$store.dispatch('task/addTask', task);
-          self.$tip.confirm(`已创建音色克隆任务\n《${res.tempFiles[0].name}》`,false).then(res => {
-            uni.redirectTo({url: '/pages/template/voice'})
-          })
-
-          uni.uploadFile({
-            url: 'https://live.tellai.tech/api/news_assistant/timbres/clone',
-            filePath: res.tempFilePaths[0],
-            name: 'file',
-            timeout: 1800000,
-            formData: {'user_id': uni.getStorageSync('userId')},
-            success: (result) => {
-              self.$store.dispatch("task/removeTask", task.id);
-              let data = JSON.parse(result.data)
-              if (data.status === 'success') {
-                self.$tip.confirm(`${task.name}音色克隆任务已完成`,false)
-              } else {
-                self.$tip.confirm(`${task.name}音色克隆任务失败,${data.message}`,false)
-              }
-            }
-          });
+          let type = res.tempFiles[0].type.indexOf('audio') !== -1 ? 'audio' : 'video'
+          self.getFileId(type, res.tempFiles[0])
         }
       });
+    },
+    getFileId(type, file) {
+      let self = this
+      uni.request({
+        url: `https://live.tellai.tech/api/media/files/upload_request?type=${type}`,
+        header: {'Authorization': token},
+        success: (res) => {
+          let status = res.data.base_resp
+          let data = res.data.data
+          if (status.status_code === 200) {
+            let task = {
+              name: file.name,
+              type: 'voice',
+              id: self.generateUniqueId(),
+            }
+            self.$store.dispatch('task/addTask', task);
+            self.$tip.confirm(`已创建音色克隆任务\n《${file.name}》`, false).then(res => {
+              uni.redirectTo({url: '/pages/template/voice'})
+            })
+
+            uni.uploadFile({
+              url: data.upload_url,
+              filePath: file.path,
+              name: 'file',
+              header: {'Authorization': token},
+              timeout: 1800000,
+              formData: {'file_id': data.file_id, 'type': type},
+              success: (result) => {
+                let upload_status = JSON.parse(result.data).base_resp
+                let upload_data = JSON.parse(result.data).data
+                if (upload_status.status_code === 200) {
+                  self.clone(upload_data.file_id, task)
+                } else {
+                  self.$store.dispatch("task/removeTask", task.id);
+                  self.$tip.confirm(`${task.name}音色克隆任务失败,${upload_status.status_msg}`, false)
+                }
+              }
+            });
+          } else {
+            this.$tip.confirm(status.status_msg, false)
+          }
+        }
+      });
+    },
+    clone(fileId, task) {
+      let params = {
+        file_id: fileId,
+        user_id: uni.getStorageSync('userId'),
+        audio_name: task.name.substring(0, task.name.lastIndexOf('.'))
+      }
+      this.$http.post('/timbres/clone/file_id', params).then(res => {
+        this.$store.dispatch("task/removeTask", task.id);
+        if (res.status === 'success') {
+          this.$tip.confirm(`${task.name}音色克隆任务成功`, false)
+        } else {
+          this.$tip.confirm(`${task.name}音色克隆任务失败,${res.message}`, false)
+        }
+      })
     },
     playAudio(index) {
       if (this.audioCtx) {

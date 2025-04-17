@@ -180,6 +180,7 @@ export default {
       let params = {
         user_id: uni.getStorageSync('userId'),
         file_id: fileId,
+        video_name: task.name.substring(0, task.name.lastIndexOf('.')),
         cloneSound: this.cloneSound
       }
       this.$http.post('/figure/clone/file_id',params).then(res => {
