@@ -114,10 +114,16 @@ export default {
         uni.redirectTo({ url: '/pages/login/login?type=redirectTo&path=/pages/home/search' })
         return
       }
-      uni.redirectTo({ url: url })
+      uni.hideKeyboard()
+      setTimeout(() => {
+        uni.redirectTo({ url: url })
+      },100)
     },
     back() {
-      uni.switchTab({url: '/pages/home/index'})
+      uni.hideKeyboard()
+      setTimeout(() => {
+        uni.switchTab({url: '/pages/home/index'})
+      },100)
     }
   }
 }

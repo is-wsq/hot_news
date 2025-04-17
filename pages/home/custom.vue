@@ -228,14 +228,11 @@ export default {
     generateUniqueId() {
       return Date.now() + Math.random().toString(36).substr(2, 16);
     },
-    downloadFile() {
-      let filename = this.fileInfo.filename
-      let filepath = this.fileInfo.video_path
-      let path = `/pages/download?filepath=${filepath}&filename=${filename}`
-      uni.redirectTo({ url: path })
-    },
     back() {
-      uni.redirectTo({ url: '/pages/home/search' })
+      uni.hideKeyboard()
+      setTimeout(() => {
+        uni.redirectTo({ url: '/pages/home/search' })
+      },100)
     },
     edit() {
       this.isEdit = true

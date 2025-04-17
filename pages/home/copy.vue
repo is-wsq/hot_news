@@ -11,7 +11,6 @@
         <input v-else style="height: 23px;line-height: 23px;text-align: center" type="text" :focus="focus" v-model="title"
                @blur="isEdit = false">
         </input>
-<!--        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>-->
       </view>
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
@@ -314,7 +313,10 @@ export default {
       }
     },
     back() {
-      uni.redirectTo({url: `/pages/home/detail?type=${this.type}`})
+      uni.hideKeyboard()
+      setTimeout(() => {
+        uni.redirectTo({url: `/pages/home/detail?type=${this.type}`})
+      },100)
     },
     edit() {
       this.focus = true
