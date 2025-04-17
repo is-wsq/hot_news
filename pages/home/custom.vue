@@ -10,11 +10,10 @@
         <input v-else style="height: 23px;line-height: 23px;text-align: center" type="text" :focus="focus" v-model="title"
                @blur="isEdit = false">
         </input>
-<!--        <image src="/static/edit_pan.png" style="width: 14px;height: 14px;margin-left: 10px;" @click="edit"></image>-->
       </view>
       <view class="custom-card">
         <textarea class="custom-script" type="text" v-model="script" placeholder-style="color:#9A9A9A"
-                  placeholder="请输入文案内容" :maxlength="400"></textarea>
+                  placeholder="请输入文案内容" :maxlength="-1"></textarea>
         <view style="height: 20px;text-align: end">
           <image class="custom-icon" src="/static/copy_icon.png" @click="copy"></image>
         </view>
@@ -33,13 +32,17 @@
         <uni-icons type="right" size="20" color="#E5E5E5;" @click="$refs.figurePopup.open"></uni-icons>
       </view>
     </view>
-    <button class="custom-btn" @click="generateVideo">口播视频生成</button>
-    <uni-popup ref="voicePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+    <view style="position: relative;width: 250px;margin: 0 auto">
+      <button class="custom-btn" @click="generateVideo">口播视频生成</button>
+      <view class="word-count">
+        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="18"></uni-icons>
+        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ scriptLengthInHundredths }}</view>
+      </view>
+    </view>
+    <uni-popup ref="voicePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0" @maskClick="closeVoicePopup">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">声音</view>
-          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="closeVoicePopup"></uni-icons>
         </view>
         <view class="voice-content">
           <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
@@ -58,12 +61,10 @@
         <button class="custom-btn" @click="voiceSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="figurePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+    <uni-popup ref="figurePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">形象</view>
-          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="$refs.figurePopup.close"></uni-icons>
         </view>
         <view class="figure-content">
           <view style="flex: none;text-align: center" v-for="item in figures" :key="item.id"
@@ -78,11 +79,6 @@
         <button class="custom-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="alertDialog" type="dialog">
-      <uni-popup-dialog type="info" cancelText="关闭" confirmText="下载" @confirm="downloadFile"
-                        content="口播视频生成成功,可点击下载按钮跳转至下载页面,也可在我的作品中查看">
-      </uni-popup-dialog>
-    </uni-popup>
   </view>
 </template>
 
@@ -92,9 +88,6 @@ export default {
   data() {
     return {
       userId: '',
-      newsId: null,
-      word: 0,
-      styleId: '',
       isEdit: false,
       focus: false,
       title: '',
@@ -109,10 +102,10 @@ export default {
       testAudioIndex: null,
     }
   },
-  onLoad: function (option) {
-    this.newsId = option.newsId
-    this.word = option.word
-    this.styleId = option.style
+  computed: {
+    scriptLengthInHundredths() {
+      return Math.ceil(this.script.length / 100);
+    }
   },
   mounted() {
     this.userId = uni.getStorageSync('userId')
@@ -195,31 +188,27 @@ export default {
         }
       });
     },
-    // generateVideo() {
-    //   let task = {
-    //     name: this.title,
-    //     type: 'video',
-    //     img: this.figure.picture,
-    //     id: this.generateUniqueId(),
-    //     status: 'running'
-    //   }
-    //   this.$store.dispatch('task/addTask', task);
-    //   // this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
-    //   this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
-    //     uni.switchTab({
-    //       url: '/pages/template/index'
-    //     })
-    //   })
-    //   setTimeout(() => {
-    //     task.status = 'success'
-    //     this.$store.dispatch('task/updateTask', task);
-    //   },30000)
-    // },
     generateVideo() {
       if (this.title === ''){
-        this.$tip.toast('请输入标题',2000)
+        this.$tip.confirm('请输入标题',false)
         return
       }
+      if (this.script === '') {
+        this.$tip.confirm('请输入文案内容',false)
+        return;
+      }
+      let task = {
+        name: this.title,
+        type: 'video',
+        id: this.generateUniqueId(),
+      }
+      this.$store.dispatch('task/addTask', task);
+      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+        uni.switchTab({
+          url: '/pages/template/index'
+        })
+      })
+
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -227,26 +216,12 @@ export default {
         video_id: this.figure.video_id,
         filename: this.title
       }
-
-      let task = {
-        name: this.title,
-        type: 'video',
-        img: this.figure.picture,
-        id: this.generateUniqueId(),
-        status: 'running'
-      }
-      this.$store.dispatch('task/addTask', task);
-      // this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
-      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
-        uni.switchTab({
-          url: '/pages/template/index'
-        })
-      })
-
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
+        this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
-          task.status = 'success'
-          this.$store.dispatch('task/updateTask', task);
+          this.$tip.confirm(`口播视频${task.name}生成任务成功`, false)
+        }else {
+          this.$tip.confirm(`口播视频${task.name}生成任务失败,${res.message}`, false)
         }
       })
     },
@@ -340,11 +315,20 @@ export default {
 
 .custom-btn {
   background-color: #e99d42;
-  width: 230px;
+  width: 250px;
   margin: 0 auto;
   font-size: 16px;
-  border-radius: 15px;
+  border-radius: 10px;
   color: #101010;
+}
+
+.word-count {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .popup-content {
@@ -406,8 +390,8 @@ export default {
 }
 
 .figure-item {
-  width: 100px;
-  height: 130px;
-  border-radius: 20px;
+  width: 90px;
+  height: 120px;
+  border-radius: 12px;
 }
 </style>

@@ -3,7 +3,12 @@
     <view class="search-header">
       <uni-icons class="icon" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
       <input class="search-input" v-model="keyword" placeholder="输入关键字" :focus="true"
-             @input="keyInput" @confirm="search"></input>
+             @input="keyInput" @confirm="search">
+      </input>
+      <view class="search-count">
+        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="20"></uni-icons>
+        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">3</view>
+      </view>
       <uni-icons class="icon" type="search" size="24" color="#ffffff" @click="search"></uni-icons>
     </view>
     <view class="history" v-if="!searchNews.newsTitle">
@@ -83,7 +88,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
       })
-      this.$http.get('/news/online_search', {keyword: this.keyword},300000).then(res => {
+      this.$http.get('/news/online_search', {keyword: this.keyword}, 300000).then(res => {
         if (res.status === 'success') {
           this.searchNews = res.data
           uni.setStorageSync('searchNews', res.data)
@@ -130,6 +135,7 @@ export default {
   justify-content: center;
   height: 65px;
   width: 100%;
+  position: relative;
 }
 
 .icon {
@@ -144,6 +150,14 @@ export default {
   color: #E5E5E5;
   padding: 0 20px;
   box-sizing: border-box;
+}
+
+.search-count {
+  position: absolute;
+  right: 50px;
+  height: 30px;
+  display: flex;
+  align-items: center;
 }
 
 .history-title {

@@ -21,13 +21,18 @@
         <uni-icons type="right" size="20" color="#E5E5E5;" @click="showStylePopup"></uni-icons>
       </view>
     </view>
-    <button class="detail-btn" @click="generate">口播文案生成</button>
-    <uni-popup ref="wordPopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+    <view style="position: relative;width: 250px;margin: 0 auto">
+      <button class="detail-btn" @click="generate">口播文案生成</button>
+      <view class="word-count">
+        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="18"></uni-icons>
+        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
+      </view>
+    </view>
+
+    <uni-popup ref="wordPopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">字数设置</view>
-          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="$refs.wordPopup.close"></uni-icons>
         </view>
         <view class="word-content">
           <picker-view class="picker-view" :indicator-style="indicatorStyle" @change="bindChange">
@@ -42,12 +47,10 @@
         <button class="detail-btn" @click="wordSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="stylePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+    <uni-popup ref="stylePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">文案风格</view>
-          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="$refs.stylePopup.close"></uni-icons>
         </view>
         <view class="style-content">
           <view style="flex: none;text-align: center" v-for="item in styles" :key="item.id"
@@ -246,11 +249,22 @@ export default {
 
 .detail-btn {
   background-color: #e99d42;
-  width: 230px;
+  width: 250px;
   margin: 0 auto;
+  height: 40px;
+  line-height: 40px;
   font-size: 16px;
-  border-radius: 15px;
+  border-radius: 10px;
   color: #101010;
+}
+
+.word-count {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .popup-content {

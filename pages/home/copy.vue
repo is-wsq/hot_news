@@ -43,13 +43,17 @@
         <uni-icons type="right" size="20" color="#E5E5E5;" @click="$refs.figurePopup.open"></uni-icons>
       </view>
     </view>
-    <button class="copy-btn" @click="generateVideo">口播视频生成</button>
-    <uni-popup ref="voicePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+    <view style="position: relative;width: 250px;margin: 0 auto">
+      <button class="copy-btn" @click="generateVideo">口播视频生成</button>
+      <view class="word-count">
+        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="18"></uni-icons>
+        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
+      </view>
+    </view>
+    <uni-popup ref="voicePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0" @maskClick="closeVoicePopup">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">声音</view>
-          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="closeVoicePopup"></uni-icons>
         </view>
         <view class="voice-content">
           <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
@@ -69,16 +73,14 @@
         <button class="copy-btn" @click="voiceSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="figurePopup" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+    <uni-popup ref="figurePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
       <view class="popup-content">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">形象</view>
-          <uni-icons class="popup-close" type="closeempty" size="18" color="#ffffff"
-                     @click="$refs.figurePopup.close"></uni-icons>
         </view>
         <view class="figure-content">
           <view style="flex: none;text-align: center" v-for="item in figures" :key="item.id"
-                @click="selectFigure(item)">
+                @click="selectedFigure = item">
             <image :src="item.picture" class="figure-item"
                    :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
             <view
@@ -199,6 +201,22 @@ export default {
       return Date.now() + Math.random().toString(36).substr(2, 16);
     },
     generateVideo() {
+      if (this.title === ''){
+        this.$tip.confirm('请输入标题',false)
+        return
+      }
+      let task = {
+        name: this.title,
+        type: 'video',
+        id: this.generateUniqueId(),
+      }
+      this.$store.dispatch('task/addTask', task);
+      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+        uni.switchTab({
+          url: '/pages/template/index'
+        })
+      })
+
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -206,26 +224,13 @@ export default {
         video_id: this.figure.video_id,
         filename: this.title
       }
-
-      let task = {
-        name: this.title,
-        type: 'video',
-        id: this.generateUniqueId(),
-        status: 'running'
-      }
-      this.$store.dispatch('task/addTask', task);
-      // this.$tip.toast(`已创建 ${this.title} 口播视频生成任务`,2000)
-      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
-        uni.switchTab({
-          url: '/pages/template/index'
-        })
-      })
-
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
+        this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
-          task.status = 'success'
-          this.$store.dispatch('task/updateTask', task);
+          this.$tip.confirm(`口播视频${task.name}生成任务成功`, false)
           uni.removeStorageSync(`${this.userId}_script`)
+        }else {
+          this.$tip.confirm(`口播视频${task.name}生成任务失败,${res.message}`, false)
         }
       })
     },
@@ -277,13 +282,6 @@ export default {
         this.stopPreviewAudio()
       }
       this.$refs.voicePopup.close()
-    },
-    selectFigure(item) {
-      if (item.status !== 'success') {
-        this.$tip.toast('当前形象正在克隆中，暂不可选择',2000)
-        return
-      }
-      this.selectedFigure = item
     },
     figureSure() {
       this.figure = this.selectedFigure
@@ -409,11 +407,20 @@ export default {
 
 .copy-btn {
   background-color: #e99d42;
-  width: 230px;
+  width: 250px;
   margin: 0 auto;
   font-size: 16px;
   border-radius: 15px;
   color: #101010;
+}
+
+.word-count {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .popup-content {
@@ -475,8 +482,8 @@ export default {
 }
 
 .figure-item {
-  width: 100px;
-  height: 130px;
-  border-radius: 20px;
+  width: 90px;
+  height: 120px;
+  border-radius: 12px;
 }
 </style>
