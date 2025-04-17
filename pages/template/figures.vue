@@ -34,21 +34,14 @@
         <view class="figure-name" :style="{ width: heightStyle * 3 / 4 + 'px' }">{{ item.name }}</view>
       </view>
     </view>
-    <uni-popup ref="previewPopup" :mask-click="false" type="bottom">
-      <view class="preview-content" :style="{ height: `${safeAreaHeight}px` }">
-        <view class="preview-title">
-          <view style="color: #ffffff; font-size: 16px;">{{ selectedFigure.name }} 形象预览</view>
-          <uni-icons class="preview-close" type="closeempty" size="20" color="#ffffff"
-                     @click="popupClose"></uni-icons>
-        </view>
-        <view style="height: calc(100% - 30px);position: relative;">
-          <uni-icons class="preview-close" type="closeempty" size="20" color="#ffffff"
-                     @click="popupClose"></uni-icons>
-          <video ref="video" style="width: 100%; height: 100%;" :src="selectedFigure.filepath" :controls="false"
-                 :show-center-play-btn="false" @ended="isPlaying = false"></video>
-          <uni-icons custom-prefix="iconfont" type="icon-play" class="play-icon" size="20" color="#ffffff"
-                     @click="controlVideo" v-if="!isPlaying"></uni-icons>
-        </view>
+    <uni-popup ref="popup" type="center" border-radius="10px" @maskClick="popupClose">
+      <view style="position: relative">
+        <video ref="video" style="border-radius: 10px" :src="selectedFigure.filepath" :controls="false"
+               :poster="selectedFigure.picture" :show-center-play-btn="false" @ended="isPlaying = false"
+               :style="{width: safeArea.width * 0.8 + 'px',height: safeArea.width * 0.8 * 4 / 3 + 'px'}">
+        </video>
+        <uni-icons custom-prefix="iconfont" type="icon-play" class="play-icon" size="30" color="#ffffff"
+                   @click="controlVideo" v-if="!isPlaying"></uni-icons>
       </view>
     </uni-popup>
   </view>
@@ -60,7 +53,7 @@ import {mapGetters} from "vuex";
 export default {
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      safeArea: uni.getSystemInfoSync().safeArea,
       systems: [],
       clones: [],
       heightStyle: 0,
@@ -119,7 +112,7 @@ export default {
     },
     previewFigure(item) {
       this.selectedFigure = item
-      this.$refs.previewPopup.open()
+      this.$refs.popup.open()
     },
     controlVideo() {
       this.$refs.video.play();
@@ -128,7 +121,6 @@ export default {
     popupClose() {
       this.isPlaying = false;
       this.$refs.video.pause();
-      this.$refs.previewPopup.close();
     },
     back() {
       uni.redirectTo({url: '/pages/template/figureClone'})
