@@ -7,19 +7,31 @@
     </view>
     <view class="voucher-content">
       <view class="voucher-list">
-        <view class="voucher-item" v-for="(item, index) in voucherList" :key="index"
+        <view class="voucher-item" v-for="(item, index) in voucherInfos" :key="index"
               :class="{ 'item-active': index === selectedIndex }" @click="selectedIndex = index">
           <view class="voucher-item-top">{{ item.name }}</view>
           <view class="voucher-item-center">￥{{ item.price }}</view>
-          <view class="voucher-item-bottom">{{ item.details }}</view>
+          <view class="voucher-item-bottom">{{ item.unit_price + '/100积分' }}</view>
         </view>
       </view>
       <view class="vip-interest">
         <view class="vip-interest-title">会员权益</view>
-        <view class="vip-interest-list">
-          <view class="vip-interest-item" v-for="(item, index) in vipInterestList[selectedIndex]" :key="index">
+        <view class="vip-interest-list" v-if="voucherInfos.length > 0">
+          <view class="vip-interest-item">
             <image class="vip-interest-img" src="/static/interest-item.png"/>
-            <view style="margin-left: 7px">{{ item.name }}</view>
+            <view style="margin-left: 7px">{{'定制版数字人形象×'+voucherInfos[selectedIndex].figure}}</view>
+          </view>
+          <view class="vip-interest-item">
+            <image class="vip-interest-img" src="/static/interest-item.png"/>
+            <view style="margin-left: 7px">{{'定制版声音克隆×'+voucherInfos[selectedIndex].timbre}}</view>
+          </view>
+          <view class="vip-interest-item">
+            <image class="vip-interest-img" src="/static/interest-item.png"/>
+            <view style="margin-left: 7px">{{'赠送'+voucherInfos[selectedIndex].points+'积分'}}</view>
+          </view>
+          <view class="vip-interest-item">
+            <image class="vip-interest-img" src="/static/interest-item.png"/>
+            <view style="margin-left: 7px">{{'后续积分购买'+voucherInfos[selectedIndex].discount*10+'折优惠'}}</view>
           </view>
         </view>
       </view>
@@ -42,34 +54,25 @@ export default {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       selectedIndex: 0,
-      voucherList: [
-        {name: '月会员', price: 29, details: '0.27/100积分'},
-        {name: '季会员', price: 79, details: '0.24/100积分'},
-        {name: '年会员', price: 199, details: '0.21/100积分'},
-      ],
-      vipInterestList: [
-        [
-          {name: '定制版数字人形象×1'},
-          {name: '定制版声音克隆×1'},
-          {name: '赠送1000积分'},
-          {name: '后续积分购买9折优惠'}
-        ],
-        [
-          {name: '定制版数字人形象×2'},
-          {name: '定制版声音克隆×2'},
-          {name: '赠送3000积分'},
-          {name: '后续积分购买8折优惠'}
-        ],
-        [
-          {name: '定制版数字人形象×5'},
-          {name: '定制版声音克隆×5'},
-          {name: '赠送8000积分'},
-          {name: '后续积分购买7折优惠'}
-        ],
-      ]
+      voucherInfos: [],
     }
   },
+  created() {
+    this.queryInfo()
+  },
   methods: {
+    queryInfo() {
+      let params = {
+        user_id: uni.getStorageSync('userId'),
+        type: 'member'
+      }
+      this.$http.get('/package/query/user',params).then(res => {
+        if (res.status === 'success') {
+          this.voucherInfos = res.data
+          this.selectedIndex = 0
+        }
+      })
+    },
     goto(path) {
       uni.redirectTo({ url: path })
     },
@@ -188,7 +191,7 @@ export default {
   width: 255px;
   height: 35px;
   line-height: 35px;
-  margin: 20px auto 0;
+  margin: 25px auto 0;
   font-size: 14px;
   border-radius: 15px;
   color: #101010;
