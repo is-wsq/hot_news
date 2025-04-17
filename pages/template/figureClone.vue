@@ -32,7 +32,7 @@
       <video style="width: 100%;height: 200px" :src="src" :poster="poster"></video>
     </view>
     <view class="figure-footer">
-      <button class="clone-button" @click="cloneFigure">开始克隆</button>
+      <button class="clone-button" @click="startClone">开始克隆</button>
     </view>
     <uni-popup ref="clonePopup" :mask-click="false" type="center" style="width: 100%">
       <view class="clone-content" :style="{ width: `${contentWidth * 0.8}px` }">
@@ -55,7 +55,7 @@
         </view>
         <view style="display: flex;margin-top: 10px">
           <view class="clone-btn" style="border-right: 1px solid #f5f5f5;color: #000000" @click="clonePopupClose">取消</view>
-          <view class="clone-btn" style="color: #007aff" @click="clone">克隆</view>
+          <view class="clone-btn" style="color: #007aff" @click="uploadFile">克隆</view>
         </view>
       </view>
     </uni-popup>
@@ -64,6 +64,8 @@
 
 <script>
 import {mapGetters} from "vuex";
+let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
+
 
 export default {
   name: 'figureClone',
@@ -82,6 +84,8 @@ export default {
       poster: 'https://www.w3schools.com/images/w3schools_green.jpg',
       selectedFile: null,
       cloneSound: false,
+      uploadUrl: '',
+      fileId: ''
     }
   },
   mounted() {
@@ -90,7 +94,8 @@ export default {
     this.errorHeight = this.errorWidth * 4 / 3
   },
   methods: {
-    cloneFigure() {
+    startClone() {
+      this.getFileId()
       this.$refs.clonePopup.open()
     },
     selectFile() {
@@ -114,7 +119,26 @@ export default {
       this.cloneSound = false
       this.$refs.clonePopup.close()
     },
-    clone() {
+    getFileId() {
+      let self = this
+      uni.request({
+        url: 'https://live.tellai.tech/api/media/files/upload_request?type=video',
+        header: {
+          'Authorization': token
+        },
+        success: (res) => {
+          let status = res.data.base_resp
+          let data = res.data.data
+          if (status.status_code === 200) {
+            self.uploadUrl = data.upload_url
+            self.fileId = data.file_id
+          }else {
+            this.$tip.confirm(status.status_msg,false)
+          }
+        }
+      });
+    },
+    uploadFile() {
       let self = this
       self.$refs.clonePopup.close()
 
@@ -129,24 +153,43 @@ export default {
       })
 
       uni.uploadFile({
-        url: 'https://live.tellai.tech/api/news_assistant/figure/clone',
+        url: self.uploadUrl,
         filePath: self.selectedFile.path,
         name: 'file',
+        header: {
+          'Authorization': token
+        },
         timeout: 1800000,
         formData: {
-          'user_id': uni.getStorageSync('userId'),
-          cloneSound: self.cloneSound
+          'file_id': self.fileId,
+          'type': 'video'
         },
         success: (result) => {
-          self.$store.dispatch("task/removeTask", task.id);
-          let data = JSON.parse(result.data)
-          if (data.status === 'success') {
-            self.$tip.confirm(`${task.name}形象克隆任务已完成`,false)
-          } else {
-            self.$tip.confirm(`${task.name}形象克隆任务失败,${data.message}`,false)
+          let status = JSON.parse(result.data).base_resp
+          let data = JSON.parse(result.data).data
+          if (status.status_code === 200) {
+            self.clone(data.file_id,task)
+          }else {
+            self.$store.dispatch("task/removeTask", task.id);
+            self.$tip.confirm(`${task.name}形象克隆任务失败,${status.status_msg}`,false)
           }
         }
       });
+    },
+    clone(fileId,task) {
+      let params = {
+        user_id: uni.getStorageSync('userId'),
+        file_id: fileId,
+        cloneSound: this.cloneSound
+      }
+      this.$http.post('/figure/clone/file_id',params).then(res => {
+        this.$store.dispatch("task/removeTask", task.id);
+        if (res.status === 'success') {
+          this.$tip.confirm(`${task.name}形象克隆任务成功`,false)
+        }else {
+          this.$tip.confirm(`${task.name}形象克隆任务失败,${res.message}`,false)
+        }
+      })
     },
     generateUniqueId() {
       return Date.now() + Math.random().toString(36).substr(2, 16);
