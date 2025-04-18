@@ -33,8 +33,9 @@
         <button class="signup-button" @click="gotoRegister">创建账户</button>
       </view>
       <view style="display: flex;margin-top: 10px;justify-content: center;gap: 40px">
-        <view v-for="item in thirds" :key="item.type" class="third" @click="thirdLogin(item.type)">
-          <uni-icons :type="item.icon" size="25" color="#fff"></uni-icons>
+        <view class="third" @click="wxLogin">
+          <view style="color: #fff;margin-right: 5px">微信授权登陆</view>
+          <uni-icons type="weixin" size="25" color="#fff"></uni-icons>
         </view>
       </view>
     </view>
@@ -60,11 +61,6 @@ export default {
       smsCountDown: 0, //0 密码登陆， 1 短信登陆
       type: '',
       path: '',
-      thirds: [
-        {icon: 'weixin', type: 'wx'},
-        {icon: 'qq', type: 'qq'},
-        {icon: 'weibo', type: 'wb'}
-      ]
     };
   },
   computed: {
@@ -195,17 +191,21 @@ export default {
         sms: '',
       };
     },
-    thirdLogin(type) {
-      if (type === 'wx') {
+    isWeChat() {
+      return /MicroMessenger/i.test(navigator.userAgent);
+    },
+    wxLogin() {
+      if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
-        // const redirectUri = 'tellai.tech'
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'STATE123'
         const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
 
         // 微信授权跳转
         window.location.href = authUrl
+      }else {
+        this.$tip.confirm('需要在微信环境下才能使用',false)
       }
     },
     getUrlCode(name) {
@@ -217,22 +217,7 @@ export default {
       if (code) {
         let self = this
         self.$tip.confirm(`微信code=${code}`,false).then(() => {
-          uni.request({
-            url: 'https://api.weixin.qq.com/sns/oauth2/access_token',
-            method: 'GET',
-            data: {
-              appid: 'wx48d2e02bf10f849c',
-              secret: '0869a1cc34f0e642d3fed14f0758dd3e',
-              code: code,
-              grant_type: 'authorization_code'
-            },
-            success: (res) => {
-              self.$tip.confirm(JSON.stringify(res.data),false)
-            },
-            fail: (err) => {
-              self.$tip.confirm(JSON.stringify(err),false)
-            }
-          })
+
         })
       }
     },
@@ -334,7 +319,7 @@ export default {
   background: #e99d42;
   color: #fff;
   font-size: 16px;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .signup-button {
@@ -344,13 +329,13 @@ export default {
   background: #ffffff;
   color: #1E1F20;
   font-size: 16px;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .third {
-  width: 40px;
-  height: 40px;
-  border-radius: 5px;
+  width: 100%;
+  height: 50px;
+  border-radius: 10px;
   background-color: #393939;
   display: flex;
   align-items: center;
