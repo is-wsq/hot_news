@@ -226,8 +226,11 @@ export default {
               code: code,
               grant_type: 'authorization_code'
             },
-            success: res => {
+            success: (res) => {
               self.$tip.confirm(JSON.stringify(res.data),false)
+            },
+            fail: (err) => {
+              self.$tip.confirm(JSON.stringify(err),false)
             }
           })
         })
