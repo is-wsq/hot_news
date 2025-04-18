@@ -36,7 +36,7 @@
         </view>
       </view>
     </view>
-    <button class="buy-btn">立即购买</button>
+    <button class="buy-btn" @click="pay">立即购买</button>
     <view class="voucher-footer">
       购买即同意
       <view @click="goto('/pages/agreement/membership?type=navigateTo')">《付费服务协议》</view>
@@ -61,6 +61,41 @@ export default {
     this.queryInfo()
   },
   methods: {
+    pay() {
+      window.WeixinJSBridge.invoke(
+          'getBrandWCPayRequest', {
+            "appId": 'wx48d2e02bf10f849c', //公众号名称，由商户传入
+            "timeStamp":"1744963636", //时间戳
+            "nonceStr":"9b15d9db2dcb4b3b97c6ba7270e7149d", //随机串
+            "package": "prepay_id=wx181607167738933a681eada98346be0001",
+            "signType":"RSA", //微信签名方式：
+            "paySign":"YTGhXFspBDi+LSMcl3W8eUj9AOlv2MlvVr2NjMAvbNYDc8/i5fWqf5SBt0o7lCttGFdCKmdiyhxiWUyWbdYK7KE50PvSLE7k/nsAhp6+ZQSh24JFiWZe/PvdlloSuSMZ4AQb6d4W5R2SRAgaUOG52vAn+RVdCkcXYX8UI3u+PKxELMh7TrVq9OrVhOCubO/XCqFcZmL03lWFSnTtuJqVohpdkzQFaN7dgnpaW8D0HSfHlTKimdwYMueG134QkhnEOwDRVhZcONhrEpIFWe+F0fRaJbjsnA/XwA1OKx355lVSysvOCLTlf8xMiOd2wWkormFtTZWBWhL2JV7uuxYAEw==", //微信签名
+          },
+          function(ress) {
+            if (ress.err_msg == "get_brand_wcpay_request:ok") {
+              uni.showToast({
+                icon: 'success',
+                title: '支付成功'
+              })
+              setTimeout(() => {
+                uni.navigateBack({
+                  delta:2
+                })
+              }, 500);
+            } else if (ress.err_msg == "get_brand_wcpay_request:cancel") {
+              uni.showToast({
+                icon: "none",
+                title: "'已取消支付"
+              })
+            } else {
+              uni.showToast({
+                icon: "none",
+                title: "支付失败"
+              })
+            }
+          }
+      );
+    },
     queryInfo() {
       let params = {
         user_id: uni.getStorageSync('userId'),
