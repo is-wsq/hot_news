@@ -80,7 +80,7 @@ export default {
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
-            self.$tip.toast('请选择有效的音频文件', 2000)
+            self.$tip.confirm('请选择有效的音频文件', false)
             return
           }
           let type = res.tempFiles[0].type.indexOf('audio') !== -1 ? 'audio' : 'video'

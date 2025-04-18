@@ -70,6 +70,8 @@ export default {
         if (res.status === 'success') {
           this.voucherInfos = res.data
           this.selectedIndex = 0
+        }else {
+          this.$tip.confirm(res.message,false);
         }
       })
     },

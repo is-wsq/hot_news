@@ -94,7 +94,7 @@ export default {
           uni.setStorageSync('searchNews', res.data)
           this.isLoading = false
         } else {
-          this.$tip.toast(res.message, 5000)
+          this.$tip.confirm(res.message, false)
         }
       })
     },
@@ -110,8 +110,9 @@ export default {
     },
     toCustom(url) {
       if (this.userId === '') {
-        this.$tip.toast('请先登录')
-        uni.redirectTo({ url: '/pages/login/login?type=redirectTo&path=/pages/home/search' })
+        this.$tip.confirm('请先登录',false).then(() => {
+          uni.redirectTo({ url: '/pages/login/login?type=redirectTo&path=/pages/home/search' })
+        })
         return
       }
       uni.hideKeyboard()

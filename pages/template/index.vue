@@ -91,8 +91,9 @@ export default {
     goto(path) {
       let userId = uni.getStorageSync('userId') || ''
       if (userId === '') {
-        this.$tip.toast('请先登录')
-        uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/template/index'})
+        this.$tip.confirm('请先登录',false).then(() => {
+          uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/template/index'})
+        })
         return
       }
       uni.redirectTo({url: path})

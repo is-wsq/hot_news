@@ -106,7 +106,7 @@ export default {
             item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
           })
         } else {
-          this.$tip.toast(res.message, 5000)
+          this.$tip.confirm(res.message, false)
         }
       })
     },

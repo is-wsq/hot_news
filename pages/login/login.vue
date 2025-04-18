@@ -73,11 +73,11 @@ export default {
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
 
       if(!this.loginFormData.phone || this.loginFormData.phone.length === 0){
-        this.$tip.toast('请填写手机号',2000);
+        this.$tip.confirm('请填写手机号',false);
         return;
       }
       if(!checkPhone.test(this.loginFormData.phone)){
-        this.$tip.toast('请输入正确的手机号',2000);
+        this.$tip.confirm('请输入正确的手机号',false);
         return;
       }
       if (this.loginType === 0) {
@@ -93,7 +93,7 @@ export default {
     },
     onPasswordLogin() {
       if (!this.loginFormData.password) {
-        this.$tip.toast('请输入密码',2000);
+        this.$tip.confirm('请输入密码',false);
         return
       }
       let params = {
@@ -102,7 +102,6 @@ export default {
       }
       this.$http.post('/user/login', params).then(res => {
         if (res.status === 'success') {
-          this.$tip.toast('登陆成功');
           uni.setStorageSync('userId', res.data.user_id)
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
@@ -110,13 +109,13 @@ export default {
             uni.redirectTo({ url: this.path })
           }
         }else {
-          this.$tip.toast(res.message,5000);
+          this.$tip.confirm(res.message,false);
         }
       })
     },
     onSMSLogin() {
       if(!this.loginFormData.sms || this.loginFormData.sms.length === 0){
-        this.$tip.toast('请填短信验证码',2000);
+        this.$tip.confirm('请填短信验证码',false);
         return;
       }
       let params = {
@@ -126,7 +125,6 @@ export default {
       }
       this.$http.post('/sms/verify', params).then(res => {
         if (res.status ==='success') {
-          this.$tip.toast('登陆成功');
           uni.setStorageSync('userId', res.data.user_id)
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
@@ -134,7 +132,7 @@ export default {
             uni.redirectTo({ url: this.path })
           }
         }else {
-          this.$tip.toast(res.message,2000);
+          this.$tip.confirm(res.message,false);
         }
       })
     },
@@ -144,11 +142,11 @@ export default {
       }
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
       if (!this.loginFormData.phone || this.loginFormData.phone.length === 0) {
-        this.$tip.toast('请填写手机号',2000);
+        this.$tip.confirm('请填写手机号',false);
         return
       }
       if (!checkPhone.test(this.loginFormData.phone)) {
-        this.$tip.toast('请输入正确的手机号',2000);
+        this.$tip.confirm('请输入正确的手机号',false);
         return
       }
       let params = {
@@ -159,9 +157,9 @@ export default {
         if (res.status ==='success') {
           this.smsCountDown = 60;
           this.startSMSTimer();
-          this.$tip.toast('短信验证码发送成功',2000);
+          this.$tip.confirm('短信验证码发送成功',false);
         }else {
-          this.$tip.toast(res.message,2000);
+          this.$tip.confirm(res.message,false);
         }
       })
     },

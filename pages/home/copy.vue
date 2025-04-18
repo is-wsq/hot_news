@@ -91,11 +91,6 @@
         <button class="copy-btn" @click="figureSure">确定</button>
       </view>
     </uni-popup>
-    <uni-popup ref="alertDialog" type="dialog">
-      <uni-popup-dialog type="info" cancelText="关闭" confirmText="下载" @confirm="downloadFile"
-                        content="口播视频生成成功,可点击下载按钮跳转至下载页面,也可在我的作品中查看">
-      </uni-popup-dialog>
-    </uni-popup>
     <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
   </view>
 </template>
@@ -157,7 +152,7 @@ export default {
             this.selectedFigure = this.figures[0]
           }
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },
@@ -170,7 +165,7 @@ export default {
             this.selectedVoice = this.voices[0]
           }
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },
@@ -192,7 +187,7 @@ export default {
           uni.setStorageSync(`${this.userId}_script`, this.scriptList)
           this.isLoading = false
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },
@@ -232,12 +227,6 @@ export default {
           this.$tip.confirm(`口播视频${task.name}生成任务失败,${res.message}`, false)
         }
       })
-    },
-    downloadFile() {
-      let filename = this.fileInfo.video_name
-      let filepath = this.fileInfo.video_path
-      let path = `/pages/download?filepath=${filepath}&filename=${filename}`
-      uni.navigateTo({url: path})
     },
     queryTitleAndScript() {
       this.scriptList = uni.getStorageSync(`${this.userId}_script`) || []
@@ -292,7 +281,7 @@ export default {
         data: self.script,
         showToast: false,
         success: function () {
-          self.$tip.toast('复制成功')
+          self.$tip.confirm('复制成功',false)
         }
       });
     },
@@ -301,7 +290,7 @@ export default {
         this.script = this.scriptList[this.scriptIndex - 2]
         this.scriptIndex = this.scriptIndex - 1
       } else {
-        this.$tip.toast('已经是第一条口播文案了')
+        this.$tip.confirm('已经是第一条口播文案了',false)
       }
     },
     nextScript() {
@@ -309,7 +298,7 @@ export default {
         this.script = this.scriptList[this.scriptIndex]
         this.scriptIndex = this.scriptIndex + 1
       } else {
-        this.$tip.toast('已经是最后一条口播文案了')
+        this.$tip.confirm('已经是最后一条口播文案了',false)
       }
     },
     back() {

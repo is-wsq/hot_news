@@ -39,7 +39,7 @@ export default {
         if (res.status === 'success') {
           this.news = res.data
         }else {
-          this.$tip.toast(res.message, 5000)
+          this.$tip.confirm(res.message, false)
         }
       })
     },

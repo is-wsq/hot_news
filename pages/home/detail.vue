@@ -155,8 +155,9 @@ export default {
     },
     generate() {
       if (this.userId === '') {
-        this.$tip.toast('请先登录')
-        uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/home/detail?type=${this.type}`})
+        this.$tip.confirm('请先登录',false).then(() => {
+          uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/home/detail?type=${this.type}`})
+        })
         return
       }
       let params = {
@@ -178,7 +179,7 @@ export default {
           uni.setStorageSync('styleId', this.style.id)
           uni.redirectTo({url: `/pages/home/copy?type=${this.type}`})
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },

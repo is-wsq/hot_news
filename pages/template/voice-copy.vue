@@ -69,7 +69,7 @@ export default {
             item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
           })
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },
@@ -85,7 +85,7 @@ export default {
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
-            self.$tip.toast('请选择有效的音频文件',2000)
+            self.$tip.confirm('请选择有效的音频文件',false)
             return
           }
           let task = {
@@ -109,7 +109,7 @@ export default {
                 task.status = 'success'
                 self.$store.dispatch('task/updateTask', task);
               } else {
-                self.$tip.toast(data.message,5000)
+                self.$tip.confirm(data.message,false)
               }
             }
           });

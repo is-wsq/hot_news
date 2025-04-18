@@ -122,7 +122,7 @@ export default {
             this.selectedFigure = this.figures[0]
           }
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },
@@ -135,7 +135,7 @@ export default {
             this.selectedVoice = this.voices[0]
           }
         } else {
-          this.$tip.toast(res.message,5000)
+          this.$tip.confirm(res.message,false)
         }
       })
     },
@@ -184,7 +184,7 @@ export default {
         data: self.script,
         showToast: false,
         success: function () {
-          self.$tip.toast('复制成功')
+          self.$tip.confirm('复制成功',false)
         }
       });
     },

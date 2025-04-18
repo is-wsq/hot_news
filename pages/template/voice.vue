@@ -100,7 +100,6 @@ export default {
           })
         } else {
           this.$tip.confirm(res.message, false)
-          // this.$tip.toast(res.message, 5000)
         }
       })
     },

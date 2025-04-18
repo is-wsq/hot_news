@@ -107,7 +107,7 @@ export default {
           let filename = res.tempFiles[0].name.toLowerCase();
           let allow = allowedExtensions.some(ext => filename.toLowerCase().endsWith(ext))
           if (!allow) {
-            self.$tip.toast('请选择有效的视频文件',2000)
+            self.$tip.confirm('请选择有效的视频文件,mp4或mov格式',false)
             return
           }
           self.selectedFile = res.tempFiles[0]

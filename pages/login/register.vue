@@ -80,11 +80,11 @@ export default {
       }
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
       if (!this.registerFormData.phone || this.registerFormData.phone.length === 0) {
-        this.$tip.toast('请填写手机号',2000);
+        this.$tip.confirm('请填写手机号',false);
         return
       }
       if (!checkPhone.test(this.registerFormData.phone)) {
-        this.$tip.toast('请输入正确的手机号',2000);
+        this.$tip.confirm('请输入正确的手机号',false);
         return
       }
       let params = {
@@ -95,9 +95,9 @@ export default {
         if (res.status ==='success') {
           this.smsCountDown = 60;
           this.startSMSTimer();
-          this.$tip.toast('短信验证码发送成功',2000);
+          this.$tip.confirm('短信验证码发送成功',false);
         }else {
-          this.$tip.toast(res.message,2000);
+          this.$tip.confirm(res.message,false);
         }
       })
     },
@@ -112,11 +112,11 @@ export default {
     verify() {
       let checkPhone = new RegExp(/^[1]([3-9])[0-9]{9}$/);
       if (!this.registerFormData.phone || this.registerFormData.phone.length === 0) {
-        this.$tip.toast('请填写手机号',2000);
+        this.$tip.confirm('请填写手机号',false);
         return
       }
       if (!checkPhone.test(this.registerFormData.phone)) {
-        this.$tip.toast('请输入正确的手机号',2000);
+        this.$tip.confirm('请输入正确的手机号',false);
         return
       }
       let params = {
@@ -129,17 +129,17 @@ export default {
           this.$tip.toast('验证成功，请设置密码',1000);
           this.isVerify = false
         }else {
-          this.$tip.toast(res.message,2000);
+          this.$tip.confirm(res.message,false);
         }
       })
     },
     register() {
       if (!this.registerFormData.password || this.registerFormData.password.length === 0) {
-        this.$tip.toast('请填写密码',2000);
+        this.$tip.confirm('请填写密码',false);
         return
       }
       if (this.registerFormData.password !== this.registerFormData.rePassword) {
-        this.$tip.toast('两次密码不一致',2000);
+        this.$tip.confirm('两次密码不一致',false);
         return
       }
       let params = {
@@ -148,13 +148,14 @@ export default {
       }
       this.$http.post('/user/register', params).then(res => {
         if (res.status === 'success') {
-          this.$tip.toast('注册成功，请登录');
-          this.resetData();
-          uni.redirectTo({
-            url: '/pages/login/login?type=switchTab&path=/pages/home/index'
+          this.$tip.confirm('注册成功，请登录',false).then(() => {
+            this.resetData();
+            uni.redirectTo({
+              url: '/pages/login/login?type=switchTab&path=/pages/home/index'
+            })
           })
         } else {
-          this.$tip.toast(res.message,5000);
+          this.$tip.confirm(res.message,false);
         }
       })
     },

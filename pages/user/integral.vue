@@ -75,6 +75,8 @@ export default {
       this.$http.get('/package/query/user',params).then(res => {
         if (res.status === 'success') {
           this.info = res.data
+        }else {
+          this.$tip.confirm(res.message,false);
         }
       })
     },

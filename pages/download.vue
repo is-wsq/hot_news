@@ -59,6 +59,7 @@ export default {
             self.loading = false
           }).catch(error => {
             console.error("视频下载失败", error)
+            this.$tip.confirm(error,false);
             self.loading = false
           });
       }

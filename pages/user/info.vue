@@ -48,9 +48,11 @@ export default {
   },
   methods: {
     queryUserInfo() {
-      this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
+      this.$http.get('/user/query', {user_id: this.userId}).then(res => {
         if (res.status ==='success') {
           this.userInfo = res.data
+        }else {
+          this.$tip.confirm(res.message,false);
         }
       })
     },
