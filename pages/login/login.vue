@@ -203,17 +203,11 @@ export default {
         const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
 
         // 微信授权跳转
+        uni.setStorageSync('authorized',true)
         window.location.href = authUrl
       }else {
         this.$tip.confirm('需要在微信环境下才能使用',false)
       }
-    },
-    removeUrlCodeParam() {
-      const url = new URL(window.location.href)
-      url.searchParams.delete('code')
-      url.searchParams.delete('state')
-
-      window.history.replaceState(null, '', url.toString())
     },
     getUrlCode(name) {
       return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ''])[1]
@@ -221,12 +215,8 @@ export default {
     },
     checkWeChatCode() {
       let code = this.getUrlCode('code')
-      if (code) {
+      if (code && uni.getStorageSync('authorized')) {
         this.loginByCode(code)
-        // let self = this
-        // self.$tip.confirm(`微信code=${code}`,false).then(() => {
-        //   self.removeUrlCodeParam()
-        // })
       }
     },
     loginByCode(code) {

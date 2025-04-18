@@ -63,6 +63,7 @@ export default {
     },
     logout() {
       uni.removeStorageSync('userId')
+      uni.removeStorageSync('authorized')
       uni.redirectTo({
         url: '/pages/login/login?type=redirectTo&path=/pages/user/info'
       })
