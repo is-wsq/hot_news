@@ -222,12 +222,19 @@ export default {
     checkWeChatCode() {
       let code = this.getUrlCode('code')
       if (code) {
-        let self = this
-        self.$tip.confirm(`微信code=${code}`,false).then(() => {
-          self.removeUrlCodeParam()
-        })
+        this.loginByCode(code)
+        // let self = this
+        // self.$tip.confirm(`微信code=${code}`,false).then(() => {
+        //   self.removeUrlCodeParam()
+        // })
       }
     },
+    loginByCode(code) {
+      this.$http.get('/user/wx/auth',{code: code}).then(res => {
+        console.log(res)
+        this.$tip.confirm(JSON.stringify(res), false)
+      })
+    }
   },
 }
 </script>

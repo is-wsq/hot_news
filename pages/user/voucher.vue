@@ -77,11 +77,6 @@ export default {
                 icon: 'success',
                 title: '支付成功'
               })
-              setTimeout(() => {
-                uni.navigateBack({
-                  delta:2
-                })
-              }, 500);
             } else if (ress.err_msg == "get_brand_wcpay_request:cancel") {
               uni.showToast({
                 icon: "none",
