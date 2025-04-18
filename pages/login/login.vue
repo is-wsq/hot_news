@@ -208,6 +208,13 @@ export default {
         this.$tip.confirm('需要在微信环境下才能使用',false)
       }
     },
+    removeUrlCodeParam() {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('code')
+      url.searchParams.delete('state')
+
+      window.history.replaceState(null, '', url.toString())
+    },
     getUrlCode(name) {
       return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ''])[1]
           .replace(/\+/g, '%20')) || null
@@ -217,7 +224,7 @@ export default {
       if (code) {
         let self = this
         self.$tip.confirm(`微信code=${code}`,false).then(() => {
-
+          self.removeUrlCodeParam()
         })
       }
     },
