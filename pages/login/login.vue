@@ -218,9 +218,14 @@ export default {
         let self = this
         self.$tip.confirm(`微信code=${code}`,false).then(() => {
           uni.request({
-            url: 'https://yourserver.com/api/wx/auth',
+            url: 'https://api.weixin.qq.com/sns/oauth2/access_token',
             method: 'GET',
-            data: { code },
+            data: {
+              appid: 'wx48d2e02bf10f849c',
+              secret: '0869a1cc34f0e642d3fed14f0758dd3e',
+              code: code,
+              grant_type: 'authorization_code'
+            },
             success: res => {
               self.$tip.confirm(JSON.stringify(res.data),false)
             }
