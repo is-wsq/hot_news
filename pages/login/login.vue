@@ -231,8 +231,16 @@ export default {
     },
     loginByCode(code) {
       this.$http.get('/user/wx/auth',{code: code}).then(res => {
-        console.log(res)
-        this.$tip.confirm(JSON.stringify(res), false)
+        if (res.status ==='success') {
+          uni.setStorageSync('userId', res.data.user_id)
+          if (this.type === 'switchTab') {
+            uni.switchTab({ url: this.path })
+          }else {
+            uni.redirectTo({ url: this.path })
+          }
+        }else {
+          this.$tip.confirm(res.message,false);
+        }
       })
     }
   },
