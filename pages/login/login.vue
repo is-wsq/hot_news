@@ -220,17 +220,19 @@ export default {
       }
     },
     loginByCode(code) {
-      this.$http.get('/user/wx/auth',{code: code}).then(res => {
-        if (res.status ==='success') {
-          uni.setStorageSync('userId', res.data.user_id)
-          if (this.type === 'switchTab') {
-            uni.switchTab({ url: this.path })
+      this.$tip.confirm(code,false).then(() => {
+        this.$http.get('/user/wx/auth',{code: code}).then(res => {
+          if (res.status ==='success') {
+            uni.setStorageSync('userId', res.data.user_id)
+            if (this.type === 'switchTab') {
+              uni.switchTab({ url: this.path })
+            }else {
+              uni.redirectTo({ url: this.path })
+            }
           }else {
-            uni.redirectTo({ url: this.path })
+            this.$tip.confirm(res.message,false);
           }
-        }else {
-          this.$tip.confirm(res.message,false);
-        }
+        })
       })
     }
   },
