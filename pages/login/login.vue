@@ -202,8 +202,6 @@ export default {
         // const redirectUri = 'tellai.tech'
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'STATE123'
-        this.$tip.confirm(redirectUri, false)
-
         const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
 
         // 微信授权跳转
@@ -216,17 +214,15 @@ export default {
     },
     checkWeChatCode() {
       let code = this.getUrlCode('code')
-      uni.showToast({
-        title:`微信code=${code}`
-      })
       if (code) {
-        this.$tip.confirm(`微信code=${code}`,false).then(() => {
+        let self = this
+        self.$tip.confirm(`微信code=${code}`,false).then(() => {
           uni.request({
             url: 'https://yourserver.com/api/wx/auth',
             method: 'GET',
             data: { code },
             success: res => {
-              this.$tip.confirm(JSON.stringify(res.data),false)
+              self.$tip.confirm(JSON.stringify(res.data),false)
             }
           })
         })
