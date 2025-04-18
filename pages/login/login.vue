@@ -23,10 +23,20 @@
       </uni-forms>
       <view style="width: 100%;display: flex;justify-content: space-between">
         <text class="forgot-password">忘记密码？</text>
-        <text class="forgot-password" @click="loginType = 1 - loginType">{{ loginType === 0? '短信登陆':'密码登陆' }}</text>
+        <text class="forgot-password" @click="loginType = 1 - loginType">{{
+            loginType === 0 ? '短信登陆' : '密码登陆'
+          }}
+        </text>
       </view>
-      <button class="login-button" @click="login">登陆</button>
-      <button class="signup-button" @click="gotoRegister">创建账户</button>
+      <view style="display: flex;gap: 30px;margin: 25px 0;">
+        <button class="login-button" @click="login">登陆</button>
+        <button class="signup-button" @click="gotoRegister">创建账户</button>
+      </view>
+      <view style="display: flex;margin-top: 10px;justify-content: center;gap: 40px">
+        <view v-for="item in thirds" :key="item.type" class="third" @click="thirdLogin(item.type)">
+          <uni-icons :type="item.icon" size="25" color="#fff"></uni-icons>
+        </view>
+      </view>
     </view>
   </view>
 </template>
@@ -49,7 +59,12 @@ export default {
       },
       smsCountDown: 0, //0 密码登陆， 1 短信登陆
       type: '',
-      path: ''
+      path: '',
+      thirds: [
+        {icon: 'weixin', type: 'wx'},
+        {icon: 'qq', type: 'qq'},
+        {icon: 'weibo', type: 'wb'}
+      ]
     };
   },
   computed: {
@@ -67,6 +82,7 @@ export default {
   onLoad: function (option) {
     this.type = option.type
     this.path = option.path
+    this.checkWeChatCode()
   },
   methods: {
     login() {
@@ -178,7 +194,32 @@ export default {
         password: '',
         sms: '',
       };
-    }
+    },
+    thirdLogin(type) {
+      if (type === 'wx') {
+        const appId = 'wx48d2e02bf10f849c'
+        const redirectUri = encodeURIComponent(window.location.href)
+        // const redirectUri = 'tellai.tech'
+        const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
+        const state = 'STATE123'
+        this.$tip.confirm(redirectUri, false)
+
+        const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+
+        // 微信授权跳转
+        window.location.href = authUrl
+      }
+    },
+    getUrlCode(name) {
+      return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ''])[1]
+          .replace(/\+/g, '%20')) || null
+    },
+    checkWeChatCode() {
+      let code = this.getUrlCode('code')
+      uni.showToast({
+        title:`微信code=${code}`
+      })
+    },
   },
 }
 </script>
@@ -271,23 +312,32 @@ export default {
 }
 
 .login-button {
-  width: 100%;
+  flex: 1;
   height: 50px;
   line-height: 50px;
   background: #e99d42;
   color: #fff;
   font-size: 16px;
   border-radius: 12px;
-  margin: 25px 0;
 }
 
 .signup-button {
-  width: 100%;
+  flex: 1;
   height: 50px;
   line-height: 50px;
   background: #ffffff;
   color: #1E1F20;
   font-size: 16px;
   border-radius: 12px;
+}
+
+.third {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  background-color: #393939;
+  display: flex;
+  align-items: center;
+  justify-content: center
 }
 </style>
