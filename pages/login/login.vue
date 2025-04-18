@@ -219,6 +219,18 @@ export default {
       uni.showToast({
         title:`微信code=${code}`
       })
+      if (code) {
+        this.$tip.confirm(`微信code=${code}`,false).then(() => {
+          uni.request({
+            url: 'https://yourserver.com/api/wx/auth',
+            method: 'GET',
+            data: { code },
+            success: res => {
+              this.$tip.confirm(JSON.stringify(res.data),false)
+            }
+          })
+        })
+      }
     },
   },
 }
