@@ -39,11 +39,11 @@
     <button class="buy-btn" @click="pay">立即购买</button>
     <view class="voucher-footer">
       购买即同意
-      <view @click="goto('/pages/agreement/membership?type=navigateTo')">《付费服务协议》</view>
+      <view @click="goto('/pages/agreement/membership?back=voucher')">《付费服务协议》</view>
       、
-      <view @click="goto('/pages/agreement/user?type=navigateTo')">《用户协议》</view>
+      <view @click="goto('/pages/agreement/user?back=voucher')">《用户协议》</view>
       与
-      <view @click="goto('/pages/agreement/privacy?type=navigateTo')">《隐私条款》</view>
+      <view @click="goto('/pages/agreement/privacy?back=voucher')">《隐私条款》</view>
     </view>
   </view>
 </template>

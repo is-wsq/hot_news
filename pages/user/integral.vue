@@ -42,11 +42,11 @@
       <button class="buy-btn">立即购买</button>
       <view class="integral-footer">
         购买即同意
-        <view @click="goto('/pages/agreement/membership?type=navigateTo')">《付费服务协议》</view>
+        <view @click="goto('/pages/agreement/membership?back=integral')">《付费服务协议》</view>
         、
-        <view @click="goto('/pages/agreement/user?type=navigateTo')">《用户协议》</view>
+        <view @click="goto('/pages/agreement/user?back=integral')">《用户协议》</view>
         与
-        <view @click="goto('/pages/agreement/privacy?type=navigateTo')">《隐私条款》</view>
+        <view @click="goto('/pages/agreement/privacy?back=integral')">《隐私条款》</view>
       </view>
     </view>
   </view>

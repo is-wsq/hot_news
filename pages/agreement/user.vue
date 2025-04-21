@@ -9,24 +9,22 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      backType: ''
+      back: ''
     }
   },
   created() {
     window.addEventListener("message", this.handleMessage);
   },
   onLoad: function (option) {
-    this.backType = option.type
+    this.back = option.back
   },
   methods: {
     handleMessage(event) {
       if (event.data === 'back') {
-        if (this.backType === 'navigateTo') {
-          console.log('navigateTo')
-          uni.navigateBack()
-        }else {
-          console.log('switchTab')
+        if (this.back === 'index') {
           uni.switchTab({url: '/pages/user/index'})
+        }else {
+          uni.reLaunch({url: `/pages/user/${this.back}`})
         }
       }
     },

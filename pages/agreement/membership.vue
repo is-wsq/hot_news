@@ -10,21 +10,21 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      backType: ''
+      back: ''
     }
   },
   onLoad: function (option) {
-    this.backType = option.type
+    this.back = option.back
   },
   created() {
     window.addEventListener("message", this.handleMessage);
   },
   methods: {
     handleMessage() {
-      if (this.backType === 'navigateTo') {
-        uni.navigateBack()
-      }else {
+      if (this.back === 'index') {
         uni.switchTab({url: '/pages/user/index'})
+      }else {
+        uni.reLaunch({url: `/pages/user/${this.back}`})
       }
     }
   }
