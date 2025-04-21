@@ -3,7 +3,7 @@
     <view class="user-info" v-if="userId !== ''">
       <image class="user-avatar" :src="userInfo.avatar" @click="goto('/pages/user/info')"></image>
       <view class="user-account">
-        <view class="user-phone">{{ userInfo.phone }}</view>
+        <view class="user-phone">{{ userInfo.username }}</view>
         <view class="user-identity">{{ userTypeName }}</view>
       </view>
     </view>

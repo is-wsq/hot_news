@@ -233,6 +233,8 @@ export default {
           }else {
             this.$tip.confirm(res.message,false);
           }
+        }).catch(err => {
+          this.$tip.confirm(JSON.stringify(err),false);
         })
       })
     }
