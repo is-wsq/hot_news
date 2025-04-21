@@ -220,23 +220,21 @@ export default {
       }
     },
     loginByCode(code) {
-      this.$tip.confirm(code,false).then(() => {
-        this.$http.get('/user/wx/auth',{code: code}).then(res => {
-          if (res.status ==='success') {
-            uni.setStorageSync('userId', res.data.user_id)
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, '', cleanUrl);
-            if (this.type === 'switchTab') {
-              uni.switchTab({ url: this.path })
-            }else {
-              uni.redirectTo({ url: this.path })
-            }
+      this.$http.get('/user/wx/auth',{code: code}).then(res => {
+        if (res.status ==='success') {
+          uni.setStorageSync('userId', res.data.user_id)
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, '', cleanUrl);
+          if (this.type === 'switchTab') {
+            uni.switchTab({ url: this.path })
           }else {
-            this.$tip.confirm(res.message,false);
+            uni.redirectTo({ url: this.path })
           }
-        }).catch(err => {
-          this.$tip.confirm(JSON.stringify(err),false);
-        })
+        }else {
+          this.$tip.confirm(res.message,false);
+        }
+      }).catch(err => {
+        this.$tip.confirm(JSON.stringify(err),false);
       })
     }
   },
