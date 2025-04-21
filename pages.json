@@ -56,6 +56,12 @@
       "path": "pages/user/voice"
     },
     {
+      "path": "pages/user/contactUs"
+    },
+    {
+      "path": "pages/user/order"
+    },
+    {
       "path": "pages/agreement/user"
     },
     {

@@ -11,11 +11,7 @@
       </view>
       <view class="info-item">
         <view class="info-label">名字</view>
-        <view class="info-value">奇点未来</view>
-      </view>
-      <view class="info-item">
-        <view class="info-label">账号</view>
-        <view class="info-value">17670845180</view>
+        <view class="info-value">{{ userInfo.username }}</view>
       </view>
       <view class="info-item">
         <view class="info-label">性别</view>

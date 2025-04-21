@@ -71,12 +71,11 @@ export default {
       ],
       userTypeName: '',
       functions: [
-        {name: '新手引导', path: ''},
         {name: '隐私条款', path: '/pages/agreement/privacy?type=switchTab'},
         {name: '用户协议', path: '/pages/agreement/user?type=switchTab'},
         {name: '付费服务协议', path: '/pages/agreement/membership?type=switchTab'},
-        {name: '订单管理', path: ''},
-        {name: '联系客服', path: ''},
+        {name: '订单管理', path: '/pages/user/order'},
+        {name: '联系客服', path: '/pages/user/contactUs'},
       ]
     }
   },
