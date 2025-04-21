@@ -13,6 +13,10 @@
 </script>
 
 <style>
+html,
+body {
+  background-color: #000000;
+}
 @import "/static/iconfont.css";
 .image-wrapper {
   position: relative;

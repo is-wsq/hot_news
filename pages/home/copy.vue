@@ -6,12 +6,7 @@
       <view class="regenerate" @click="generate">重新生成</view>
     </view>
     <view class="copy-content">
-      <view style="color: #ffffff;display: flex;justify-content: center;align-items: center">
-        <view v-if="!isEdit" class="copy-title" @click="edit">{{ title ? title : '请输入标题' }}</view>
-        <input v-else style="height: 23px;line-height: 23px;text-align: center" type="text" :focus="focus" v-model="title"
-               @blur="isEdit = false">
-        </input>
-      </view>
+      <input style="height: 23px;line-height: 23px;width: 100%;text-align: center;color: #ffffff" type="text" v-model="title"></input>
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
         <view style="height: 40px;display: flex;align-items: end">
