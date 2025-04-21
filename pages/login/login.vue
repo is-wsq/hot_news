@@ -197,10 +197,7 @@ export default {
     wxLogin() {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
-        const timestamp = Date.now();
-        const currentUrl = `${window.location.origin}${window.location.pathname}?t=${timestamp}`;
-        const redirectUri = encodeURIComponent(currentUrl);
-        // const redirectUri = encodeURIComponent(window.location.href)
+        const redirectUri = encodeURIComponent(window.location.href)
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'STATE123'
         const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
@@ -227,6 +224,8 @@ export default {
         this.$http.get('/user/wx/auth',{code: code}).then(res => {
           if (res.status ==='success') {
             uni.setStorageSync('userId', res.data.user_id)
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
             if (this.type === 'switchTab') {
               uni.switchTab({ url: this.path })
             }else {
