@@ -8,7 +8,7 @@
     <view class="voucher-content">
       <view class="voucher-list">
         <view class="voucher-item" v-for="item in voucherInfos" :key="item.id"
-              :class="{ 'item-active': item.id === packageId }" @click="changePackage(item)">
+              :class="{ 'item-active': item.id === selectedVoucher.id }" @click="changePackage(item)">
           <view class="voucher-item-top">{{ item.name }}</view>
           <view class="voucher-item-center">￥{{ item.price }}</view>
           <view class="voucher-item-bottom">{{ item.unit_price + '/100积分' }}</view>
@@ -55,14 +55,12 @@ export default {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       voucherInfos: [],
       selectedVoucher: {},
-      packageId: null,
     }
   },
-  created() {
-    uni.removeStorageSync('wxpay')
-    this.queryInfo()
-  },
   onLoad() {
+    if (!uni.getSystemInfoSync('wxpay')) {
+      this.queryInfo()
+    }
     this.checkWeChatCode()
   },
   methods: {
@@ -92,7 +90,7 @@ export default {
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
-          package_id: this.selectedVoucher.id,
+          package_id: uni.getStorageSync('packageId'),
         }
         this.$http.post('/package/buy', params).then(res => {
           if (res.status === 'success') {
@@ -125,8 +123,7 @@ export default {
         if (res.status === 'success') {
           this.voucherInfos = res.data
           this.selectedVoucher = res.data[0] || {}
-          this.packageId = this.selectedVoucher.id || null
-          console.log(this.packageId)
+          uni.setStorageSync('packageId', this.selectedVoucher.id)
         } else {
           this.$tip.confirm(res.message, false);
         }
@@ -134,7 +131,7 @@ export default {
     },
     changePackage(item) {
       this.selectedVoucher = item
-      this.packageId = item.id
+      uni.setStorageSync('packageId', item.id)
     },
     goto(path) {
       uni.redirectTo({url: path})
