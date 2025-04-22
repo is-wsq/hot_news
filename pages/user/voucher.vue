@@ -76,7 +76,8 @@ export default {
         const scope = 'snsapi_base'
         const state = 'STATE123'
         uni.setStorageSync('wxpay', true)
-        window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+        // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+        window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
       } else {
         this.$tip.confirm('需要在微信环境下才能使用', false)
       }
@@ -259,7 +260,7 @@ export default {
   line-height: 35px;
   margin: 25px auto 0;
   font-size: 14px;
-  border-radius: 15px;
+  border-radius: 10px;
   color: #101010;
 }
 

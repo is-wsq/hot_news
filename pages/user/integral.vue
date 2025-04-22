@@ -191,7 +191,7 @@ export default {
   line-height: 35px;
   margin: 20px auto 0;
   font-size: 14px;
-  border-radius: 15px;
+  border-radius: 10px;
   color: #101010;
 }
 
