@@ -6,7 +6,7 @@
              @input="keyInput" @confirm="search">
       </input>
       <view class="search-count">
-        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="20"></uni-icons>
+        <uni-icons fontFamily="CustomFont" color="#ffffff" size="20">{{'\ue607'}}</uni-icons>
         <view style="margin-left: 3px;color: #ffffff;font-size: 14px">3</view>
       </view>
       <uni-icons class="icon" type="search" size="24" color="#ffffff" @click="search"></uni-icons>

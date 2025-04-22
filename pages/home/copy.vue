@@ -40,7 +40,7 @@
     <view style="position: relative;width: 250px;margin: 0 auto">
       <button class="copy-btn" @click="generateVideo">口播视频生成</button>
       <view class="word-count">
-        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="18"></uni-icons>
+        <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>
         <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
       </view>
     </view>
@@ -53,10 +53,10 @@
           <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
                 @click="selectedVoice = item">
             <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '' }">
-              <uni-icons custom-prefix="iconfont" type="icon-play" class="off-on" size="20" color="#ffffff"
-                         v-if="testAudioIndex !== index" @click="previewAudio(item,index)"></uni-icons>
-              <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="20" color="#ffffff"
-                         v-else @click="stopPreviewAudio"></uni-icons>
+              <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-if="testAudioIndex !== index"
+                         @click="previewAudio(item,index)">{{'\ue618'}}</uni-icons>
+              <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-else
+                         @click="stopPreviewAudio">{{'\ue637'}}</uni-icons>
             </view>
             <view
                 style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 80px;"
@@ -312,6 +312,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .copy {
   height: 100vh;
 }

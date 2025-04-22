@@ -24,7 +24,7 @@
     <view style="position: relative;width: 250px;margin: 0 auto">
       <button class="detail-btn" @click="generate">口播文案生成</button>
       <view class="word-count">
-        <uni-icons custom-prefix="iconfont" type="icon-if-diamond" color="#ffffff" size="18"></uni-icons>
+        <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>
         <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
       </view>
     </view>
@@ -196,6 +196,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .detail {
   height: 100vh;
 }

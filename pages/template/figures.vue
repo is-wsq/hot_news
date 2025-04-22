@@ -40,8 +40,8 @@
                :poster="selectedFigure.picture" :show-center-play-btn="false" @ended="isPlaying = false"
                :style="{width: safeArea.width * 0.8 + 'px',height: safeArea.width * 0.8 * 4 / 3 + 'px'}">
         </video>
-        <uni-icons custom-prefix="iconfont" type="icon-play" class="play-icon" size="30" color="#ffffff"
-                   @click="controlVideo" v-if="!isPlaying"></uni-icons>
+        <uni-icons fontFamily="CustomFont" class="play-icon" size="30" color="#ffffff"
+                   @click="controlVideo" v-if="!isPlaying">{{'\ue618'}}</uni-icons>
       </view>
     </uni-popup>
   </view>
@@ -130,6 +130,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .figures {
   height: 100vh;
 }

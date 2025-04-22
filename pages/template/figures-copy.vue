@@ -35,8 +35,8 @@
                      @click="popupClose"></uni-icons>
           <video ref="video" style="width: 100%; height: 100%;" :src="selectedFigure.filepath" :controls="false"
                  :show-center-play-btn="false" @ended="isPlaying = false"></video>
-          <uni-icons custom-prefix="iconfont" type="icon-play" class="play-icon" size="20" color="#ffffff"
-                     @click="controlVideo" v-if="!isPlaying"></uni-icons>
+          <uni-icons fontFamily="CustomFont" class="play-icon" size="20" color="#ffffff"
+                     @click="controlVideo" v-if="!isPlaying">{{'\ue618'}}</uni-icons>
         </view>
       </view>
     </uni-popup>
