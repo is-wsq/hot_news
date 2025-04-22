@@ -64,6 +64,9 @@ export default {
     this.checkWeChatCode()
   },
   methods: {
+    isWeChat() {
+      return /MicroMessenger/i.test(navigator.userAgent);
+    },
     getWeChatCode() {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
