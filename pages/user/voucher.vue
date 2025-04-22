@@ -72,6 +72,7 @@ export default {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
+        uni.setStorageSync('redirectUri', window.location.href)
         this.$tip.confirm(window.location.href, false).then(() => {
           const scope = 'snsapi_base'
           const state = 'STATE123'
@@ -102,7 +103,7 @@ export default {
               window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
                 const cleanUrl = window.location.origin + window.location.pathname;
                 self.$tip.confirm(cleanUrl, false).then(() => {
-                  window.history.replaceState({}, '', cleanUrl);
+                  window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voucher');
                   if (result.err_msg === "get_brand_wcpay_request:ok") {
                     self.$tip.confirm('支付成功', false)
                   } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
