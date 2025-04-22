@@ -59,7 +59,9 @@ export default {
     }
   },
   created() {
-    this.queryInfo()
+    if (!uni.getStorageSync('wxpay')) {
+      this.queryInfo()
+    }
   },
   onLoad() {
     this.checkWeChatCode()
@@ -74,6 +76,7 @@ export default {
         const redirectUri = encodeURIComponent(window.location.href)
         const scope = 'snsapi_base'
         const state = 'STATE123'
+        uni.setStorageSync('wxpay', true)
         window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
       } else {
         this.$tip.confirm('需要在微信环境下才能使用', false)
@@ -86,36 +89,33 @@ export default {
     checkWeChatCode() {
       let self = this
       let code = self.getUrlCode('code')
-      self.$tip.confirm(code + '\n' + uni.getStorageSync('userId') + '\n' + self.selectedVoucher.id + '\n' + self.packageId, false).then(() => {
-        if (code) {
-          let params = {
-            user_id: uni.getStorageSync('userId'),
-            code: code,
-            package_id: self.selectedVoucher.id,
-          }
-          self.$http.post('/package/buy', params).then(res => {
-            if (res.status === 'success') {
-              const cleanUrl = window.location.origin + window.location.pathname;
-              window.history.replaceState({}, '', cleanUrl);
-              self.$tip.confirm(JSON.stringify(res.data), false).then(() => {
-                window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-                  self.$tip.confirm(JSON.stringify(result), false).then(() => {
-                    if (result.err_msg === "get_brand_wcpay_request:ok") {
-                      self.$tip.confirm('支付成功', false)
-                    } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
-                      self.$tip.confirm('已取消支付', false)
-                    } else {
-                      self.$tip.confirm('支付失败', false)
-                    }
-                  })
-                });
-              })
-            } else {
-              self.$tip.confirm(res.message, false);
-            }
-          })
+      if (code) {
+        let params = {
+          user_id: uni.getStorageSync('userId'),
+          code: code,
+          package_id: self.selectedVoucher.id,
         }
-      })
+        self.$http.post('/package/buy', params).then(res => {
+          if (res.status === 'success') {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+            window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+              self.$tip.confirm(JSON.stringify(result), false).then(() => {
+                uni.removeStorageSync('wxpay')
+                if (result.err_msg === "get_brand_wcpay_request:ok") {
+                  self.$tip.confirm('支付成功', false)
+                } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
+                  self.$tip.confirm('已取消支付', false)
+                } else {
+                  self.$tip.confirm('支付失败', false)
+                }
+              })
+            });
+          } else {
+            self.$tip.confirm(res.message, false);
+          }
+        })
+      }
     },
     queryInfo() {
       let params = {
