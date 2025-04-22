@@ -87,30 +87,32 @@ export default {
       let code = this.getUrlCode('code')
       uni.removeStorageSync('wxpay')
       if (code) {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
           package_id: uni.getStorageSync('packageId'),
         }
         this.$http.post('/package/buy', params).then(res => {
-          if (res.status === 'success') {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, '', cleanUrl);
-            let self = this
-            window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-              self.$tip.confirm(JSON.stringify(result), false).then(() => {
-                if (result.err_msg === "get_brand_wcpay_request:ok") {
-                  self.$tip.confirm('支付成功', false)
-                } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
-                  self.$tip.confirm('已取消支付', false)
-                } else {
-                  self.$tip.confirm('支付失败', false)
-                }
-              })
-            });
-          } else {
-            this.$tip.confirm(res.message, false);
-          }
+          this.$tip.confirm(JSON.stringify(params), false).then(() => {
+            if (res.status === 'success') {
+              let self = this
+              window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+                self.$tip.confirm(JSON.stringify(result), false).then(() => {
+                  if (result.err_msg === "get_brand_wcpay_request:ok") {
+                    self.$tip.confirm('支付成功', false)
+                  } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
+                    self.$tip.confirm('已取消支付', false)
+                  } else {
+                    self.$tip.confirm('支付失败', false)
+                  }
+                })
+              });
+            } else {
+              this.$tip.confirm(res.message, false);
+            }
+          })
         })
       }
     },
