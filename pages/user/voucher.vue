@@ -90,8 +90,6 @@ export default {
       let code = this.getUrlCode('code')
       uni.setStorageSync('wxpay', false)
       if (code) {
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, '', cleanUrl);
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
@@ -102,7 +100,9 @@ export default {
             if (res.status === 'success') {
               let self = this
               window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-                self.$tip.confirm(JSON.stringify(result), false).then(() => {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                self.$tip.confirm(cleanUrl, false).then(() => {
+                  window.history.replaceState({}, '', cleanUrl);
                   if (result.err_msg === "get_brand_wcpay_request:ok") {
                     self.$tip.confirm('支付成功', false)
                   } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
