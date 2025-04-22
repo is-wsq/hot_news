@@ -61,6 +61,9 @@ export default {
     this.queryInfo()
     this.checkWeChatCode()
   },
+  beforeDestroy() {
+    uni.removeStorageSync('packageId')
+  },
   methods: {
     isWeChat() {
       return /MicroMessenger/i.test(navigator.userAgent);
@@ -69,10 +72,12 @@ export default {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
-        const scope = 'snsapi_base'
-        const state = 'STATE123'
-        uni.setStorageSync('wxpay', true)
-        window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+        this.$tip.confirm(window.location.href, false).then(() => {
+          const scope = 'snsapi_base'
+          const state = 'STATE123'
+          uni.setStorageSync('wxpay', true)
+          window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+        })
       } else {
         this.$tip.confirm('需要在微信环境下才能使用', false)
       }
