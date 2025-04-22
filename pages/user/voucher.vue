@@ -8,7 +8,7 @@
     <view class="voucher-content">
       <view class="voucher-list">
         <view class="voucher-item" v-for="item in voucherInfos" :key="item.id"
-              :class="{ 'item-active': item.id === selectedVoucher.id }" @click="selectedVoucher = item">
+              :class="{ 'item-active': item.id === packageId }" @click="changePackage(item)">
           <view class="voucher-item-top">{{ item.name }}</view>
           <view class="voucher-item-center">￥{{ item.price }}</view>
           <view class="voucher-item-bottom">{{ item.unit_price + '/100积分' }}</view>
@@ -54,7 +54,8 @@ export default {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       voucherInfos: [],
-      selectedVoucher: {}
+      selectedVoucher: {},
+      packageId: null,
     }
   },
   created() {
@@ -85,7 +86,7 @@ export default {
     checkWeChatCode() {
       let self = this
       let code = self.getUrlCode('code')
-      self.$tip.confirm(code + '\n' + uni.getStorageSync('userId') + '\n' + self.selectedVoucher.id, false).then(() => {
+      self.$tip.confirm(code + '\n' + uni.getStorageSync('userId') + '\n' + self.selectedVoucher.id + '\n' + self.packageId, false).then(() => {
         if (code) {
           let params = {
             user_id: uni.getStorageSync('userId'),
@@ -99,9 +100,9 @@ export default {
               self.$tip.confirm(JSON.stringify(res.data), false).then(() => {
                 window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
                   self.$tip.confirm(JSON.stringify(result), false).then(() => {
-                    if (res.err_msg === "get_brand_wcpay_request:ok") {
+                    if (result.err_msg === "get_brand_wcpay_request:ok") {
                       self.$tip.confirm('支付成功', false)
-                    } else if (res.err_msg === "get_brand_wcpay_request:cancel") {
+                    } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
                       self.$tip.confirm('已取消支付', false)
                     } else {
                       self.$tip.confirm('支付失败', false)
@@ -125,10 +126,16 @@ export default {
         if (res.status === 'success') {
           this.voucherInfos = res.data
           this.selectedVoucher = res.data[0] || {}
+          this.packageId = this.selectedVoucher.id || null
+          console.log(this.packageId)
         } else {
           this.$tip.confirm(res.message, false);
         }
       })
+    },
+    changePackage(item) {
+      this.selectedVoucher = item
+      this.packageId = item.id
     },
     goto(path) {
       uni.redirectTo({url: path})
