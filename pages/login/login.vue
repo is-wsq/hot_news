@@ -204,7 +204,7 @@ export default {
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
-        window.location.href = authUrl
+        window.location.replace(authUrl)
       }else {
         this.$tip.confirm('需要在微信环境下才能使用',false)
       }
