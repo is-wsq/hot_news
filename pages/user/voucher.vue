@@ -58,9 +58,7 @@ export default {
     }
   },
   onLoad() {
-    if (!uni.getStorageSync('wxpay')) {
-      this.queryInfo()
-    }
+    this.queryInfo()
     this.checkWeChatCode()
   },
   methods: {
@@ -124,8 +122,12 @@ export default {
       this.$http.get('/package/query/user', params).then(res => {
         if (res.status === 'success') {
           this.voucherInfos = res.data
-          this.selectedVoucher = res.data[0] || {}
-          uni.setStorageSync('packageId', this.selectedVoucher.id)
+          if (uni.getStorageSync('packageId')) {
+            this.selectedVoucher = this.voucherInfos.find(item => item.id === uni.getStorageSync('packageId')) || {}
+          }else {
+            this.selectedVoucher = res.data[0] || {}
+            uni.setStorageSync('packageId', this.selectedVoucher.id)
+          }
         } else {
           this.$tip.confirm(res.message, false);
         }
