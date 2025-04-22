@@ -82,13 +82,14 @@ export default {
     checkWeChatCode() {
       let self = this
       let code = self.getUrlCode('code')
+      self.$tip.confirm(code, false)
       if (code) {
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
           package_id: self.selectedVoucher.id,
         }
-        this.$http.post('/package/buy', params).then(res => {
+        self.$http.post('/package/buy', params).then(res => {
           if (res.status === 'success') {
             const cleanUrl = window.location.origin + window.location.pathname;
             window.history.replaceState({}, '', cleanUrl);
@@ -96,17 +97,17 @@ export default {
               window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
                 self.$tip.confirm(JSON.stringify(result), false).then(() => {
                   if (res.err_msg === "get_brand_wcpay_request:ok") {
-                    this.$tip.confirm('支付成功', false)
+                    self.$tip.confirm('支付成功', false)
                   } else if (res.err_msg === "get_brand_wcpay_request:cancel") {
-                    this.$tip.confirm('已取消支付', false)
+                    self.$tip.confirm('已取消支付', false)
                   } else {
-                    this.$tip.confirm('支付失败', false)
+                    self.$tip.confirm('支付失败', false)
                   }
                 })
               });
             })
           } else {
-            this.$tip.confirm(res.message, false);
+            self.$tip.confirm(res.message, false);
           }
         })
       }
