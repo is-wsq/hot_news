@@ -73,12 +73,10 @@ export default {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
         uni.setStorageSync('redirectUri', window.location.href)
-        this.$tip.confirm(window.location.href, false).then(() => {
-          const scope = 'snsapi_base'
-          const state = 'STATE123'
-          uni.setStorageSync('wxpay', true)
-          window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
-        })
+        const scope = 'snsapi_base'
+        const state = 'STATE123'
+        uni.setStorageSync('wxpay', true)
+        window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
       } else {
         this.$tip.confirm('需要在微信环境下才能使用', false)
       }
@@ -97,26 +95,23 @@ export default {
           package_id: uni.getStorageSync('packageId'),
         }
         this.$http.post('/package/buy', params).then(res => {
-          this.$tip.confirm(JSON.stringify(params), false).then(() => {
-            if (res.status === 'success') {
-              let self = this
-              window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-                const cleanUrl = window.location.origin + window.location.pathname;
-                self.$tip.confirm(cleanUrl, false).then(() => {
-                  window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voucher');
-                  if (result.err_msg === "get_brand_wcpay_request:ok") {
-                    self.$tip.confirm('支付成功', false)
-                  } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
-                    self.$tip.confirm('已取消支付', false)
-                  } else {
-                    self.$tip.confirm('支付失败', false)
-                  }
-                })
-              });
-            } else {
-              this.$tip.confirm(res.message, false);
-            }
-          })
+          if (res.status === 'success') {
+            let self = this
+            window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+              // 将回调页面重新设置成当前页面
+              window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voucher');
+
+              if (result.err_msg === "get_brand_wcpay_request:ok") {
+                self.$tip.confirm('支付成功', false)
+              } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
+                self.$tip.confirm('已取消支付', false)
+              } else {
+                self.$tip.confirm('支付失败', false)
+              }
+            });
+          } else {
+            this.$tip.confirm(res.message, false);
+          }
         })
       }
     },
