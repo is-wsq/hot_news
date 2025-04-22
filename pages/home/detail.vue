@@ -161,6 +161,7 @@ export default {
         return
       }
       let params = {
+        user_id: this.userId,
         style_id: this.style.id,
         news_details: this.news.details,
         count: this.word,
