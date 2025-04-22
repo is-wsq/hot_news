@@ -7,8 +7,8 @@
     </view>
     <view class="voucher-content">
       <view class="voucher-list">
-        <view class="voucher-item" v-for="(item, index) in voucherInfos" :key="index"
-              :class="{ 'item-active': index === selectedIndex }" @click="selectedIndex = index">
+        <view class="voucher-item" v-for="item in voucherInfos" :key="item.id"
+              :class="{ 'item-active': item.id === selectedVoucher.id }" @click="selectedVoucher = item">
           <view class="voucher-item-top">{{ item.name }}</view>
           <view class="voucher-item-center">￥{{ item.price }}</view>
           <view class="voucher-item-bottom">{{ item.unit_price + '/100积分' }}</view>
@@ -19,24 +19,24 @@
         <view class="vip-interest-list" v-if="voucherInfos.length > 0">
           <view class="vip-interest-item">
             <image class="vip-interest-img" src="/static/interest-item.png"/>
-            <view style="margin-left: 7px">{{'定制版数字人形象×'+voucherInfos[selectedIndex].figure}}</view>
+            <view style="margin-left: 7px">{{ '定制版数字人形象×' + selectedVoucher.figure }}</view>
           </view>
           <view class="vip-interest-item">
             <image class="vip-interest-img" src="/static/interest-item.png"/>
-            <view style="margin-left: 7px">{{'定制版声音克隆×'+voucherInfos[selectedIndex].timbre}}</view>
+            <view style="margin-left: 7px">{{ '定制版声音克隆×' + selectedVoucher.timbre }}</view>
           </view>
           <view class="vip-interest-item">
             <image class="vip-interest-img" src="/static/interest-item.png"/>
-            <view style="margin-left: 7px">{{'赠送'+voucherInfos[selectedIndex].points+'积分'}}</view>
+            <view style="margin-left: 7px">{{ '赠送' + selectedVoucher.points + '积分' }}</view>
           </view>
           <view class="vip-interest-item">
             <image class="vip-interest-img" src="/static/interest-item.png"/>
-            <view style="margin-left: 7px">{{'后续积分购买'+voucherInfos[selectedIndex].discount*10+'折优惠'}}</view>
+            <view style="margin-left: 7px">{{ '后续积分购买' + selectedVoucher.discount * 10 + '折优惠' }}</view>
           </view>
         </view>
       </view>
     </view>
-    <button class="buy-btn" @click="pay">立即购买</button>
+    <button class="buy-btn" @click="getWeChatCode">立即购买</button>
     <view class="voucher-footer">
       购买即同意
       <view @click="goto('/pages/agreement/membership?back=voucher')">《付费服务协议》</view>
@@ -53,61 +53,80 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      selectedIndex: 0,
       voucherInfos: [],
+      selectedVoucher: {}
     }
   },
   created() {
     this.queryInfo()
   },
+  onLoad() {
+    this.checkWeChatCode()
+  },
   methods: {
-    pay() {
-      window.WeixinJSBridge.invoke(
-          'getBrandWCPayRequest', {
-            "appId": 'wx48d2e02bf10f849c', //公众号名称，由商户传入
-            "timeStamp":"1744963636", //时间戳
-            "nonceStr":"9b15d9db2dcb4b3b97c6ba7270e7149d", //随机串
-            "package": "prepay_id=wx181607167738933a681eada98346be0001",
-            "signType":"RSA", //微信签名方式：
-            "paySign":"YTGhXFspBDi+LSMcl3W8eUj9AOlv2MlvVr2NjMAvbNYDc8/i5fWqf5SBt0o7lCttGFdCKmdiyhxiWUyWbdYK7KE50PvSLE7k/nsAhp6+ZQSh24JFiWZe/PvdlloSuSMZ4AQb6d4W5R2SRAgaUOG52vAn+RVdCkcXYX8UI3u+PKxELMh7TrVq9OrVhOCubO/XCqFcZmL03lWFSnTtuJqVohpdkzQFaN7dgnpaW8D0HSfHlTKimdwYMueG134QkhnEOwDRVhZcONhrEpIFWe+F0fRaJbjsnA/XwA1OKx355lVSysvOCLTlf8xMiOd2wWkormFtTZWBWhL2JV7uuxYAEw==", //微信签名
-          },
-          function(res) {
-            this.$tip.confirm(JSON.stringify(res),false);
-            // if (ress.err_msg == "get_brand_wcpay_request:ok") {
-            //   uni.showToast({
-            //     icon: 'success',
-            //     title: '支付成功'
-            //   })
-            // } else if (ress.err_msg == "get_brand_wcpay_request:cancel") {
-            //   uni.showToast({
-            //     icon: "none",
-            //     title: "'已取消支付"
-            //   })
-            // } else {
-            //   uni.showToast({
-            //     icon: "none",
-            //     title: "支付失败"
-            //   })
-            // }
+    getWeChatCode() {
+      if (this.isWeChat()) {
+        const appId = 'wx48d2e02bf10f849c'
+        const redirectUri = encodeURIComponent(window.location.href)
+        const scope = 'snsapi_base'
+        const state = 'STATE123'
+        window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+      } else {
+        this.$tip.confirm('需要在微信环境下才能使用', false)
+      }
+    },
+    getUrlCode(name) {
+      return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ''])[1]
+          .replace(/\+/g, '%20')) || null
+    },
+    checkWeChatCode() {
+      let self = this
+      let code = self.getUrlCode('code')
+      if (code) {
+        let params = {
+          user_id: uni.getStorageSync('userId'),
+          code: code,
+          package_id: self.selectedVoucher.id,
+        }
+        this.$http.post('/package/buy', params).then(res => {
+          if (res.status === 'success') {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+            self.$tip.confirm(JSON.stringify(res.data), false).then(() => {
+              window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+                self.$tip.confirm(JSON.stringify(result), false).then(() => {
+                  if (res.err_msg === "get_brand_wcpay_request:ok") {
+                    this.$tip.confirm('支付成功', false)
+                  } else if (res.err_msg === "get_brand_wcpay_request:cancel") {
+                    this.$tip.confirm('已取消支付', false)
+                  } else {
+                    this.$tip.confirm('支付失败', false)
+                  }
+                })
+              });
+            })
+          } else {
+            this.$tip.confirm(res.message, false);
           }
-      );
+        })
+      }
     },
     queryInfo() {
       let params = {
         user_id: uni.getStorageSync('userId'),
         type: 'member'
       }
-      this.$http.get('/package/query/user',params).then(res => {
+      this.$http.get('/package/query/user', params).then(res => {
         if (res.status === 'success') {
           this.voucherInfos = res.data
-          this.selectedIndex = 0
-        }else {
-          this.$tip.confirm(res.message,false);
+          this.selectedVoucher = res.data[0] || {}
+        } else {
+          this.$tip.confirm(res.message, false);
         }
       })
     },
     goto(path) {
-      uni.redirectTo({ url: path })
+      uni.redirectTo({url: path})
     },
     back() {
       uni.switchTab({
@@ -123,6 +142,7 @@ export default {
   height: 100vh;
   overflow-y: auto;
 }
+
 .integralRecharge {
   position: absolute;
   right: 5px;
