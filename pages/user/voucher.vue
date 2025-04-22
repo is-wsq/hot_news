@@ -85,35 +85,36 @@ export default {
     checkWeChatCode() {
       let self = this
       let code = self.getUrlCode('code')
-      self.$tip.confirm(code, false)
-      if (code) {
-        let params = {
-          user_id: uni.getStorageSync('userId'),
-          code: code,
-          package_id: self.selectedVoucher.id,
-        }
-        self.$http.post('/package/buy', params).then(res => {
-          if (res.status === 'success') {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, '', cleanUrl);
-            self.$tip.confirm(JSON.stringify(res.data), false).then(() => {
-              window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-                self.$tip.confirm(JSON.stringify(result), false).then(() => {
-                  if (res.err_msg === "get_brand_wcpay_request:ok") {
-                    self.$tip.confirm('支付成功', false)
-                  } else if (res.err_msg === "get_brand_wcpay_request:cancel") {
-                    self.$tip.confirm('已取消支付', false)
-                  } else {
-                    self.$tip.confirm('支付失败', false)
-                  }
-                })
-              });
-            })
-          } else {
-            self.$tip.confirm(res.message, false);
+      self.$tip.confirm(code + '\n' + uni.getStorageSync('userId') + '\n' + self.selectedVoucher.id, false).then(() => {
+        if (code) {
+          let params = {
+            user_id: uni.getStorageSync('userId'),
+            code: code,
+            package_id: self.selectedVoucher.id,
           }
-        })
-      }
+          self.$http.post('/package/buy', params).then(res => {
+            if (res.status === 'success') {
+              const cleanUrl = window.location.origin + window.location.pathname;
+              window.history.replaceState({}, '', cleanUrl);
+              self.$tip.confirm(JSON.stringify(res.data), false).then(() => {
+                window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+                  self.$tip.confirm(JSON.stringify(result), false).then(() => {
+                    if (res.err_msg === "get_brand_wcpay_request:ok") {
+                      self.$tip.confirm('支付成功', false)
+                    } else if (res.err_msg === "get_brand_wcpay_request:cancel") {
+                      self.$tip.confirm('已取消支付', false)
+                    } else {
+                      self.$tip.confirm('支付失败', false)
+                    }
+                  })
+                });
+              })
+            } else {
+              self.$tip.confirm(res.message, false);
+            }
+          })
+        }
+      })
     },
     queryInfo() {
       let params = {
