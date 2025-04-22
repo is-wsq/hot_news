@@ -58,9 +58,7 @@ export default {
     }
   },
   onLoad() {
-    if (!uni.getSystemInfoSync('wxpay')) {
-      this.queryInfo()
-    }
+    this.queryInfo()
     this.checkWeChatCode()
   },
   methods: {
@@ -85,7 +83,7 @@ export default {
     },
     checkWeChatCode() {
       let code = this.getUrlCode('code')
-      uni.removeStorageSync('wxpay')
+      uni.setStorageSync('wxpay', false)
       if (code) {
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, '', cleanUrl);
