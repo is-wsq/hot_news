@@ -58,7 +58,9 @@ export default {
     }
   },
   onLoad() {
-    this.queryInfo()
+    if (!uni.getStorageSync('wxpay')) {
+      this.queryInfo()
+    }
     this.checkWeChatCode()
   },
   methods: {
