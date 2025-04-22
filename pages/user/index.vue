@@ -101,6 +101,7 @@ export default {
         })
         return
       }
+      uni.removeStorageSync('packageId')
       this.goto('/pages/user/voucher')
     },
     goto(url) {
