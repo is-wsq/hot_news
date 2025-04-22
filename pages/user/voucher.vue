@@ -59,9 +59,8 @@ export default {
     }
   },
   created() {
-    if (!uni.getStorageSync('wxpay')) {
-      this.queryInfo()
-    }
+    uni.removeStorageSync('wxpay')
+    this.queryInfo()
   },
   onLoad() {
     this.checkWeChatCode()
@@ -87,21 +86,21 @@ export default {
           .replace(/\+/g, '%20')) || null
     },
     checkWeChatCode() {
-      let self = this
-      let code = self.getUrlCode('code')
+      let code = this.getUrlCode('code')
+      uni.removeStorageSync('wxpay')
       if (code) {
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
-          package_id: self.selectedVoucher.id,
+          package_id: this.selectedVoucher.id,
         }
-        self.$http.post('/package/buy', params).then(res => {
+        this.$http.post('/package/buy', params).then(res => {
           if (res.status === 'success') {
             const cleanUrl = window.location.origin + window.location.pathname;
             window.history.replaceState({}, '', cleanUrl);
+            let self = this
             window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
               self.$tip.confirm(JSON.stringify(result), false).then(() => {
-                uni.removeStorageSync('wxpay')
                 if (result.err_msg === "get_brand_wcpay_request:ok") {
                   self.$tip.confirm('支付成功', false)
                 } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
@@ -112,7 +111,7 @@ export default {
               })
             });
           } else {
-            self.$tip.confirm(res.message, false);
+            this.$tip.confirm(res.message, false);
           }
         })
       }
