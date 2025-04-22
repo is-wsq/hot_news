@@ -88,7 +88,11 @@ export default {
       this.$nextTick(() => {
         this.$refs.loadingVideo.playVideo()
       })
-      this.$http.get('/news/online_search', {keyword: this.keyword}, 300000).then(res => {
+      let params = {
+        user_id: this.userId,
+        keyword: this.keyword
+      }
+      this.$http.get('/news/online_search', params, 600000).then(res => {
         if (res.status === 'success') {
           this.searchNews = res.data
           uni.setStorageSync('searchNews', res.data)
