@@ -22,14 +22,14 @@
       </view>
       <view class="integral-content">
         <view class="integral-list">
-          <view class="integral-item" v-for="item in integralList" :key="item"
-                :class="{ 'integral-active': item === selected }" @click="selected = item">
+          <view class="integral-item" v-for="item in packages" :key="item"
+                :class="{ 'integral-active': item.id === selectedPackage.id }" @click="changePackage(item)">
             <view style="display: flex;align-items: center">
-              <view class="integral-name">{{ item }}</view>
-              <image v-if="item === selected" src="/static/amount-active.png" class="integral-icon"></image>
+              <view class="integral-name">{{ item.points }}</view>
+              <image v-if="item.id === selectedPackage.id" src="/static/amount-active.png" class="integral-icon"></image>
               <image v-else src="/static/amount.png" class="integral-icon"></image>
             </view>
-            <view class="integral-price">{{ (item / 1000 * info.unit_price).toFixed(1) }}￥</view>
+            <view class="integral-price">{{ item.price }}￥</view>
           </view>
         </view>
         <view class="top_up-desc">
@@ -39,7 +39,7 @@
           <view>3.如特殊情况需要退款，请联系客服。</view>
         </view>
       </view>
-      <button class="buy-btn">立即购买</button>
+      <button class="buy-btn" @click="getWeChatCode">立即购买</button>
       <view class="integral-footer">
         购买即同意
         <view @click="goto('/pages/agreement/membership?back=integral')">《付费服务协议》</view>
@@ -58,15 +58,67 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      integralList: [1000, 2000, 3000, 5000, 10000, 20000],
-      selected: 1000,
       info: {},
+      packages: [],
+      selectedPackage: {}
     }
   },
-  mounted() {
+  onLoad() {
     this.queryInfo()
+    this.checkWeChatCode()
+  },
+  beforeDestroy() {
+    uni.removeStorageSync('packageId')
   },
   methods: {
+    isWeChat() {
+      return /MicroMessenger/i.test(navigator.userAgent);
+    },
+    getWeChatCode() {
+      if (this.isWeChat()) {
+        const appId = 'wx48d2e02bf10f849c'
+        const redirectUri = encodeURIComponent(window.location.href)
+        uni.setStorageSync('redirectUri', window.location.href)
+        const scope = 'snsapi_base'
+        const state = 'STATE123'
+        window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
+      } else {
+        this.$tip.confirm('需要在微信环境下才能使用', false)
+      }
+    },
+    getUrlCode(name) {
+      return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ''])[1]
+          .replace(/\+/g, '%20')) || null
+    },
+    checkWeChatCode() {
+      let code = this.getUrlCode('code')
+      if (code) {
+        let params = {
+          user_id: uni.getStorageSync('userId'),
+          code: code,
+          package_id: uni.getStorageSync('packageId'),
+        }
+        this.$http.post('/package/buy', params).then(res => {
+          if (res.status === 'success') {
+            let self = this
+            window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+              // 将回调页面重新设置成当前页面
+              window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/integral');
+
+              if (result.err_msg === "get_brand_wcpay_request:ok") {
+                self.$tip.confirm('支付成功', false)
+              } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
+                self.$tip.confirm('已取消支付', false)
+              } else {
+                self.$tip.confirm('支付失败', false)
+              }
+            });
+          } else {
+            this.$tip.confirm(res.message, false);
+          }
+        })
+      }
+    },
     queryInfo() {
       let params = {
         user_id: uni.getStorageSync('userId'),
@@ -74,11 +126,22 @@ export default {
       }
       this.$http.get('/package/query/user',params).then(res => {
         if (res.status === 'success') {
-          this.info = res.data
+          this.info = res.data.user_info;
+          this.packages = res.data.packages;
+          if (uni.getStorageSync('packageId')) {
+            this.selectedPackage = this.packages.find(item => item.id === uni.getStorageSync('packageId'))
+          }else {
+            this.selectedPackage = this.packages[0] || {}
+            uni.setStorageSync('packageId', this.selectedPackage.id)
+          }
         }else {
           this.$tip.confirm(res.message,false);
         }
       })
+    },
+    changePackage(item) {
+      this.selectedPackage = item
+      uni.setStorageSync('packageId', item.id)
     },
     goto(path) {
       uni.redirectTo({url: path})

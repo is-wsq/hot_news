@@ -21,29 +21,29 @@
         <view class="clone-case">
           <view class="clone-case-title">原声</view>
           <view class="clone-case-btn">
-            <uni-icons custom-prefix="iconfont" type="icon-play" class="off-on" size="18" color="#ffffff"
-                       v-if="playIndex !== 0" @click="playAudio(0)"></uni-icons>
-            <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="18" color="#ffffff"
-                       v-else @click="stopAudio()"></uni-icons>
+            <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-if="playIndex !== 0"
+                       @click="playAudio(0)">{{'\ue618'}}</uni-icons>
+            <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-else
+                       @click="stopAudio()">{{'\ue637'}}</uni-icons>
           </view>
         </view>
         <view class="clone-case">
           <view class="clone-case-title">克隆</view>
           <view class="clone-case-btn">
-            <uni-icons custom-prefix="iconfont" type="icon-play" class="off-on" size="18" color="#ffffff"
-                       v-if="playIndex !== 1" @click="playAudio(1)"></uni-icons>
-            <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="18" color="#ffffff"
-                       v-else @click="stopAudio()"></uni-icons>
+            <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-if="playIndex !== 1"
+                       @click="playAudio(1)">{{'\ue618'}}</uni-icons>
+            <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-else
+                       @click="stopAudio()">{{'\ue637'}}</uni-icons>
           </view>
         </view>
       </view>
       <view style="margin: 15px 0">音频教程</view>
       <view class="voice-tutorial">
         <view class="voice-tutorial-btn">
-          <uni-icons custom-prefix="iconfont" type="icon-play" class="off-on" size="22" color="#ffffff"
-                     v-if="playIndex !== 2" @click="playAudio(2)"></uni-icons>
-          <uni-icons custom-prefix="iconfont" type="icon-pause" class="off-on" size="22" color="#ffffff"
-                     v-else @click="stopAudio()"></uni-icons>
+          <uni-icons fontFamily="CustomFont" class="off-on" size="22" color="#ffffff" v-if="playIndex !== 2"
+                     @click="playAudio(2)">{{'\ue618'}}</uni-icons>
+          <uni-icons fontFamily="CustomFont" class="off-on" size="22" color="#ffffff" v-else
+                     @click="stopAudio()">{{'\ue637'}}</uni-icons>
         </view>
       </view>
     </view>
@@ -186,6 +186,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .voicesClone {
   height: 100vh;
   color: #ffffff;

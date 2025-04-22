@@ -131,6 +131,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .search {
   height: 100vh;
   background-color: #000000;

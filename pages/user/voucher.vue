@@ -75,7 +75,6 @@ export default {
         uni.setStorageSync('redirectUri', window.location.href)
         const scope = 'snsapi_base'
         const state = 'STATE123'
-        uni.setStorageSync('wxpay', true)
         // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
         window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
       } else {
@@ -88,7 +87,6 @@ export default {
     },
     checkWeChatCode() {
       let code = this.getUrlCode('code')
-      uni.setStorageSync('wxpay', false)
       if (code) {
         let params = {
           user_id: uni.getStorageSync('userId'),
@@ -127,7 +125,7 @@ export default {
           if (uni.getStorageSync('packageId')) {
             this.selectedVoucher = this.voucherInfos.find(item => item.id === uni.getStorageSync('packageId')) || {}
           }else {
-            this.selectedVoucher = res.data[0] || {}
+            this.selectedVoucher = this.voucherInfos[0] || {}
             uni.setStorageSync('packageId', this.selectedVoucher.id)
           }
         } else {
