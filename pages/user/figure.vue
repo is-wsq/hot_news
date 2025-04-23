@@ -29,7 +29,7 @@
     </uni-popup>
     <uni-popup ref="inputDialog" type="dialog">
       <uni-popup-dialog ref="inputClose" mode="input" title="重命名形象"
-                        placeholder="请输入内容" @confirm="dialogInputConfirm">
+                        placeholder="输入新名称" @confirm="dialogInputConfirm">
       </uni-popup-dialog>
     </uni-popup>
   </view>
