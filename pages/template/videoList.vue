@@ -3,9 +3,9 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">我的作品</view>
-      <view class="manageBtn" @click="manage">管理</view>
+      <view class="manageBtn" @click="manage" v-if="videoTasks.length > 0">管理</view>
     </view>
-    <view class="video-list" style="height: calc(100% - 140px)">
+    <view class="video-list" v-if="videoTasks.length > 0">
       <view class="video-item" v-for="item in videoTasks" :key="item.id">
         <view class="image-wrapper shining">
           <image class="item-img" src="/static/img/20.png"></image>
@@ -26,6 +26,10 @@
           {{ item.filename }}
         </view>
       </view>
+    </view>
+    <view class="empty-list" v-else>
+      <uni-icons fontFamily="CustomFont" color="#333333" size="70">{{'\ue76c'}}</uni-icons>
+      <view class="empty-list-title">暂无作品保存</view>
     </view>
     <view class="video-footer">
       <view v-if="!isManage">只保留近三天生成的作品</view>
@@ -139,6 +143,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .video {
   height: 100vh;
 }
@@ -151,12 +160,27 @@ export default {
 }
 
 .video-list {
+  height: calc(100% - 140px);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   grid-template-rows: 230px;
   gap: 10px;
   justify-items: center;
   overflow: auto;
+}
+
+.empty-list {
+  height: calc(100% - 140px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-list-title {
+  font-size: 16px;
+  margin-top: 10px;
+  color: #333333;
 }
 
 .item-img {

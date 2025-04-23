@@ -3,9 +3,9 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">我的声音</view>
-      <view class="manageBtn" @click="manage">管理</view>
+      <view class="manageBtn" @click="manage" v-if="voices.length > 0">管理</view>
     </view>
-    <view class="user-voice-container" :style="{gridAutoRows: voiceWidth + 30 + 'px' }">
+    <view class="user-voice-container" :style="{gridAutoRows: voiceWidth + 30 + 'px' }" v-if="voices.length > 0">
       <view class="user-voice-item" v-for="item in voices" :key="item.id" @click="manageVoice(item)">
         <image class="user-voice-item-img" :src="item.avatar"
                :class="{'user-voice-itemActive': selectedVoices.findIndex(video => video.id === item.id) !== -1 || audioCtxId === item.id}"
@@ -15,6 +15,13 @@
               color: selectedVoices.findIndex(video => video.id === item.id) !== -1 || audioCtxId === item.id? '#E99D42' : '#ffffff'}">
           {{ item.name }}
         </view>
+      </view>
+    </view>
+    <view class="empty-voice" v-else>
+      <uni-icons fontFamily="CustomFont" color="#333333" size="70">{{'\ue76c'}}</uni-icons>
+      <view class="empty-voice-title">
+        <view>暂无音色，</view>
+        <view style="color: #636dae" @click="toClone">去克隆？</view>
       </view>
     </view>
     <view class="user-voice-footer" v-if="isManage">
@@ -103,6 +110,9 @@ export default {
         this.audioCtxId = null
       }
     },
+    toClone() {
+      uni.redirectTo({url: '/pages/template/voicesClone'})
+    },
     rename() {
       if (this.selectedVoices.length === 0) {
         this.$tip.confirm('请先选择要重命名的音色', false)
@@ -165,6 +175,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .user-voice {
   height: 100vh;
 }
@@ -187,6 +202,21 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
   overflow-y: auto;
+}
+
+.empty-voice {
+  height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-voice-title {
+  font-size: 16px;
+  color: #333333;
+  margin-top: 10px;
+  display: flex;
 }
 
 .user-voice-item-img {

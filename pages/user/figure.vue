@@ -3,14 +3,21 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">我的数字人</view>
-      <view class="manageBtn" @click="manage">管理</view>
+      <view class="manageBtn" @click="manage" v-if="figures.length > 0">管理</view>
     </view>
-    <view class="user-figure-container" :style="{gridAutoRows: figureWidth * 4 / 3 + 30 + 'px' }">
+    <view class="user-figure-container" :style="{gridAutoRows: figureWidth * 4 / 3 + 30 + 'px' }" v-if="figures.length > 0">
       <view class="user-figure-item" v-for="item in figures" :key="item.id" @click="manageFigure(item)">
         <image class="user-figure-item-img" :src="item.picture"
                :class="{'user-figure-itemActive': selectedFigures.findIndex(video => video.id === item.id) !== -1}"
                :style="{width: figureWidth + 'px',height: figureWidth * 4 / 3 + 'px'}"></image>
         <view class="user-figure-item-name" :style="{width: figureWidth + 'px'}">{{ item.name }}</view>
+      </view>
+    </view>
+    <view class="empty-figure" v-else>
+      <uni-icons fontFamily="CustomFont" color="#333333" size="70">{{'\ue76c'}}</uni-icons>
+      <view class="empty-figure-title">
+        <view>暂无形象，</view>
+        <view style="color: #636dae" @click="toClone">去克隆？</view>
       </view>
     </view>
     <view class="user-figure-footer" v-if="isManage">
@@ -82,6 +89,9 @@ export default {
         this.$refs.popup.open()
       }
     },
+    toClone() {
+      uni.redirectTo({url: '/pages/template/figureClone'})
+    },
     rename() {
       if (this.selectedFigures.length === 0) {
         this.$tip.confirm('请先选择要重命名的数字人', false)
@@ -148,6 +158,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .user-figure {
   height: 100vh;
 }
@@ -170,6 +185,21 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   overflow-y: auto;
+}
+
+.empty-figure {
+  height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-figure-title {
+  font-size: 16px;
+  color: #333333;
+  margin-top: 10px;
+  display: flex;
 }
 
 .user-figure-item-img {
