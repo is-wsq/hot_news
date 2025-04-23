@@ -4,18 +4,22 @@
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">订单管理</view>
     </view>
-    <view class="order-content">
+    <view class="order-content" v-if="orders.length > 0">
       <view class="order-item" v-for="(item, index) in orders" :key="index" :class="{'marginBottom': index !== orders.length - 1}">
         <view class="order-item-left">
-          <view class="order-item-left-title">{{ item.title }}</view>
-          <view class="order-item-left-time">{{ item.time }}</view>
+          <view class="order-item-left-title">{{ item.service_name + (item.money? '&nbsp￥'+ item.money : '') }}</view>
+          <view class="order-item-left-time" v-if="item.created_at">{{ formatTime(item.created_at) }}</view>
         </view>
         <view class="order-item-right">
-          <view class="order-item-right-title">积分：{{ item.score > 0? '+' + item.score : item.score }}</view>
-          <view class="order-item-right-title" v-if="item.figure !== 0">形象：{{ item.figure > 0? '+' + item.figure : item.figure }}</view>
-          <view class="order-item-right-title" v-if="item.voice !== 0">声音：{{ item.voice > 0? '+' + item.voice : item.voice }}</view>
+          <view class="order-item-right-title">积分：{{ item.points > 0? '+' + item.points : item.points }}</view>
+          <view class="order-item-right-title" v-if="item.figure">形象：{{ item.figure > 0? '+' + item.figure : item.figure }}</view>
+          <view class="order-item-right-title" v-if="item.timbre">声音：{{ item.timbre > 0? '+' + item.timbre : item.timbre }}</view>
         </view>
       </view>
+    </view>
+    <view class="empty-content" v-else>
+      <uni-icons fontFamily="CustomFont" color="#434343" size="70">{{'\ue638'}}</uni-icons>
+      <view class="empty-content-title">暂无交易记录</view>
     </view>
   </view>
 </template>
@@ -24,16 +28,33 @@
 export default {
   data() {
     return {
-      orders: [
-        { title: '克隆形象', time: '2025/4/6 18:23', score: -25, figure: 0, voice: 0 },
-        { title: '生成视频', time: '2025/4/6 18:23', score: -25, figure: 0, voice: 0 },
-        { title: '搜索新闻', time: '2025/4/6 18:23', score: -25, figure: 0, voice: 0 },
-        { title: '会员购买（季度）￥100', time: '2025/4/6 18:23', score: 300000, figure: 3, voice: 3 },
-        { title: '积分充值 ￥20', time: '2025/4/6 18:23', score: 600, figure: 0, voice: 0 },
-      ]
+      orders: []
     }
   },
+  mounted() {
+    this.queryOrders()
+  },
   methods: {
+    queryOrders() {
+      if (!uni.getStorageSync('userId')) {
+        this.$tip.confirm('请先登录',false).then(() => {
+          uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/user/order`})
+        })
+        return
+      }
+      this.$http.get('/transactions/query/user',{user_id: uni.getStorageSync('userId')}).then(res => {
+        if (res.status === 'success') {
+          this.orders = res.data
+        }else {
+          this.$tip.toast(res.message)
+        }
+      })
+    },
+    formatTime(isoString) {
+      const parts = isoString.split('T')
+      if (parts.length !== 2) return 'Invalid Date'
+      return parts[0].replace(/-/g, '/') + ' ' + parts[1]
+    },
     back() {
       uni.switchTab({ url: '/pages/user/index' })
     }
@@ -42,6 +63,11 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: CustomFont;
+  src: url('/static/iconfont.ttf');
+}
+
 .order {
   height: 100vh;
 }
@@ -49,6 +75,20 @@ export default {
 .order-content {
   height: calc(100vh - 58px);
   overflow-y: auto;
+}
+
+.empty-content {
+  height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-content-title {
+  color: #434343;
+  font-size: 18px;
+  margin-top: 10px;
 }
 
 .order-item {

@@ -11,6 +11,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-weikong:before {
+  content: "\ue600";
+}
+
+.icon-liebiaoweikong:before {
+  content: "\ue76c";
+}
+
+.icon-dingdanweikong:before {
+  content: "\ue638";
+}
+
+.icon-dingdanweikong1:before {
+  content: "\ue617";
+}
+
 .icon-if-diamond:before {
   content: "\ue607";
 }
