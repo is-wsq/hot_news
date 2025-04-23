@@ -47,6 +47,12 @@
       "path": "pages/user/integral"
     },
     {
+      "path": "pages/user/figureRecharge"
+    },
+    {
+      "path": "pages/user/voiceRecharge"
+    },
+    {
       "path": "pages/user/previewAvatar"
     },
     {

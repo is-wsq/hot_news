@@ -19,15 +19,15 @@
         <button class="membership" @click="openVIP">开通VIP</button>
       </view>
       <view class="identity-detail">
-        <view style="text-align: center">
+        <view style="text-align: center" @click="goto('/pages/user/figureRecharge')">
           <view class="detail-value">{{ userInfo.figureBalance || 0 }}</view>
           <view class="detail-name">数字人额度</view>
         </view>
-        <view style="text-align: center">
+        <view style="text-align: center" @click="goto('/pages/user/voiceRecharge')">
           <view class="detail-value">{{ userInfo.timbreBalance || 0 }}</view>
           <view class="detail-name">声音额度</view>
         </view>
-        <view style="text-align: center">
+        <view style="text-align: center" @click="goto('/pages/user/integral')">
           <view class="detail-value">{{ userInfo.points || 0 }}</view>
           <view class="detail-name">积分余额</view>
         </view>

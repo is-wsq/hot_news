@@ -1,37 +1,37 @@
 <template>
-  <view class="pages integral">
+  <view class="pages figure-recharge">
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
-      <view class="nav-bar-title">积分充值</view>
+      <view class="nav-bar-title">形象额度充值</view>
     </view>
-    <view class="integral-container">
+    <view class="figure-recharge-container">
       <view style="display: flex;color: #fff">
-        <view class="integral-header">
-          <view style="line-height: 37px">积分余额</view>
-          <view style="font-size: 20px">{{ info.user_points }}</view>
+        <view class="figure-recharge-header">
+          <view style="line-height: 37px">数字人额度</view>
+          <view style="font-size: 20px">{{ userInfo.figureBalance }}</view>
         </view>
         <view style="flex: 1;"></view>
         <view style="margin-top: 20px;width: 115px">
           <view style="display: flex">
-            <image v-if="info.member !== '普通会员'" src="/static/royal.png" class="vip-icon"></image>
+            <image v-if="userInfo.userType !== 0" src="/static/royal.png" class="vip-icon"></image>
             <image v-else src="/static/royal.png" class="vip-icon"></image>
-            <view class="vip-type">{{ info.member }}</view>
+            <view class="vip-type">{{ userTypeNames.find(item => item.type === userInfo.userType).name }}</view>
           </view>
-          <view class="vip-desc">{{ info.discount === 1 ? '': `可享${info.discount*10}折充值优惠` }}</view>
+          <view class="vip-desc">{{ discounts.find(item => item.type === userInfo.userType).name }}</view>
         </view>
       </view>
-      <view class="integral-content">
-        <view class="integral-list">
-          <view class="integral-item" v-for="item in packages" :key="item.id"
-                :class="{ 'integral-active': item.id === selectedPackage.id }" @click="changePackage(item)">
-            <view style="display: flex;align-items: center">
-              <view class="integral-name">{{ item.points }}</view>
-              <image v-if="item.id === selectedPackage.id" src="/static/amount-active.png" class="integral-icon"></image>
-              <image v-else src="/static/amount.png" class="integral-icon"></image>
-            </view>
-            <view class="integral-price">{{ item.price }}￥</view>
+      <view class="figure-recharge-content">
+        <view style="margin-bottom: 10px;font-size: 14px;color: #CECECE">当前会员折扣价：{{ price }}元/个</view>
+        <view class="figure-recharge-list">
+          <view class="figure-recharge-item" v-for="item in recharges" :key="item.id"
+                :class="{ 'figure-recharge-active': item.id === selected.id }" @click="selected = item">
+            <view>{{ item.name }}</view>
+            <view v-if="item.id !== 4" style="font-size: 14px;margin-top: 5px">{{ price * item.count }}￥</view>
+            <view v-if="item.id === 4 && selected.id === 4" style="font-size: 14px;margin-top: 5px">{{ price * count}}￥</view>
           </view>
         </view>
+        <input v-if="selected.id === 4" class="figure-recharge-other" v-model="count" type="number" placeholder="输入充值数字人额度数量" />
+        <view v-else style="height: 64px"></view>
         <view class="top_up-desc">
           <view style="margin-bottom: 5px">充值说明：</view>
           <view>1.充值未完成时，请不要切换账户或者退出软件，请等待充值结束，否则可能会出现账户未到账的情况。若出现此类情况，请咨询客服。</view>
@@ -40,7 +40,7 @@
         </view>
       </view>
       <button class="buy-btn" @click="getWeChatCode">立即购买</button>
-      <view class="integral-footer">
+      <view class="figure-recharge-agreement">
         购买即同意
         <view @click="goto('/pages/agreement/membership?back=integral')">《付费服务协议》</view>
         、
@@ -54,23 +54,64 @@
 
 <script>
 export default {
-  name: 'Integral',
   data() {
     return {
-      safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      info: {},
-      packages: [],
-      selectedPackage: {}
+      userInfo: {},
+      userTypeNames: [
+        { type: 0, name: '普通用户' },
+        { type: 1, name: '月会员' },
+        { type: 2, name: '季会员' },
+        { type: 3, name: '年会员' },
+      ],
+      discounts: [
+        { type: 0, name: '' },
+        { type: 1, name: '可享9折充值优惠' },
+        { type: 2, name: '可享8折充值优惠' },
+        { type: 3, name: '可享7折充值优惠' },
+      ],
+      recharges: [
+        { id: 1, name: '1个形象', count: 1 },
+        { id: 2, name: '3个形象', count: 3 },
+        { id: 3, name: '5个形象', count: 5 },
+        { id: 4, name: '其他数量'}
+      ],
+      selected: { id: 1, name: '1个形象' },
+      price: 0,
+      count: 1
     }
   },
   onLoad() {
-    this.queryInfo()
+    this.queryUserInfo()
+    this.queryPackageInfo()
     this.checkWeChatCode()
   },
   beforeDestroy() {
     uni.removeStorageSync('packageId')
   },
   methods: {
+    queryPackageInfo() {
+      let params = {
+        user_id: uni.getStorageSync('userId'),
+        type: 'figure'
+      }
+      this.$http.get('/package/query/user', params).then(res => {
+        if (res.status ==='success') {
+          this.price = res.data.price
+          uni.setStorageSync('packageId', res.data.id)
+        }else {
+          this.$tip.confirm(res.message, false)
+        }
+      })
+    },
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: uni.getStorageSync('userId')}).then(res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+        }else {
+          this.$tip.confirm(res.message, false)
+        }
+      })
+    },
     isWeChat() {
       return /MicroMessenger/i.test(navigator.userAgent);
     },
@@ -78,7 +119,6 @@ export default {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
-        uni.setStorageSync('redirectUri', window.location.href)
         const scope = 'snsapi_base'
         const state = 'STATE123'
         window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
@@ -96,18 +136,19 @@ export default {
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
+          count: this.selected.id === 4? this.count : this.selected.count,
           package_id: uni.getStorageSync('packageId'),
         }
-        this.$http.post('/package/buy', params).then(res => {
+        this.$http.post('/package/buy/balance', params).then(res => {
           if (res.status === 'success') {
             let self = this
             window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
               // 将回调页面重新设置成当前页面
-              window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/integral');
+              window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/figureRecharge');
 
               if (result.err_msg === "get_brand_wcpay_request:ok") {
                 self.$tip.confirm('支付成功', false)
-                self.queryInfo()
+                self.queryUserInfo()
               } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
                 self.$tip.confirm('已取消支付', false)
               } else {
@@ -120,51 +161,29 @@ export default {
         })
       }
     },
-    queryInfo() {
-      let params = {
-        user_id: uni.getStorageSync('userId'),
-        type: 'token'
-      }
-      this.$http.get('/package/query/user',params).then(res => {
-        if (res.status === 'success') {
-          this.info = res.data.user_info;
-          this.packages = res.data.packages;
-          if (uni.getStorageSync('packageId')) {
-            this.selectedPackage = this.packages.find(item => item.id === uni.getStorageSync('packageId'))
-          }else {
-            this.selectedPackage = this.packages[0] || {}
-            uni.setStorageSync('packageId', this.selectedPackage.id)
-          }
-        }else {
-          this.$tip.confirm(res.message,false);
-        }
-      })
-    },
-    changePackage(item) {
-      this.selectedPackage = item
-      uni.setStorageSync('packageId', item.id)
-    },
-    goto(path) {
-      uni.redirectTo({url: path})
+    goto(url) {
+
     },
     back() {
       uni.switchTab({ url: '/pages/user/index' })
     }
+  },
+  created() {
   }
 }
 </script>
 
 <style scoped>
-.integral {
+.figure-recharge {
   height: 100vh;
+  color: #ffffff;
 }
 
-.integral-container {
-  height: calc(100% - 56px);
-  overflow-y: auto;
+.figure-recharge-container {
+  height: calc(100% - 58px);
 }
 
-.integral-header {
+.figure-recharge-header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -190,26 +209,26 @@ export default {
   margin-top: 5px;
 }
 
-.integral-content {
+.figure-recharge-content {
   height: calc(100% - 195px);
   min-height: 400px;
   margin-top: 10px;
   border-radius: 15px;
   background: linear-gradient(to bottom, rgba(233, 157, 66, 0.2), rgba(233, 157, 157, 0));
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.4);
-  padding: 20px 5px 5px;
+  padding: 10px 5px 5px;
   box-sizing: border-box;
 }
 
-.integral-list {
+.figure-recharge-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
   grid-auto-rows: 92px;
   gap: 12px;
 }
 
-.integral-item {
-  border-radius: 15px;
+.figure-recharge-item {
+  border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.25);
   display: flex;
   flex-direction: column;
@@ -218,25 +237,18 @@ export default {
   color: #FFFFFF;
 }
 
-.integral-active {
+.figure-recharge-active {
   background-color: rgba(225, 197, 156, 0.93) !important;
   color: #96750E !important;
 }
 
-.integral-name {
-  line-height: 30px;
-  font-size: 20px;
-}
-
-.integral-icon {
-  width: 16px;
-  height: 16px;
-  margin-left: 2px;
-}
-
-.integral-price {
-  font-size: 14px;
-  color: #FFFFFF;
+.figure-recharge-other {
+  margin-top: 12px;
+  height: 50px;
+  border: 1px solid #96750E;
+  padding-left: 10px;
+  border-radius: 10px;
+  font-size: 16px;
 }
 
 .top_up-desc {
@@ -245,6 +257,7 @@ export default {
   padding: 0 10px;
   box-sizing: border-box;
 }
+
 
 .buy-btn {
   background-color: #e99d42;
@@ -257,7 +270,7 @@ export default {
   color: #101010;
 }
 
-.integral-footer {
+.figure-recharge-agreement {
   color: #9A9A9A;
   font-size: 13px;
   margin: 20px 0;
