@@ -75,7 +75,7 @@ export default {
         { id: 3, name: '5个形象', count: 5 },
         { id: 4, name: '其他数量'}
       ],
-      selected: { id: 1, name: '1个形象' },
+      selected: { id: 1, name: '1个形象', count: 1 },
       price: 0,
       count: 1
     }
