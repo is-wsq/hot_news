@@ -49,7 +49,7 @@ export default {
       })
     },
     toDetail(item) {
-      uni.setStorageSync('newsDetail', item)
+      uni.setStorageSync('news', item)
       uni.redirectTo({
         url: '/pages/home/detail?type=switchTab'
       })

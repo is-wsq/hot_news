@@ -112,7 +112,7 @@ export default {
   },
   mounted() {
     this.userId = uni.getStorageSync('userId') || ''
-    this.news = uni.getStorageSync('newsDetail')
+    this.news = uni.getStorageSync('news')
     this.queryStyles()
   },
   onLoad: function (option) {

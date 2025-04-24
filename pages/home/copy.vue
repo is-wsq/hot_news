@@ -125,7 +125,7 @@ export default {
   },
   mounted() {
     this.userId = uni.getStorageSync('userId')
-    this.news = uni.getStorageSync('newsDetail')
+    this.news = uni.getStorageSync('news')
     this.word = uni.getStorageSync('wordSetting')
     this.styleId = uni.getStorageSync('styleId')
     this.queryTitleAndScript()

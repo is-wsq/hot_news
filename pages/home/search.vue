@@ -2,16 +2,15 @@
   <view class="search">
     <view class="search-header">
       <uni-icons class="icon" type="left" size="24" color="#ffffff" @click="back"></uni-icons>
-      <input class="search-input" v-model="keyword" placeholder="输入关键字" :focus="true"
-             @input="keyInput" @confirm="search">
+      <input class="search-input" v-model="keyword" placeholder="输入关键字" :focus="true" @confirm="search">
       </input>
       <view class="search-count">
         <uni-icons fontFamily="CustomFont" color="#ffffff" size="20">{{'\ue607'}}</uni-icons>
-        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">3</view>
+        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">4</view>
       </view>
       <uni-icons class="icon" type="search" size="24" color="#ffffff" @click="search"></uni-icons>
     </view>
-    <view class="history" v-if="!searchNews.newsTitle">
+    <view class="history" v-if="!searchNews">
       <view class="history-title">
         <view style="color: #ffffff;margin-left: 10px;width: calc(100% - 40px);">历史搜索</view>
         <uni-icons type="trash-filled" size="20" color="#9a9a9a" @click="clearHistory"></uni-icons>
@@ -19,18 +18,17 @@
       <view class="tags">
         <view v-for="(item, index) in history" :key="index">
           <uni-tag circle style="background-color: #303030;border: none;color: #E5E5E5;min-width: 80px;"
-                   :text="item.keyword"
-                   @click="searchByHistory(item.keyword)"></uni-tag>
+                   :text="item.keyword" @click="searchByHistory(item)"></uni-tag>
         </view>
       </view>
     </view>
-    <view v-if="searchNews.newsTitle">
+    <view v-if="searchNews">
       <view class="search-list" @click="goto()">
-        <view class="search-title">{{ searchNews.newsTitle }}</view>
-        <view class="search-details">{{ searchNews.newsDetails }}</view>
+        <view class="search-title">{{ searchNews.title }}</view>
+        <view class="search-details">{{ searchNews.details }}</view>
       </view>
     </view>
-    <view v-if="!searchNews.newsTitle" class="custom" @click="toCustom('/pages/home/custom')">
+    <view v-if="!searchNews" class="custom" @click="toCustom('/pages/home/custom')">
       <view class="custom-text">自定义文案</view>
       <uni-icons type="right" size="18" color="#ffffff" class="custom-icon"></uni-icons>
     </view>
@@ -48,41 +46,38 @@ export default {
       userId: '',
       keyword: '',
       history: [],
-      searchNews: {},
+      searchNews: null,
       isLoading: false
     }
   },
   mounted() {
     this.userId = uni.getStorageSync('userId') || ''
-    this.queryHistory()
+    this.queryHistoryCopy()
+    this.searchNews = uni.getStorageSync('searchNews')
     uni.removeStorageSync(`${this.userId}_script`)
   },
   methods: {
     clearHistory() {
-      uni.removeStorageSync(`${this.userId}_history`)
-      this.queryHistory()
+
     },
-    searchByHistory(keyword) {
-      this.keyword = keyword
-      this.search()
+    searchByHistory(item) {
+      this.searchNews = item
+      uni.setStorageSync('searchNews', item)
     },
-    queryHistory() {
-      this.history = uni.getStorageSync(`${this.userId}_history`) || []
-      this.searchNews = uni.getStorageSync('searchNews') || []
-    },
-    keyInput() {
-      if (this.keyword.length === 0) {
-        this.queryHistory()
+    queryHistoryCopy() {
+      let params = {
+        user_id: this.userId,
+        is_news: 1
       }
+      this.$http.get('/copywriting_history/query', params).then(res => {
+        if (res.status === 'success') {
+          this.history = res.data
+        }
+      })
     },
     search() {
       if (this.keyword.length === 0) {
         return
-      }
-      let history = uni.getStorageSync(`${this.userId}_history`) || []
-      if (history.findIndex(item => item.keyword === this.keyword) === -1) {
-        history.unshift({keyword: this.keyword})
-        uni.setStorageSync(`${this.userId}_history`, history)
       }
       this.isLoading = true
       this.$nextTick(() => {
@@ -97,17 +92,14 @@ export default {
           this.searchNews = res.data
           uni.setStorageSync('searchNews', res.data)
           this.isLoading = false
+          this.queryHistoryCopy()
         } else {
           this.$tip.confirm(res.message, false)
         }
       })
     },
     goto() {
-      let newsDetail = {
-        title: this.searchNews.newsTitle,
-        details: this.searchNews.newsDetails,
-      }
-      uni.setStorageSync('newsDetail', newsDetail)
+      uni.setStorageSync('news', this.searchNews)
       uni.redirectTo({
         url: '/pages/home/detail?type=redirectTo'
       })
