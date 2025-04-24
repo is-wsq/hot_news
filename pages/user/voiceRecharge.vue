@@ -144,32 +144,30 @@ export default {
         let params = {
           user_id: uni.getStorageSync('userId'),
           code: code,
-          count: this.selected.id === 4? this.count : this.selected.count,
+          count: this.selected.id === 4? parseInt(this.count) : this.selected.count,
           package_id: uni.getStorageSync('packageId'),
         }
-        this.$tip.confirm(JSON.stringify(params),false).then(() => {
-          this.$http.post('/package/buy/balance', params).then(res => {
-            if (res.status === 'success') {
-              let self = this
-              window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-                // 将回调页面重新设置成当前页面
-                window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
-
-                if (result.err_msg === "get_brand_wcpay_request:ok") {
-                  self.$tip.confirm('支付成功', false).then(() => {
-                    self.queryUserInfo()
-                  })
-                } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
-                  self.$tip.confirm('已取消支付', false)
-                } else {
-                  self.$tip.confirm('支付失败', false)
-                }
-              });
-            } else {
+        this.$http.post('/package/buy/balance', params).then(res => {
+          if (res.status === 'success') {
+            let self = this
+            window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+              // 将回调页面重新设置成当前页面
               window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
-              this.$tip.confirm(res.message, false);
-            }
-          })
+
+              if (result.err_msg === "get_brand_wcpay_request:ok") {
+                self.$tip.confirm('支付成功', false).then(() => {
+                  self.queryUserInfo()
+                })
+              } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
+                self.$tip.confirm('已取消支付', false)
+              } else {
+                self.$tip.confirm('支付失败', false)
+              }
+            });
+          } else {
+            window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
+            this.$tip.confirm(res.message, false);
+          }
         })
       }
     },
