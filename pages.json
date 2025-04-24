@@ -14,6 +14,9 @@
       "path": "pages/home/copy"
     },
     {
+      "path": "pages/home/history"
+    },
+    {
       "path": "pages/home/custom"
     },
     {

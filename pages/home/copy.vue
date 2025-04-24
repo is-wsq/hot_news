@@ -6,7 +6,7 @@
       <view class="regenerate" @click="generate">重新生成</view>
     </view>
     <view class="copy-content">
-      <input style="height: 23px;line-height: 23px;width: 100%;text-align: center;color: #ffffff" type="text" v-model="title"></input>
+      <input style="height: 23px;line-height: 23px;width: 100%;text-align: center;color: #ffffff" type="text" v-model="news.title"></input>
       <view class="copy-card">
         <view class="copy-script">{{ script }}</view>
         <view style="height: 40px;display: flex;align-items: end">
@@ -106,7 +106,6 @@ export default {
       styleId: '',
       isEdit: false,
       focus: false,
-      title: '',
       script: '',
       scriptIndex: 0,
       scriptList: [],
@@ -128,7 +127,7 @@ export default {
     this.news = uni.getStorageSync('news')
     this.word = uni.getStorageSync('wordSetting')
     this.styleId = uni.getStorageSync('styleId')
-    this.queryTitleAndScript()
+    this.queryHistoryCopy()
     this.queryVoices()
     this.queryFigures()
   },
@@ -168,6 +167,7 @@ export default {
       let params = {
         user_id: this.userId,
         style_id: this.styleId,
+        news_id: this.news.id,
         news_details: this.news.details,
         count: this.word,
       }
@@ -177,10 +177,7 @@ export default {
       })
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
-          this.script = res.data.script
-          this.scriptList.push(res.data.script)
-          this.scriptIndex = this.scriptList.length
-          uni.setStorageSync(`${this.userId}_script`, this.scriptList)
+          this.queryHistoryCopy()
           this.isLoading = false
         } else {
           this.$tip.confirm(res.message,false)
@@ -191,17 +188,17 @@ export default {
       return Date.now() + Math.random().toString(36).substr(2, 16);
     },
     generateVideo() {
-      if (this.title === ''){
+      if (this.news.title === ''){
         this.$tip.confirm('请输入标题',false)
         return
       }
       let task = {
-        name: this.title,
+        name: this.news.title,
         type: 'video',
         id: this.generateUniqueId(),
       }
       this.$store.dispatch('task/addTask', task);
-      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+      this.$tip.confirm(`已创建口播视频生成任务\n《${this.news.title}.mp4》`,false).then(res => {
         uni.switchTab({
           url: '/pages/template/index'
         })
@@ -212,7 +209,7 @@ export default {
         user_id: this.userId,
         voice_id: this.voice.voice_id,
         video_id: this.figure.video_id,
-        filename: this.title
+        filename: this.news.title
       }
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         this.$store.dispatch("task/removeTask", task.id);
@@ -224,13 +221,18 @@ export default {
         }
       })
     },
-    queryTitleAndScript() {
-      this.scriptList = uni.getStorageSync(`${this.userId}_script`) || []
-      if (this.scriptList.length > 0) {
-        this.scriptIndex = this.scriptList.length
-        this.script = this.scriptList[this.scriptIndex - 1]
+    queryHistoryCopy() {
+      let params = {
+        user_id: this.userId,
+        is_news: 0
       }
-      this.title = this.news.title
+      this.$http.get('/copywriting_history/query', params).then(res => {
+        if (res.status === 'success') {
+          this.scriptList = res.data
+          this.scriptIndex = this.scriptList.length
+          this.script = this.scriptList[this.scriptIndex - 1].copywriting
+        }
+      })
     },
     previewAudio(item, index) {
       if (this.testAudioContext) {
@@ -283,7 +285,7 @@ export default {
     },
     prevScript() {
       if (this.scriptIndex > 1) {
-        this.script = this.scriptList[this.scriptIndex - 2]
+        this.script = this.scriptList[this.scriptIndex - 2].copywriting
         this.scriptIndex = this.scriptIndex - 1
       } else {
         this.$tip.confirm('已经是第一条口播文案了',false)
@@ -291,7 +293,7 @@ export default {
     },
     nextScript() {
       if (this.scriptIndex < this.scriptList.length) {
-        this.script = this.scriptList[this.scriptIndex]
+        this.script = this.scriptList[this.scriptIndex].copywriting
         this.scriptIndex = this.scriptIndex + 1
       } else {
         this.$tip.confirm('已经是最后一条口播文案了',false)

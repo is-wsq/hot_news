@@ -3,6 +3,7 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">热点详情</view>
+      <view class="history-copy" @click="viewHistory">历史文案</view>
     </view>
     <view class="detail-title">{{ news.title }}</view>
     <view class="detail-card">
@@ -163,6 +164,7 @@ export default {
       let params = {
         user_id: this.userId,
         style_id: this.style.id,
+        news_id: this.news.id,
         news_details: this.news.details,
         count: this.word,
       }
@@ -173,9 +175,6 @@ export default {
       this.$http.post('/copywriting/voice', params, 300000).then(res => {
         if (res.status === 'success') {
           this.isLoading = false
-          let scriptList = uni.getStorageSync(`${this.userId}_script`) || []
-          scriptList.push(res.data.script)
-          uni.setStorageSync(`${this.userId}_script`, scriptList)
           uni.setStorageSync('wordSetting', this.word)
           uni.setStorageSync('styleId', this.style.id)
           uni.redirectTo({url: `/pages/home/copy?type=${this.type}`})
@@ -190,6 +189,9 @@ export default {
       }else {
         uni.switchTab({url: '/pages/home/index'})
       }
+    },
+    viewHistory() {
+      uni.redirectTo({url: '/pages/home/history'})
     }
   }
 }
@@ -199,6 +201,12 @@ export default {
 @font-face {
   font-family: CustomFont;
   src: url('/static/iconfont.ttf');
+}
+
+.history-copy {
+  position: absolute;
+  right: 5px;
+  color: #ffffff;
 }
 
 .detail {
