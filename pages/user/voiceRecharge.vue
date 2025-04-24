@@ -30,7 +30,7 @@
             <view v-if="item.id === 4 && selected.id === 4" style="font-size: 14px;margin-top: 5px">{{ (price * count).toFixed(1) }}￥</view>
           </view>
         </view>
-        <input v-if="selected.id === 4" class="voice-recharge-other" :value="1" type="number" placeholder="输入充值数字人额度数量" />
+        <input v-if="selected.id === 4" class="voice-recharge-other" v-model="count" type="number" placeholder="输入充值数字人额度数量" />
         <view v-else style="height: 64px"></view>
         <view class="top_up-desc">
           <view style="margin-bottom: 5px">充值说明：</view>
@@ -147,27 +147,29 @@ export default {
           count: this.selected.id === 4? this.count : this.selected.count,
           package_id: uni.getStorageSync('packageId'),
         }
-        this.$http.post('/package/buy/balance', params).then(res => {
-          if (res.status === 'success') {
-            let self = this
-            window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
-              // 将回调页面重新设置成当前页面
-              window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
+        this.$tip.confirm(JSON.stringify(params),false).then(() => {
+          this.$http.post('/package/buy/balance', params).then(res => {
+            if (res.status === 'success') {
+              let self = this
+              window.WeixinJSBridge.invoke('getBrandWCPayRequest', res.data, function (result) {
+                // 将回调页面重新设置成当前页面
+                window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
 
-              if (result.err_msg === "get_brand_wcpay_request:ok") {
-                self.$tip.confirm('支付成功', false).then(() => {
-                  self.queryUserInfo()
-                })
-              } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
-                self.$tip.confirm('已取消支付', false)
-              } else {
-                self.$tip.confirm('支付失败', false)
-              }
-            });
-          } else {
-            window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
-            this.$tip.confirm(res.message, false);
-          }
+                if (result.err_msg === "get_brand_wcpay_request:ok") {
+                  self.$tip.confirm('支付成功', false).then(() => {
+                    self.queryUserInfo()
+                  })
+                } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
+                  self.$tip.confirm('已取消支付', false)
+                } else {
+                  self.$tip.confirm('支付失败', false)
+                }
+              });
+            } else {
+              window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
+              this.$tip.confirm(res.message, false);
+            }
+          })
         })
       }
     },
