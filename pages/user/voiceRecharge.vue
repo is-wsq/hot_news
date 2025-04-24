@@ -82,6 +82,14 @@ export default {
   },
   onLoad() {
     this.queryUserInfo()
+    if (uni.getStorageSync('selected')) {
+      this.selected = uni.getStorageSync('selected')
+      uni.removeStorageSync('selected')
+    }
+    if (uni.getStorageSync('count')) {
+      this.count = uni.getStorageSync('count')
+      uni.removeStorageSync('count')
+    }
     this.queryPackageInfo()
     this.checkWeChatCode()
   },
@@ -117,6 +125,8 @@ export default {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
+        uni.setStorageSync('selected', this.selected)
+        uni.setStorageSync('count', this.count)
         const scope = 'snsapi_base'
         const state = 'STATE123'
         window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
@@ -145,8 +155,9 @@ export default {
               window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
 
               if (result.err_msg === "get_brand_wcpay_request:ok") {
-                self.$tip.confirm('支付成功', false)
-                self.queryUserInfo()
+                self.$tip.confirm('支付成功', false).then(() => {
+                  self.queryUserInfo()
+                })
               } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
                 self.$tip.confirm('已取消支付', false)
               } else {
@@ -154,6 +165,7 @@ export default {
               }
             });
           } else {
+            window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voiceRecharge');
             this.$tip.confirm(res.message, false);
           }
         })

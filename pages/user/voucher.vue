@@ -109,6 +109,7 @@ export default {
               }
             });
           } else {
+            window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/voucher');
             this.$tip.confirm(res.message, false);
           }
         })

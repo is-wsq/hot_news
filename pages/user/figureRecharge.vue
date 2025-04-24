@@ -26,7 +26,7 @@
           <view class="figure-recharge-item" v-for="item in recharges" :key="item.id"
                 :class="{ 'figure-recharge-active': item.id === selected.id }" @click="selected = item">
             <view>{{ item.name }}</view>
-            <view v-if="item.id !== 4" style="font-size: 14px;margin-top: 5px">{{ (price * item.count.toFixed(1)) }}￥</view>
+            <view v-if="item.id !== 4" style="font-size: 14px;margin-top: 5px">{{ (price * item.count).toFixed(1) }}￥</view>
             <view v-if="item.id === 4 && selected.id === 4" style="font-size: 14px;margin-top: 5px">{{ (price * count).toFixed(1) }}￥</view>
           </view>
         </view>
@@ -157,8 +157,9 @@ export default {
               window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/figureRecharge');
 
               if (result.err_msg === "get_brand_wcpay_request:ok") {
-                self.$tip.confirm('支付成功', false)
-                self.queryUserInfo()
+                self.$tip.confirm('支付成功', false).then(() => {
+                  self.queryUserInfo()
+                })
               } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
                 self.$tip.confirm('已取消支付', false)
               } else {
@@ -166,6 +167,7 @@ export default {
               }
             });
           } else {
+            window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/figureRecharge');
             this.$tip.confirm(res.message, false);
           }
         })

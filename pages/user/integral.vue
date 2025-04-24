@@ -106,8 +106,9 @@ export default {
               window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/integral');
 
               if (result.err_msg === "get_brand_wcpay_request:ok") {
-                self.$tip.confirm('支付成功', false)
-                self.queryInfo()
+                self.$tip.confirm('支付成功', false).then(() => {
+                  self.queryInfo()
+                })
               } else if (result.err_msg === "get_brand_wcpay_request:cancel") {
                 self.$tip.confirm('已取消支付', false)
               } else {
@@ -115,6 +116,7 @@ export default {
               }
             });
           } else {
+            window.history.replaceState({}, '', 'https://tellai.tech/#/pages/user/integral');
             this.$tip.confirm(res.message, false);
           }
         })
