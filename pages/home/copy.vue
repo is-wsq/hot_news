@@ -39,10 +39,10 @@
     </view>
     <view style="position: relative;width: 250px;margin: 0 auto">
       <button class="copy-btn" @click="generateVideo">口播视频生成</button>
-      <view class="word-count">
-        <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>
-        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
-      </view>
+<!--      <view class="word-count">-->
+<!--        <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>-->
+<!--        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>-->
+<!--      </view>-->
     </view>
     <uni-popup ref="voicePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0" @maskClick="closeVoicePopup">
       <view class="popup-content">
@@ -217,7 +217,7 @@ export default {
       this.$http.post('/figure/generate_video', params, 1800000).then(res => {
         this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
-          this.$tip.confirm(`口播视频${task.name}生成任务成功`, false)
+          this.$tip.confirm(`口播视频${task.name}生成任务成功，本次生成耗费${res.data.point}个积分`, false)
           uni.removeStorageSync(`${this.userId}_script`)
         }else {
           this.$tip.confirm(`口播视频${task.name}生成任务失败,${res.message}`, false)

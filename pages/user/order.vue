@@ -11,7 +11,7 @@
           <view class="order-item-left-time" v-if="item.created_at">{{ formatTime(item.created_at) }}</view>
         </view>
         <view class="order-item-right">
-          <view class="order-item-right-title">积分：{{ item.points > 0? '+' + item.points : item.points }}</view>
+          <view class="order-item-right-title" v-if="item.points">积分：{{ item.points > 0? '+' + item.points : item.points }}</view>
           <view class="order-item-right-title" v-if="item.figure">形象：{{ item.figure > 0? '+' + item.figure : item.figure }}</view>
           <view class="order-item-right-title" v-if="item.timbre">声音：{{ item.timbre > 0? '+' + item.timbre : item.timbre }}</view>
         </view>
