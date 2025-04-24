@@ -26,8 +26,8 @@
           <view class="figure-recharge-item" v-for="item in recharges" :key="item.id"
                 :class="{ 'figure-recharge-active': item.id === selected.id }" @click="selected = item">
             <view>{{ item.name }}</view>
-            <view v-if="item.id !== 4" style="font-size: 14px;margin-top: 5px">{{ price * item.count }}￥</view>
-            <view v-if="item.id === 4 && selected.id === 4" style="font-size: 14px;margin-top: 5px">{{ price * count}}￥</view>
+            <view v-if="item.id !== 4" style="font-size: 14px;margin-top: 5px">{{ (price * item.count.toFixed(1)) }}￥</view>
+            <view v-if="item.id === 4 && selected.id === 4" style="font-size: 14px;margin-top: 5px">{{ (price * count).toFixed(1) }}￥</view>
           </view>
         </view>
         <input v-if="selected.id === 4" class="figure-recharge-other" v-model="count" type="number" placeholder="输入充值数字人额度数量" />
@@ -82,6 +82,14 @@ export default {
   },
   onLoad() {
     this.queryUserInfo()
+    if (uni.getStorageSync('selected')) {
+      this.selected = uni.getStorageSync('selected')
+      uni.removeStorageSync('selected')
+    }
+    if (uni.getStorageSync('count')) {
+      this.count = uni.getStorageSync('count')
+      uni.removeStorageSync('count')
+    }
     this.queryPackageInfo()
     this.checkWeChatCode()
   },
@@ -119,6 +127,8 @@ export default {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
         const redirectUri = encodeURIComponent(window.location.href)
+        uni.setStorageSync('selected', this.selected)
+        uni.setStorageSync('count', this.count)
         const scope = 'snsapi_base'
         const state = 'STATE123'
         window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
