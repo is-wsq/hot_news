@@ -42,11 +42,11 @@
       <button class="buy-btn" @click="getWeChatCode">立即购买</button>
       <view class="voice-recharge-agreement">
         购买即同意
-        <view @click="goto('/pages/agreement/membership?back=integral')">《付费服务协议》</view>
+        <view @click="goto('/pages/agreement/membership?back=voiceRecharge')">《付费服务协议》</view>
         、
-        <view @click="goto('/pages/agreement/user?back=integral')">《用户协议》</view>
+        <view @click="goto('/pages/agreement/user?back=voiceRecharge')">《用户协议》</view>
         与
-        <view @click="goto('/pages/agreement/privacy?back=integral')">《隐私条款》</view>
+        <view @click="goto('/pages/agreement/privacy?back=voiceRecharge')">《隐私条款》</view>
       </view>
     </view>
   </view>
@@ -172,7 +172,7 @@ export default {
       }
     },
     goto(url) {
-
+      uni.redirectTo({ url: url })
     },
     back() {
       uni.switchTab({ url: '/pages/user/index' })
