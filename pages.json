@@ -41,6 +41,9 @@
       "path": "pages/template/transcribe"
     },
     {
+      "path": "pages/template/recorder"
+    },
+    {
       "path": "pages/user/index"
     },
     {

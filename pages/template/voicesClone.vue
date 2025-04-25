@@ -180,7 +180,7 @@ export default {
       uni.redirectTo({url: '/pages/template/voice'})
     },
     gotoTranscribe() {
-      uni.redirectTo({url: '/pages/template/transcribe'})
+      uni.redirectTo({url: '/pages/template/recorder'})
     }
   },
   beforeDestroy() {
