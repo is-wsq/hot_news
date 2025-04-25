@@ -66,6 +66,7 @@ export default {
             console.log('文件',self.recorder)
 
             const file = new File([self.recorder.data], 'recording.wav', { type: 'audio/wav' });
+            console.log('文件1',file)
 
             uni.uploadFile({
               url: 'https://u480621-ba45-4d5fd016.westc.gpuhub.com:8443/files/upload_file',
