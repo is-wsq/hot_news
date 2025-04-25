@@ -65,9 +65,11 @@ export default {
 
             console.log('文件',self.recorder)
 
+            const file = new File([self.recorder.data], 'recording.wav', { type: 'audio/wav' });
+
             uni.uploadFile({
               url: 'https://u480621-ba45-4d5fd016.westc.gpuhub.com:8443/files/upload_file',
-              filePath: self.recorder.localUrl,
+              filePath: file.path,
               name: 'file',
               header: {'Authorization': token},
               timeout: 1800000,
