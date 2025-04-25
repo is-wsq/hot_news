@@ -32,22 +32,22 @@
 				throw '当前浏览器不支持'
 			}
 
-			this.getRecorderManager()
-		},
-		methods: {
-			getRecorderManager() {
-				this.audio = document.createElement('audio')
-				navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-					this.isUserMedia = true
-					stream.getTracks().forEach((track) => {
-						track.stop()
-					})
-				}).catch(err => {
-					this.onErrorHandler(err)
-				})
-			},
-			start() {
-				if (!this.isUserMedia) return console.log('设备不支持')
+    this.getRecorderManager()
+  },
+  methods: {
+    getRecorderManager() {
+      this.audio = document.createElement('audio')
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        this.isUserMedia = true
+        stream.getTracks().forEach((track) => {
+          track.stop()
+        })
+      }).catch(err => {
+        this.onErrorHandler(err)
+      })
+    },
+    start() {
+      if (!this.isUserMedia) return console.log('设备不支持')
 
 				navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
 					this.startTime = new Date().getTime()
@@ -70,7 +70,7 @@
 				this.chunks.push(e.data)
 			},
 			saveRecordingData() {
-				const blob = new Blob(this.chunks, { 'type': 'audio/mp3' }),
+				const blob = new Blob(this.chunks, { 'type': 'audio/mpeg' }),
 					localUrl = URL.createObjectURL(blob)
 
 				const endTime = new Date().getTime()

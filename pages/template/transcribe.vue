@@ -65,7 +65,7 @@ export default {
 
             console.log('文件',self.recorder)
 
-            const file = new File([self.recorder.data], 'recording.wav', { type: 'audio/mp3' });
+            const file = new File([self.recorder.data], 'recording.wav', { type: 'audio/wav' });
             console.log('文件1',file)
 
             uni.uploadFile({
