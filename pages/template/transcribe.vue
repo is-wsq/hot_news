@@ -11,6 +11,7 @@
       </view>
       <mumu-recorder ref='recorder' @success='handlerSuccess' @error='handlerError'></mumu-recorder>
     </view>
+    <button type="primary" @click='handlerSave'>保存</button>
   </view>
 </template>
 
