@@ -41,6 +41,9 @@ export default {
       tag.download = '录音'
       tag.click()
     },
+    generateUniqueId() {
+      return Date.now() + Math.random().toString(36).substr(2, 16);
+    },
     handlerUpload() {
       let self = this
       uni.request({
