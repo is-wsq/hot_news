@@ -85,7 +85,7 @@ export default {
           }
           let type = res.tempFiles[0].type.indexOf('audio') !== -1 ? 'audio' : 'video'
           console.log(res.tempFiles[0])
-          // self.getFileId(type, res.tempFiles[0])
+          self.getFileId(type, res.tempFiles[0])
         }
       });
     },

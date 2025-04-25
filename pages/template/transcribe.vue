@@ -11,9 +11,9 @@
       </view>
       <mumu-recorder ref='recorder' @success='handlerSuccess' @error='handlerError'></mumu-recorder>
     </view>
-    <view>
-      <button type="primary" @click='handlerSave'>保存</button>
-      <button type="primary" @click='handlerUpload'>上传</button>
+    <view style="display: flex;gap: 20px">
+      <button style="flex: 1" type="primary" @click='handlerSave'>保存</button>
+      <button style="flex: 1" type="primary" @click='handlerUpload'>上传</button>
     </view>
   </view>
 </template>
@@ -140,5 +140,6 @@ export default {
 <style scoped>
 .transcribe {
   height: 100vh;
+  color: #ffffff;
 }
 </style>
