@@ -86,7 +86,8 @@
         this.chunks.push(e.data)
       },
       saveRecordingData() {
-        const blob = new Blob(this.chunks, { 'type': 'audio/mpeg' }),
+        console.log(this.chunks)
+        const blob = new Blob(this.chunks, { 'type': 'mp3/mpeg' }),
             localUrl = URL.createObjectURL(blob)
 
         const endTime = new Date().getTime()
