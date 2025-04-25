@@ -83,7 +83,7 @@ export default {
       })
     },
     startRecording() {
-      if (Recorder) {
+      if (!Recorder) {
         uni.showToast({ title: '录音库未加载', icon: 'none' })
         return
       }
