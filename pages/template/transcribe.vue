@@ -70,7 +70,7 @@ export default {
 
             uni.uploadFile({
               url: 'https://u480621-ba45-4d5fd016.westc.gpuhub.com:8443/files/upload_file',
-              filePath: file.path,
+              file: file,
               name: 'file',
               header: {'Authorization': token},
               timeout: 1800000,
