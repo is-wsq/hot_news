@@ -11,7 +11,7 @@
 <script>
 let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
 
-import Recorder from 'recorder-core';
+import '../../static/js/recorder.wav.min.js'
 
 export default {
   data() {
@@ -83,12 +83,12 @@ export default {
       })
     },
     startRecording() {
-      if (!Recorder) {
+      if (!window.Recorder) {
         uni.showToast({ title: '录音库未加载', icon: 'none' })
         return
       }
 
-      this.recorder = Recorder({
+      this.recorder = window.Recorder({
         type: 'wav',
         sampleRate: 16000,
         bitRate: 16
