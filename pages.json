@@ -38,6 +38,9 @@
       "path": "pages/template/voice"
     },
     {
+      "path": "pages/template/transcribe"
+    },
+    {
       "path": "pages/user/index"
     },
     {

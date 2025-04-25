@@ -48,7 +48,7 @@
       </view>
     </view>
     <view style="height: 90px;display: flex;align-items: center;gap: 30px">
-      <button class="transcribe">在线录制</button>
+      <button class="transcribe" @click="gotoTranscribe">在线录制</button>
       <button class="upload" @click="uploadFile">上传文件</button>
     </view>
   </view>
@@ -177,6 +177,9 @@ export default {
     },
     gotoVoices() {
       uni.redirectTo({url: '/pages/template/voice'})
+    },
+    gotoTranscribe() {
+      uni.redirectTo({url: '/pages/template/transcribe'})
     }
   },
   beforeDestroy() {
