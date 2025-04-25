@@ -7,169 +7,138 @@
     <view>
       <audio :src='recorder.localUrl' v-if='recorder' name='本地录音' controls="true"></audio>
       <view @click='handlerOnCahnger'>
-        {{!status?'开始录音':'结束录音'}}
+        {{ !status ? '开始录音' : '结束录音' }}
       </view>
+      <mumu-recorder ref='recorder' @success='handlerSuccess' @error='handlerError'></mumu-recorder>
     </view>
-    <button type="primary" @click='handlerSave'>保存</button>
+    <view>
+      <button type="primary" @click='handlerSave'>保存</button>
+      <button type="primary" @click='handlerUpload'>上传</button>
+    </view>
   </view>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        status: false,
-        isUserMedia: false,
-        stream: null,
-        audio: null,
-        recorder: null,
-        chunks: [],
-        startTime: 0
-      }
+let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
+
+import MumuRecorder from '@/uni_modules/mumu-recorder/components/mumu-recorder/mumu-recorder.vue'
+
+export default {
+  components: {MumuRecorder},
+  data() {
+    return {
+      status: false,
+      recorder: null
+    }
+  },
+  mounted() {
+
+  },
+  methods: {
+    handlerSave() {
+      let tag = document.createElement('a')
+      tag.href = this.recorder.localUrl
+      tag.download = '录音'
+      tag.click()
     },
-    beforeDestroy() {
-      this.stop()
+    handlerUpload() {
+      let self = this
+      uni.request({
+        url: `https://live.tellai.tech/api/media/files/upload_request?type=audio`,
+        header: {'Authorization': token},
+        success: (res) => {
+          let status = res.data.base_resp
+          let data = res.data.data
+          if (status.status_code === 200) {
+            let task = {
+              name: '录制.wav',
+              type: 'voice',
+              id: self.generateUniqueId(),
+            }
+            self.$store.dispatch('task/addTask', task);
+            self.$tip.confirm(`已创建音色克隆任务\n《录制.wav》`, false).then(res => {
+              uni.redirectTo({url: '/pages/template/voice'})
+            })
+
+            uni.uploadFile({
+              url: data.upload_url,
+              filePath: self.recorder.localUrl,
+              name: 'file',
+              header: {'Authorization': token},
+              timeout: 1800000,
+              formData: {'file_id': data.file_id, 'type': 'audio'},
+              success: (result) => {
+                let upload_status = JSON.parse(result.data).base_resp
+                let upload_data = JSON.parse(result.data).data
+                if (upload_status.status_code === 200) {
+                  self.clone(upload_data.file_id, task)
+                } else {
+                  self.$store.dispatch("task/removeTask", task.id);
+                  self.$tip.confirm(`${task.name}音色克隆任务失败,${upload_status.status_msg}`, false)
+                }
+              }
+            });
+          } else {
+            this.$tip.confirm(status.status_msg, false)
+          }
+        }
+      });
     },
-    mounted() {
-      if (origin.indexOf('https') === -1) {
-        this.$emit('error', '100')
-        throw '请在 https 环境中使用本插件。'
+    clone(fileId, task) {
+      let params = {
+        file_id: fileId,
+        user_id: uni.getStorageSync('userId'),
+        audio_name: task.name.substring(0, task.name.lastIndexOf('.'))
       }
-      if (!navigator.mediaDevices || !window.MediaRecorder) {
-        this.$emit('error', '101')
-        throw '当前浏览器不支持'
-      }
-
-      this.getRecorderManager()
-    },
-    methods: {
-      handlerSave() {
-        let tag = document.createElement('a')
-        tag.href = this.recorder.localUrl
-        tag.download = '录音'
-        tag.click()
-      },
-      getRecorderManager() {
-        this.audio = document.createElement('audio')
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-          this.isUserMedia = true
-          stream.getTracks().forEach((track) => {
-            track.stop()
-          })
-        }).catch(err => {
-          this.onErrorHandler(err)
-        })
-      },
-      start() {
-        if (!this.isUserMedia) return console.log('设备不支持')
-
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-          this.startTime = new Date().getTime()
-          this.stream = stream
-          this.recorder = new MediaRecorder(stream)
-          this.recorder.ondataavailable = this.getRecordingData
-          this.recorder.onstop = this.saveRecordingData
-          this.recorder.start()
-        }).catch(err => {
-          this.onErrorHandler(err)
-        })
-        this.status = !this.status
-      },
-      stop() {
-        this.recorder.stop()
-        this.stream.getTracks().forEach((track) => {
-          track.stop()
-        })
-        this.status = !this.status
-      },
-      getRecordingData(e) {
-        this.chunks.push(e.data)
-      },
-      saveRecordingData() {
-        console.log(this.chunks)
-        const blob = new Blob(this.chunks, { 'type': 'audio/mp3' }),
-            localUrl = URL.createObjectURL(blob)
-
-        const endTime = new Date().getTime()
-
-        const options = {
-          path: localUrl,
-          lastModified: Date.now()
-        }
-
-        const file = new File([blob], '录音.mp3', options)
-        console.log(file)
-
-        let duration = (endTime - this.startTime).toString().split('')
-        duration.splice(duration.length - 2)
-        duration.splice(duration.length - 1, 0, '.')
-        duration = parseFloat(duration.join(''))
-
-        const recorder = {
-          data: blob,
-          duration: duration,
-          localUrl: localUrl
-        }
-        this.handlerSuccess(recorder)
-      },
-      onErrorHandler(err) {
-        console.log(err)
-        if (err.name === 'NotAllowedError') {
-          this.handlerError('201')
-          throw '用户拒绝了当前的浏览器实例的访问请求'
-        }
-
-        if (err.name === 'NotReadableError') {
-          this.handlerError('202')
-          throw '当前浏览器不支持'
-        }
-
-        this.handlerError('500')
-        throw '调用失败，原因不详'
-
-      },
-
-
-      handlerOnCahnger() {
-        if (this.status) {
-          this.stop()
+      this.$http.post('/timbres/clone/file_id', params).then(res => {
+        this.$store.dispatch("task/removeTask", task.id);
+        if (res.status === 'success') {
+          this.$tip.confirm(`${task.name}音色克隆任务成功`, false)
         } else {
-          this.start()
+          this.$tip.confirm(`${task.name}音色克隆任务失败,${res.message}`, false)
         }
-      },
-      handlerSuccess(res) {
-        console.log(res)
-        this.recorder = res
-      },
-      handlerError(code) {
-        switch (code) {
-          case '101':
-            uni.showModal({
-              content: '当前浏览器版本较低，请更换浏览器使用，推荐在微信中打开。'
-            })
-            break;
-          case '201':
-            uni.showModal({
-              content: '麦克风权限被拒绝，请刷新页面后授权麦克风权限。'
-            })
-            break
-          default:
-            uni.showModal({
-              content: '未知错误，请刷新页面重试'
-            })
-            break
-        }
-      },
-      back() {
-        uni.redirectTo({ url: '/pages/template/voicesClone' })
+      })
+    },
+    handlerOnCahnger() {
+      if (this.status) {
+        this.$refs.recorder.stop()
+      } else {
+        this.$refs.recorder.start()
+      }
+      this.status = !this.status
+    },
+    handlerSuccess(res) {
+      this.$tip.confirm(JSON.stringify(res), false)
+      this.recorder = res
+    },
+    handlerError(code) {
+      switch (code) {
+        case '101':
+          uni.showModal({
+            content: '当前浏览器版本较低，请更换浏览器使用，推荐在微信中打开。'
+          })
+          break;
+        case '201':
+          uni.showModal({
+            content: '麦克风权限被拒绝，请刷新页面后授权麦克风权限。'
+          })
+          break
+        default:
+          uni.showModal({
+            content: '未知错误，请刷新页面重试'
+          })
+          break
       }
     },
-  }
+    back() {
+      uni.redirectTo({url: '/pages/template/voicesClone'})
+    }
+  },
+}
 </script>
 
 <style scoped>
 .transcribe {
   height: 100vh;
-  color: #ffffff;
 }
 </style>
