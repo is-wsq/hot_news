@@ -44,7 +44,7 @@ export default {
             })
 
             uni.uploadFile({
-              url: 'https://u480621-ba45-4d5fd016.westc.gpuhub.com:8443/files/upload_file',
+              url: data.upload_url,
               file: this.file,
               name: 'file',
               header: {'Authorization': token},
