@@ -4,7 +4,8 @@
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">在线录制</view>
     </view>
-    <view> <audio :src='recorder.localUrl' v-if='recorder' name='本地录音' controls="true"></audio>
+    <view>
+      <audio :src='recorder.localUrl' v-if='recorder' name='本地录音' controls="true"></audio>
       <view @click='handlerOnCahnger'>
         {{!status?'开始录音':'结束录音'}}
       </view>
@@ -74,5 +75,6 @@
 <style scoped>
 .transcribe {
   height: 100vh;
+  color: #ffffff;
 }
 </style>
