@@ -92,6 +92,14 @@
 
         const endTime = new Date().getTime()
 
+        const options = {
+          path: localUrl,
+          lastModified: Date.now()
+        }
+
+        const file = new File([blob], '录音.mp3', options)
+        console.log(file)
+
         let duration = (endTime - this.startTime).toString().split('')
         duration.splice(duration.length - 2)
         duration.splice(duration.length - 1, 0, '.')
