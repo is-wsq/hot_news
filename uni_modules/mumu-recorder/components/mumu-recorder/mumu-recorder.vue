@@ -52,7 +52,7 @@
 				navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
 					this.startTime = new Date().getTime()
 					this.stream = stream
-					this.recorder = new MediaRecorder(stream, { mimeType: 'audio/wav' })
+					this.recorder = new MediaRecorder(stream, { mimeType: 'audio/mp3' })
 					this.recorder.ondataavailable = this.getRecordingData
 					this.recorder.onstop = this.saveRecordingData
 					this.recorder.start()
@@ -70,7 +70,7 @@
 				this.chunks.push(e.data)
 			},
 			saveRecordingData() {
-				const blob = new Blob(this.chunks, { 'type': 'audio/wav' }),
+				const blob = new Blob(this.chunks, { 'type': 'audio/mp3' }),
 					localUrl = URL.createObjectURL(blob)
 
 				const endTime = new Date().getTime()
