@@ -52,7 +52,7 @@
 				navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
 					this.startTime = new Date().getTime()
 					this.stream = stream
-					this.recorder = new MediaRecorder(stream, { mimeType: 'audio/mp3' })
+					this.recorder = new MediaRecorder(stream)
 					this.recorder.ondataavailable = this.getRecordingData
 					this.recorder.onstop = this.saveRecordingData
 					this.recorder.start()
