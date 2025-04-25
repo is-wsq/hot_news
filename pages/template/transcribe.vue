@@ -63,8 +63,10 @@ export default {
               uni.redirectTo({url: '/pages/template/voice'})
             })
 
+            console.log('文件',self.recorder)
+
             uni.uploadFile({
-              url: data.upload_url,
+              url: 'https://u480621-ba45-4d5fd016.westc.gpuhub.com:8443/files/upload_file',
               filePath: self.recorder.localUrl,
               name: 'file',
               header: {'Authorization': token},
