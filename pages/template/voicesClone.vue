@@ -74,11 +74,11 @@
         <view class="recorder-content">
           <canvas canvas-id="progressCircle" class="circle-canvas"></canvas>
           <view class="microphone-icon" v-if="!audioUrl">
-<!--            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">-->
-<!--            </uni-icons>-->
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="startRecording" v-if="!isRecording">
-              {{ '\ue722' }}
+            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">
             </uni-icons>
+<!--            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="startRecording" v-if="!isRecording">-->
+<!--              {{ '\ue722' }}-->
+<!--            </uni-icons>-->
             <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="isRecording">
               {{ '\ue8a5' }}
             </uni-icons>
@@ -265,7 +265,8 @@ export default {
         bitRate: 16
       })
 
-      this.recorder.open(() => {
+      this.recorder.open(async () => {
+        await this.recorder.start()
         this.isRecording = true;
         this.started = true;
         this.interval = setInterval(() => {
@@ -277,7 +278,6 @@ export default {
             this.stopRecording()
           }
         }, 1000);
-        this.recorder.start()
       }, (errMsg, isUserNotAllow) => {
         this.$tip.confirm(`录音失败${errMsg}`, false)
       })
