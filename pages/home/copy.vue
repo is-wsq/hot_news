@@ -119,7 +119,8 @@ export default {
       testAudioIndex: null,
       isLoading: false,
       fileInfo: {},
-      type: ''
+      type: '',
+      userInfo: {}
     }
   },
   mounted() {
@@ -130,6 +131,7 @@ export default {
     this.queryHistoryCopy()
     this.queryVoices()
     this.queryFigures()
+    this.queryUserInfo()
   },
   onLoad: function (option) {
     if (option.type){
@@ -137,6 +139,13 @@ export default {
     }
   },
   methods: {
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+        }
+      })
+    },
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
@@ -192,6 +201,10 @@ export default {
         this.$tip.confirm('请输入标题',false)
         return
       }
+      if (this.userInfo.point < 20) {
+        this.$tip.confirm(`积分余额须大于20方可使用本服务，当前剩余积分${this.userInfo.point}`,false)
+        return;
+      }
       let task = {
         name: this.news.title,
         type: 'video',
@@ -215,7 +228,6 @@ export default {
         this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
           this.$tip.confirm(`口播视频${task.name}生成任务成功，本次生成耗费${res.data.point}个积分`, false)
-          uni.removeStorageSync(`${this.userId}_script`)
         }else {
           this.$tip.confirm(`口播视频${task.name}生成任务失败,${res.message}`, false)
         }

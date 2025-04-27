@@ -54,7 +54,6 @@ export default {
     this.userId = uni.getStorageSync('userId') || ''
     this.queryHistoryCopy()
     this.searchNews = uni.getStorageSync('searchNews')
-    uni.removeStorageSync(`${this.userId}_script`)
   },
   methods: {
     clearHistory() {

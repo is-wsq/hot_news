@@ -352,6 +352,7 @@ export default {
       if (self.recorderFile) {
         this.$tip.confirm('请先录制音频', false)
       }
+      self.handleCancel()
       uni.request({
         url: `https://live.tellai.tech/api/media/files/upload_request?type=audio`,
         header: {'Authorization': token},
