@@ -341,7 +341,8 @@ export default {
     },
     handleCancel() {
       this.stopAudio()
-      this.stopRecording()
+      if (this.isRecording)
+        this.stopRecording()
 
       this.reRecord()
       this.$refs.recorder.close()
