@@ -11,6 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-stop-recording:before {
+  content: "\ue8a5";
+}
+
 .icon-weikong:before {
   content: "\ue600";
 }

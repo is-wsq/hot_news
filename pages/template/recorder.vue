@@ -1,10 +1,27 @@
 <template>
-  <view class="container">
-    <button @click="startRecording">开始录音</button>
-    <button @click="stopRecording">停止</button>
+  <view class="pages recorder">
+<!--    <button @click="startRecording">开始录音</button>-->
+<!--    <button @click="stopRecording">停止</button>-->
 
-    <audio v-if="audioUrl" :src="audioUrl" controls></audio>
-    <button @click="handlerUpload">上传</button>
+<!--    <audio v-if="audioUrl" :src="audioUrl" controls></audio>-->
+<!--    <button @click="handlerUpload">上传</button>-->
+    <view class="nav-bar-header">
+      <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
+      <view class="nav-bar-title">在线录制</view>
+    </view>
+    <view class="autocue">
+
+    </view>
+    <view class="recorder-audio">
+      <audio :src="audioUrl" controls></audio>
+    </view>
+    <view class="recorder-box">
+      <canvas width="100%" height="100%" ref="canvas"></canvas>
+      <view class="recorder-btn">
+        <uni-icons style="border: 1px solid #ffffff;" type="mic-filled" v-if="!recorder" size="30" color="#ffffff" @click="startRecording"></uni-icons>
+        <uni-icons type="micoff-filled" v-else size="30" color="#ffffff" @click="stopRecording"></uni-icons>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -19,6 +36,9 @@ export default {
       recorder: null,
       audioUrl: '',     // 录音本地播放地址
     }
+  },
+  beforeDestroy() {
+    if (this.recorder) this.recorder.close();
   },
   methods: {
     generateUniqueId() {
@@ -108,6 +128,7 @@ export default {
 
       this.recorder.stop((blob, duration) => {
         this.audioUrl = URL.createObjectURL(blob)
+        this.recorder.close()
 
         this.file = new File([blob], 'recording.wav', { type: 'audio/wav' })
         console.log(this.file)
@@ -116,23 +137,47 @@ export default {
         uni.showToast({ title: '停止失败', icon: 'none' })
       })
     },
+
+    back() {
+      uni.redirectTo({url: '/pages/template/voicesClone'})
+    }
   }
 }
 </script>
 
 <style scoped>
-.container {
-  padding: 40rpx;
+.recorder {
+  height: 100vh;
 }
-button {
-  display: block;
-  margin: 20rpx auto;
-  width: 200rpx;
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  background-color: #007AFF;
-  color: white;
-  border-radius: 10rpx;
+
+.autocue {
+  height: 200px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.recorder-audio {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid red;
+}
+
+.recorder-box {
+  height: calc(100vh - 465px);
+  border: 1px solid red;
+  position: relative;
+}
+
+.recorder-btn {
+  position: absolute;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+  border: 1px solid yellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

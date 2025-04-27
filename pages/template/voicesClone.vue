@@ -22,18 +22,22 @@
           <view class="clone-case-title">原声</view>
           <view class="clone-case-btn">
             <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-if="playIndex !== 0"
-                       @click="playAudio(0)">{{'\ue618'}}</uni-icons>
+                       @click="playAudio(0)">{{ '\ue618' }}
+            </uni-icons>
             <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-else
-                       @click="stopAudio()">{{'\ue637'}}</uni-icons>
+                       @click="stopAudio()">{{ '\ue637' }}
+            </uni-icons>
           </view>
         </view>
         <view class="clone-case">
           <view class="clone-case-title">克隆</view>
           <view class="clone-case-btn">
             <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-if="playIndex !== 1"
-                       @click="playAudio(1)">{{'\ue618'}}</uni-icons>
+                       @click="playAudio(1)">{{ '\ue618' }}
+            </uni-icons>
             <uni-icons fontFamily="CustomFont" class="off-on" size="18" color="#ffffff" v-else
-                       @click="stopAudio()">{{'\ue637'}}</uni-icons>
+                       @click="stopAudio()">{{ '\ue637' }}
+            </uni-icons>
           </view>
         </view>
       </view>
@@ -41,9 +45,11 @@
       <view class="voice-tutorial">
         <view class="voice-tutorial-btn">
           <uni-icons fontFamily="CustomFont" class="off-on" size="22" color="#ffffff" v-if="playIndex !== 2"
-                     @click="playAudio(2)">{{'\ue618'}}</uni-icons>
+                     @click="playAudio(2)">{{ '\ue618' }}
+          </uni-icons>
           <uni-icons fontFamily="CustomFont" class="off-on" size="22" color="#ffffff" v-else
-                     @click="stopAudio()">{{'\ue637'}}</uni-icons>
+                     @click="stopAudio()">{{ '\ue637' }}
+          </uni-icons>
         </view>
       </view>
     </view>
@@ -51,11 +57,50 @@
       <button class="transcribe" @click="gotoTranscribe">在线录制</button>
       <button class="upload" @click="uploadFile">上传文件</button>
     </view>
+    <uni-popup ref="recorder" :mask-click="false" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+      <view class="popup-content">
+        <view style="height: 200px;line-height: 50px">
+          <view class="text">
+            <text
+              v-for="(char, index) in chars"
+              :key="index"
+              class="word"
+              :class="{ active: started }"
+              :style="started ? { animationDelay: (index * delayStep) + 's' } : {}"
+            >{{ char }}</text>
+          </view>
+        </view>
+        <view style="font-size: 14px;margin-top: 20px;text-align: center"></view>
+        <view class="recorder-content">
+          <canvas canvas-id="progressCircle" class="circle-canvas"></canvas>
+          <view class="microphone-icon" v-if="!audioUrl">
+            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">
+            </uni-icons>
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-else>{{ '\ue8a5' }}
+            </uni-icons>
+          </view>
+          <view class="microphone-icon" v-else>
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" v-if="playIndex !== 3" @click="playAudio(3)">
+              {{ '\ue618' }}
+            </uni-icons>
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" v-else @click="stopAudio()">{{ '\ue637' }}
+            </uni-icons>
+          </view>
+          <view class="timer">{{ formatTime(duration) }}</view>
+          <view style="margin-top: 20px;font-size: 14px;text-align: center;height: 40px" @click="reRecord">{{ !audioUrl? '重新录制': '' }}</view>
+          <view style="display: flex;gap: 30px;margin-top: 20px">
+            <button class="recorder-btn" @click="$refs.recorder.close">取消</button>
+            <button class="recorder-btn" style="background-color: #e99d42;">完成</button>
+          </view>
+        </view>
+      </view>
+    </uni-popup>
   </view>
 </template>
 
 <script>
 let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
+import '../../static/js/recorder.wav.min.js'
 
 export default {
   data() {
@@ -67,8 +112,26 @@ export default {
         'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/272f4122-ab74-4bc1-9cd6-c29a41fb508f/20250327145319386.wav',
         'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/272f4122-ab74-4bc1-9cd6-c29a41fb508f/20250326155734776.wav',
         'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/272f4122-ab74-4bc1-9cd6-c29a41fb508f/20250326154431855.wav',
-      ]
+      ],
+      duration: 0,
+      interval: null,
+      progress: 0,
+      ctx: null,
+      isRecording: false,
+      audioUrl: null,
+      recorderFile: null,
+      sentence: "现在做视频真的太简单了，使用奇点数字人，不用真人出镜也能出爆款视频。",
+      delayStep: 0.277, // 每个字的延迟秒数（10秒/36字）
+      started: false
     }
+  },
+  computed: {
+    chars() {
+      return this.sentence.split('');
+    }
+  },
+  mounted() {
+    this.ctx = uni.createCanvasContext('progressCircle', this);
   },
   methods: {
     uploadFile() {
@@ -152,7 +215,11 @@ export default {
         this.stopAudio()
       }
       this.audioCtx = uni.createInnerAudioContext()
-      this.audioCtx.src = this.audios[index]
+      if (index === 3) {
+        this.audioCtx.src = this.audioUrl
+      } else {
+        this.audioCtx.src = this.audios[index]
+      }
       this.audioCtx.autoplay = true;
       this.audioCtx.play();
       this.audioCtx.onPlay(() => {
@@ -180,7 +247,83 @@ export default {
       uni.redirectTo({url: '/pages/template/voice'})
     },
     gotoTranscribe() {
-      uni.redirectTo({url: '/pages/template/recorder'})
+      // uni.redirectTo({url: '/pages/template/recorder'})
+      this.$refs.recorder.open()
+      setTimeout(() => {
+        this.drawProgress()
+      }, 50)
+    },
+    startRecording() {
+      this.recorder = window.Recorder({
+        type: 'wav',
+        sampleRate: 16000,
+        bitRate: 16
+      })
+
+      this.recorder.open(() => {
+        this.isRecording = true;
+        this.started = true;
+        this.interval = setInterval(() => {
+          if (this.duration < 15) {
+            this.duration++;
+            this.progress = (this.duration % 60) / 15; // 每60秒转一圈
+            this.drawProgress();
+          } else {
+            this.stopRecording()
+          }
+        }, 1000);
+        this.recorder.start()
+      }, (errMsg, isUserNotAllow) => {
+        this.$tip.confirm(`录音失败${errMsg}`, false)
+      })
+    },
+    stopRecording() {
+      if (!this.recorder) return
+
+      this.recorder.stop((blob, duration) => {
+        this.isRecording = false;
+        this.started = false;
+        this.progress = 0
+        clearInterval(this.interval);
+        this.audioUrl = URL.createObjectURL(blob)
+        this.recorder.close()
+
+        this.recorderFile = new File([blob], 'recording.wav', {type: 'audio/wav'})
+      }, err => {
+        this.$tip.confirm(`停止失败${err}`, false)
+      })
+    },
+    drawProgress() {
+      const ctx = this.ctx;
+      const r = 40; // 圆半径
+      ctx.clearRect(0, 0, 100, 100);
+
+      // 绘制灰色底圈
+      ctx.beginPath();
+      ctx.arc(50, 50, r, 0, 2 * Math.PI);
+      ctx.setStrokeStyle('#eeeeee');
+      ctx.setLineWidth(4);
+      ctx.stroke();
+
+      // 绘制进度圈
+      ctx.beginPath();
+      ctx.arc(50, 50, r, -0.5 * Math.PI, (this.progress * 2 * Math.PI) - 0.5 * Math.PI);
+      ctx.setStrokeStyle('#00C6AD'); // 进度条颜色
+      ctx.setLineWidth(4);
+      ctx.stroke();
+
+      ctx.draw();
+    },
+    formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    },
+    reRecord() {
+      this.audioUrl = null
+      this.progress = 0
+      this.duration = 0
+      this.started = false;
     }
   },
   beforeDestroy() {
@@ -291,5 +434,77 @@ export default {
   background-color: #E99D42;
   color: #ffffff;
   border-radius: 10px;
+}
+
+.popup-content {
+  background-color: #292929;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 10px;
+  height: 500px;
+}
+
+.popup-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.recorder-content {
+  position: relative;
+  height: 100px;
+}
+
+.circle-canvas {
+  width: 100px;
+  height: 100px;
+  margin: 20px auto 0;
+}
+
+.microphone-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.timer {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.recorder-btn {
+  flex: 1;
+  height: 45px;
+  line-height: 45px;
+  font-size: 14px;
+  border-radius: 8px;
+  color: #101010;
+}
+
+.text {
+  font-size: 16px;
+  color: #888;
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+}
+.word {
+  opacity: 1;
+  color: #888;
+}
+.word.active {
+  animation: highlight 0.5s forwards;
+}
+@keyframes highlight {
+  from {
+    color: #888;
+  }
+  to {
+    color: #E99D42;
+  }
 }
 </style>
