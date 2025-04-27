@@ -74,9 +74,9 @@
         <view class="recorder-content">
           <canvas canvas-id="progressCircle" class="circle-canvas"></canvas>
           <view class="microphone-icon" v-if="!audioUrl">
-<!--            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="isRecording">-->
+<!--            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">-->
 <!--            </uni-icons>-->
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="!isRecording">
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="startRecording" v-if="!isRecording">
               {{ '\ue722' }}
             </uni-icons>
             <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="isRecording">
