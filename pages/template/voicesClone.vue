@@ -96,7 +96,7 @@
             {{ audioUrl ? '重新录制' : '' }}
           </view>
           <view style="display: flex;gap: 30px;margin-top: 20px">
-            <button class="recorder-btn" @click="$refs.recorder.close">取消</button>
+            <button class="recorder-btn" @click="handleCancel">取消</button>
             <button class="recorder-btn" style="background-color: #e99d42;" @click="handleConfirm">完成</button>
           </view>
         </view>
@@ -125,6 +125,7 @@ export default {
       progress: 0,
       ctx: null,
       isRecording: false,
+      recorder: null,
       audioUrl: null,
       recorderFile: null,
       sentence: "现在做视频真的太简单了，使用奇点数字人，不用真人出镜也能出爆款视频。",
@@ -336,6 +337,13 @@ export default {
       this.drawProgress();
       this.duration = 0
       this.started = false;
+    },
+    handleCancel() {
+      if (this.recorder) {
+        this.recorder.close()
+      }
+      this.reRecord()
+      this.$refs.recorder.close()
     },
     handleConfirm() {
       let self = this
