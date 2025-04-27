@@ -76,8 +76,8 @@
           <view class="microphone-icon" v-if="!audioUrl">
             <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="isRecording">
             </uni-icons>
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="!isRecording">
-              {{ '\ue8a5' }}
+            <uni-icons fontFamily="CustomFont" size="35" color="#ffffff" @click="stopRecording()" v-if="!isRecording">
+              {{ '\ue722' }}
             </uni-icons>
           </view>
           <view class="microphone-icon" v-if="audioUrl">
