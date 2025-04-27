@@ -337,16 +337,20 @@ export default {
       this.drawProgress();
       this.duration = 0
       this.started = false;
+      this.recorderFile = null
     },
     handleCancel() {
-      if (this.recorder) {
-        this.recorder.close()
-      }
+      this.stopAudio()
+      this.stopRecording()
+
       this.reRecord()
       this.$refs.recorder.close()
     },
     handleConfirm() {
       let self = this
+      if (self.recorderFile) {
+        this.$tip.confirm('请先录制音频', false)
+      }
       uni.request({
         url: `https://live.tellai.tech/api/media/files/upload_request?type=audio`,
         header: {'Authorization': token},
@@ -368,7 +372,7 @@ export default {
 
             uni.uploadFile({
               url: data.upload_url,
-              file: this.recorderFile,
+              file: self.recorderFile,
               name: 'file',
               header: {'Authorization': token},
               timeout: 1800000,
@@ -385,7 +389,7 @@ export default {
               }
             });
           } else {
-            this.$tip.confirm(status.status_msg, false)
+            self.$tip.confirm(status.status_msg, false)
           }
         }
       });
