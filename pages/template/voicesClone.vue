@@ -62,12 +62,13 @@
         <view style="height: 200px;line-height: 50px">
           <view class="text">
             <text
-              v-for="(char, index) in chars"
-              :key="index"
-              class="word"
-              :class="{ active: started }"
-              :style="started ? { animationDelay: (index * delayStep) + 's' } : {}"
-            >{{ char }}</text>
+                v-for="(char, index) in chars"
+                :key="index"
+                class="word"
+                :class="{ active: started }"
+                :style="started ? { animationDelay: (index * delayStep) + 's' } : {}"
+            >{{ char }}
+            </text>
           </view>
         </view>
         <view style="font-size: 14px;margin-top: 20px;text-align: center"></view>
@@ -76,12 +77,11 @@
           <view class="microphone-icon" v-if="!audioUrl">
             <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">
             </uni-icons>
-<!--            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="startRecording" v-if="!isRecording">-->
-<!--              {{ '\ue722' }}-->
-<!--            </uni-icons>-->
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="isRecording">
-              {{ '\ue8a5' }}
+            <uni-icons type="smallcircle-filled" size="30" color="#ffffff" @click="stopRecording" v-if="isRecording">
             </uni-icons>
+            <!--            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording" v-if="isRecording">-->
+            <!--              {{ '\ue8a5' }}-->
+            <!--            </uni-icons>-->
           </view>
           <view class="microphone-icon" v-if="audioUrl">
             <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" v-if="playIndex !== 3" @click="playAudio(3)">
@@ -92,10 +92,12 @@
             </uni-icons>
           </view>
           <view class="timer">{{ formatTime(duration) }}</view>
-          <view style="margin-top: 20px;font-size: 14px;text-align: center;height: 40px" @click="reRecord">{{ audioUrl? '重新录制': '' }}</view>
+          <view style="margin-top: 20px;font-size: 14px;text-align: center;height: 40px" @click="reRecord">
+            {{ audioUrl ? '重新录制' : '' }}
+          </view>
           <view style="display: flex;gap: 30px;margin-top: 20px">
             <button class="recorder-btn" @click="$refs.recorder.close">取消</button>
-            <button class="recorder-btn" style="background-color: #e99d42;">完成</button>
+            <button class="recorder-btn" style="background-color: #e99d42;" @click="handleConfirm">完成</button>
           </view>
         </view>
       </view>
@@ -167,12 +169,12 @@ export default {
           let data = res.data.data
           if (status.status_code === 200) {
             let task = {
-              name: file.name,
+              name: file.name.substring(0, task.name.lastIndexOf('.')),
               type: 'voice',
               id: self.generateUniqueId(),
             }
             self.$store.dispatch('task/addTask', task);
-            self.$tip.confirm(`已创建音色克隆任务\n《${file.name}》`, false).then(res => {
+            self.$tip.confirm(`已创建音色克隆任务\n《${task.name}》`, false).then(res => {
               uni.redirectTo({url: '/pages/template/voice'})
             })
 
@@ -204,7 +206,7 @@ export default {
       let params = {
         file_id: fileId,
         user_id: uni.getStorageSync('userId'),
-        audio_name: task.name.substring(0, task.name.lastIndexOf('.'))
+        audio_name: task.name
       }
       this.$http.post('/timbres/clone/file_id', params).then(res => {
         this.$store.dispatch("task/removeTask", task.id);
@@ -259,6 +261,7 @@ export default {
       }, 50)
     },
     startRecording() {
+      uni.showToast({title: '录音环境准备中', icon: 'loading'})
       this.recorder = window.Recorder({
         type: 'wav',
         sampleRate: 16000,
@@ -267,6 +270,7 @@ export default {
 
       this.recorder.open(async () => {
         await this.recorder.start()
+        uni.hideToast()
         this.isRecording = true;
         this.started = true;
         this.interval = setInterval(() => {
@@ -294,7 +298,8 @@ export default {
         this.audioUrl = URL.createObjectURL(blob)
         this.recorder.close()
 
-        this.recorderFile = new File([blob], 'recording.wav', {type: 'audio/wav'})
+        let index = uni.getStorageSync('recorderIndex') ? uni.getStorageSync('recorderIndex') + 1 : 1
+        this.recorderFile = new File([blob], `recording_${index}.wav`, {type: 'audio/wav'})
       }, err => {
         this.$tip.confirm(`停止失败${err}`, false)
       })
@@ -331,6 +336,51 @@ export default {
       this.drawProgress();
       this.duration = 0
       this.started = false;
+    },
+    handleConfirm() {
+      let self = this
+      uni.request({
+        url: `https://live.tellai.tech/api/media/files/upload_request?type=audio`,
+        header: {'Authorization': token},
+        success: (res) => {
+          let status = res.data.base_resp
+          let data = res.data.data
+          if (status.status_code === 200) {
+            let index = uni.getStorageSync('recorderIndex') ? uni.getStorageSync('recorderIndex') + 1 : 1
+            uni.setStorageSync('recorderIndex', index)
+            let task = {
+              name: `recording_${index}`,
+              type: 'voice',
+              id: self.generateUniqueId(),
+            }
+            self.$store.dispatch('task/addTask', task);
+            self.$tip.confirm(`已创建音色克隆任务\n《${task.name}》`, false).then(res => {
+              uni.redirectTo({url: '/pages/template/voice'})
+            })
+
+            uni.uploadFile({
+              url: data.upload_url,
+              file: this.recorderFile,
+              name: 'file',
+              header: {'Authorization': token},
+              timeout: 1800000,
+              formData: {'file_id': data.file_id, 'type': 'audio'},
+              success: (result) => {
+                let upload_status = JSON.parse(result.data).base_resp
+                let upload_data = JSON.parse(result.data).data
+                if (upload_status.status_code === 200) {
+                  self.clone(upload_data.file_id, task)
+                } else {
+                  self.$store.dispatch("task/removeTask", task.id);
+                  self.$tip.confirm(`${task.name}音色克隆任务失败,${upload_status.status_msg}`, false)
+                }
+              }
+            });
+          } else {
+            this.$tip.confirm(status.status_msg, false)
+          }
+        }
+      });
     }
   },
   beforeDestroy() {
@@ -499,13 +549,16 @@ export default {
   flex-wrap: wrap;
   text-align: center;
 }
+
 .word {
   opacity: 1;
   color: #888;
 }
+
 .word.active {
   animation: highlight 0.5s forwards;
 }
+
 @keyframes highlight {
   from {
     color: #888;
