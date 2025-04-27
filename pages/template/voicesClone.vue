@@ -76,18 +76,20 @@
           <view class="microphone-icon" v-if="!audioUrl">
             <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">
             </uni-icons>
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-else>{{ '\ue8a5' }}
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="isRecording">
+              {{ '\ue8a5' }}
             </uni-icons>
           </view>
-          <view class="microphone-icon" v-else>
+          <view class="microphone-icon" v-if="audioUrl">
             <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" v-if="playIndex !== 3" @click="playAudio(3)">
               {{ '\ue618' }}
             </uni-icons>
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" v-else @click="stopAudio()">{{ '\ue637' }}
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" v-else @click="stopAudio()">
+              {{ '\ue637' }}
             </uni-icons>
           </view>
           <view class="timer">{{ formatTime(duration) }}</view>
-          <view style="margin-top: 20px;font-size: 14px;text-align: center;height: 40px" @click="reRecord">{{ !audioUrl? '重新录制': '' }}</view>
+          <view style="margin-top: 20px;font-size: 14px;text-align: center;height: 40px" @click="reRecord">{{ audioUrl? '重新录制': '' }}</view>
           <view style="display: flex;gap: 30px;margin-top: 20px">
             <button class="recorder-btn" @click="$refs.recorder.close">取消</button>
             <button class="recorder-btn" style="background-color: #e99d42;">完成</button>
