@@ -74,9 +74,9 @@
         <view class="recorder-content">
           <canvas canvas-id="progressCircle" class="circle-canvas"></canvas>
           <view class="microphone-icon" v-if="!audioUrl">
-            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="!isRecording">
+            <uni-icons type="mic-filled" size="30" color="#ffffff" @click="startRecording" v-if="isRecording">
             </uni-icons>
-            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="isRecording">
+            <uni-icons fontFamily="CustomFont" size="25" color="#ffffff" @click="stopRecording()" v-if="!isRecording">
               {{ '\ue8a5' }}
             </uni-icons>
           </view>
@@ -286,6 +286,7 @@ export default {
         this.isRecording = false;
         this.started = false;
         this.progress = 0
+        this.drawProgress();
         clearInterval(this.interval);
         this.audioUrl = URL.createObjectURL(blob)
         this.recorder.close()
@@ -324,6 +325,7 @@ export default {
     reRecord() {
       this.audioUrl = null
       this.progress = 0
+      this.drawProgress();
       this.duration = 0
       this.started = false;
     }
