@@ -30,6 +30,7 @@ export default {
   },
   onShow() {
     this.queryNews()
+    uni.removeStorageSync(`${uni.getStorageSync('userId')}_script`)
     uni.removeStorageSync('searchNews')
   },
   methods: {
@@ -37,7 +38,7 @@ export default {
       this.$http.get('/news/rank').then(res => {
         if (res.status === 'success') {
           this.news = res.data
-        }else {
+        } else {
           this.$tip.confirm(res.message, false)
         }
       })
