@@ -6,7 +6,7 @@
         <view class="user-phone">{{ userInfo.username }}</view>
         <view style="display: flex">
           <view class="user-identity">{{ userTypeName  }}</view>
-          <view style="font-size: 12px;color: #BBBBBB;line-height: 30px">{{'有效期至' + userInfo.expire_time.replace('T',' ')}}</view>
+          <view style="font-size: 12px;color: #BBBBBB;line-height: 30px">{{'有效期至' + expireTime}}</view>
         </view>
       </view>
     </view>
@@ -73,6 +73,7 @@ export default {
         { type: 3, name: '年会员' },
       ],
       userTypeName: '',
+      expireTime: '',
       functions: [
         {name: '隐私条款', path: '/pages/agreement/privacy?back=index'},
         {name: '用户协议', path: '/pages/agreement/user?back=index'},
@@ -94,6 +95,7 @@ export default {
         if (res.status ==='success') {
           this.userInfo = res.data
           this.userTypeName = this.userTypeNames.find(item => item.type === this.userInfo.userType).name
+          this.expireTime = this.userInfo.expire_time.replace('T',' ')
         }
       })
     },
