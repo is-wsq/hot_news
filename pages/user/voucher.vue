@@ -55,11 +55,13 @@ export default {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       voucherInfos: [],
       selectedVoucher: {},
+      userInfo: {}
     }
   },
   onLoad() {
     this.queryInfo()
     this.checkWeChatCode()
+    this.queryUserInfo()
   },
   beforeDestroy() {
     uni.removeStorageSync('packageId')
@@ -69,16 +71,24 @@ export default {
       return /MicroMessenger/i.test(navigator.userAgent);
     },
     getWeChatCode() {
-      if (this.isWeChat()) {
-        const appId = 'wx48d2e02bf10f849c'
-        const redirectUri = encodeURIComponent(window.location.href)
-        uni.setStorageSync('redirectUri', window.location.href)
-        const scope = 'snsapi_base'
-        const state = 'STATE123'
-        // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
-        window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
-      } else {
-        this.$tip.confirm('需要在微信环境下才能使用', false)
+      if (this.selectedVoucher.member_type < this.userInfo.userType) {
+        this.$tip.confirm('无法购买比当前会员等级低的套餐', false)
+      }else {
+        this.$tip.confirm('未过期前购买新的会员套餐，时长会覆盖而不是延长', true).then(() => {
+          if (this.isWeChat()) {
+            const appId = 'wx48d2e02bf10f849c'
+            const redirectUri = encodeURIComponent(window.location.href)
+            uni.setStorageSync('redirectUri', window.location.href)
+            const scope = 'snsapi_base'
+            const state = 'STATE123'
+            // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+            window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`)
+          } else {
+            this.$tip.confirm('需要在微信环境下才能使用', false)
+          }
+        }).catch(() => {
+          this.$tip.toast('已取消购买', 1000)
+        })
       }
     },
     getUrlCode(name) {
@@ -114,6 +124,13 @@ export default {
           }
         })
       }
+    },
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: uni.getStorageSync('userId')}).then(async res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+        }
+      })
     },
     queryInfo() {
       let params = {
