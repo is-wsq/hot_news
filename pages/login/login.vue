@@ -78,7 +78,7 @@ export default {
   onLoad: function (option) {
     this.type = option.type
     this.path = option.path
-    this.checkWeChatCode()
+    // this.checkWeChatCode()
   },
   methods: {
     login() {
