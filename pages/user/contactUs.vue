@@ -31,6 +31,7 @@
 .contact-us-content {
   height: calc(100vh - 56px);
   background-image: url('/static/img/contact_us.png');
+  background-size: cover;
   background-position: center top;
 }
 </style>

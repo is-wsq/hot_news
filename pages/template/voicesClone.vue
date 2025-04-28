@@ -6,7 +6,7 @@
       <view class="voices-list" @click="gotoVoices">音色列表</view>
     </view>
     <view class="voice-content">
-      <view style="margin-bottom: 15px">正确示例</view>
+      <view style="margin-bottom: 10px">正确示例</view>
       <view style="display: flex">
         <view class="template-img"></view>
         <view class="template-requires">
@@ -16,7 +16,7 @@
           </view>
         </view>
       </view>
-      <view style="margin: 15px 0">克隆案例</view>
+      <view style="margin: 10px 0">克隆案例</view>
       <view style="display: flex;gap: 30px">
         <view class="clone-case">
           <view class="clone-case-title">原声</view>
@@ -41,7 +41,7 @@
           </view>
         </view>
       </view>
-      <view style="margin: 15px 0">音频教程</view>
+      <view style="margin: 10px 0">音频教程</view>
       <view class="voice-tutorial">
         <view class="voice-tutorial-btn">
           <uni-icons fontFamily="CustomFont" class="off-on" size="22" color="#ffffff" v-if="playIndex !== 2"
@@ -428,8 +428,8 @@ export default {
 .template-img {
   background-image: url('/static/img/microphone.png');
   border-radius: 10px;
-  width: 180px;
-  height: 240px;
+  width: 160px;
+  height: 211px;
   margin-right: 5px;
   background-size: cover;
   background-repeat: no-repeat;
@@ -469,12 +469,13 @@ export default {
 }
 
 .voice-tutorial {
-  height: 150px;
+  height: 170px;
   border-radius: 10px;
   background-image: url('/static/img/microphone_copy.png');
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;
+  background-position: 0 -30px;
 }
 
 .voice-tutorial-btn {
