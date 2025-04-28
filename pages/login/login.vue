@@ -228,7 +228,7 @@ export default {
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
           }else {
-            uni.redirectTo({ url: this.path })
+            uni.reLaunch({ url: this.path })
           }
         }else {
           this.$tip.confirm(res.message,false);
