@@ -6,7 +6,7 @@
         <view class="user-phone">{{ userInfo.username }}</view>
         <view style="display: flex">
           <view class="user-identity">{{ userTypeName  }}</view>
-          <view style="font-size: 12px;color: #BBBBBB;line-height: 30px">{{'有效期至' + expireTime}}</view>
+          <view style="font-size: 12px;color: #BBBBBB;line-height: 30px" v-if="userInfo.userType !== 0">{{'有效期至' + expireTime}}</view>
         </view>
       </view>
     </view>

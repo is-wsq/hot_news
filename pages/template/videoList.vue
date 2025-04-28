@@ -5,7 +5,7 @@
       <view class="nav-bar-title">我的作品</view>
       <view class="manageBtn" @click="manage" v-if="videoTasks.length > 0">管理</view>
     </view>
-    <view class="video-list" v-if="videoTasks.length > 0">
+    <view class="video-list" v-if="videoTasks.length > 0 || showReel.length > 0">
       <view class="video-item" v-for="item in videoTasks" :key="item.id">
         <view class="image-wrapper shining">
           <image class="item-img" src="/static/img/20.png"></image>
@@ -101,7 +101,11 @@ export default {
       }
     },
     queryReel() {
-      this.$http.get('/video_record/query', {user_id: uni.getStorageSync('userId')}).then(res => {
+      let params = {
+        user_id: uni.getStorageSync('userId')
+      }
+      this.$http.get('/video_record/query', params).then(res => {
+        console.log('111',res)
         if (res.status === 'success') {
           this.showReel = res.data
         }
