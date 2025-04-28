@@ -16,7 +16,7 @@
     <view class="empty-figure" v-else>
       <uni-icons fontFamily="CustomFont" color="#333333" size="70">{{'\ue76c'}}</uni-icons>
       <view class="empty-figure-title">
-        <view>暂无形象，</view>
+        <view>暂无形象</view>
         <view style="color: #636dae" @click="toClone">去克隆？</view>
       </view>
     </view>
@@ -106,12 +106,12 @@ export default {
     delVideos() {
       let ids = this.selectedFigures.map(item => item.id)
       if (ids.length === 0) {
-        this.$tip.confirm('请先选择要删除的视频', false)
+        this.$tip.confirm('请先选择要删除的数字人形象', false)
         return
       }
       uni.showModal({
         title: '提示',
-        content: '确定要删除选中的视频吗？',
+        content: '确定要删除选中的数字人形象吗？',
         showCancel: true,
         success: res => {
           if (res.confirm) {

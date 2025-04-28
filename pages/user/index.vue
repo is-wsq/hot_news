@@ -4,7 +4,10 @@
       <image class="user-avatar" :src="userInfo.avatar" @click="goto('/pages/user/info')"></image>
       <view class="user-account">
         <view class="user-phone">{{ userInfo.username }}</view>
-        <view class="user-identity">{{ userTypeName }}</view>
+        <view style="display: flex">
+          <view class="user-identity">{{ userTypeName  }}</view>
+          <view style="font-size: 12px;color: #BBBBBB;line-height: 30px">{{'有效期至' + userInfo.expire_time.replace('T',' ')}}</view>
+        </view>
       </view>
     </view>
     <view class="user-info" v-else @click="goto('/pages/login/login?type=switchTab&path=/pages/user/index')">
@@ -146,6 +149,7 @@ export default {
   font-size: 14px;
   line-height: 30px;
   font-weight: bold;
+  margin-right: 10px;
 }
 
 .identity-card {
