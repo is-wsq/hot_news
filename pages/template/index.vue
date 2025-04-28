@@ -118,6 +118,8 @@ export default {
   color: #fff;
   font-size: 20px;
   border-radius: 10px;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .figure-bg {
