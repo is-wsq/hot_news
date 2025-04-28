@@ -225,11 +225,7 @@ export default {
           uni.setStorageSync('userId', res.data.user_id)
           const cleanUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, '', cleanUrl);
-          if (this.type === 'switchTab') {
-            uni.switchTab({ url: this.path })
-          }else {
-            uni.reLaunch({ url: this.path })
-          }
+          window.location.replace(this.path)
         }else {
           this.$tip.confirm(res.message,false);
         }
