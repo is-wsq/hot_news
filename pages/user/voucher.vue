@@ -11,7 +11,7 @@
               :class="{ 'item-active': item.id === selectedVoucher.id }" @click="changePackage(item)">
           <view class="voucher-item-top">{{ item.name }}</view>
           <view class="voucher-item-center">￥{{ item.price }}</view>
-          <view class="voucher-item-bottom">{{ item.unit_price + '/100积分' }}</view>
+          <view class="voucher-item-bottom">￥{{ item.unit_price + '/100积分' }}</view>
         </view>
       </view>
       <view class="vip-interest">

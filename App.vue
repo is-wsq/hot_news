@@ -1,5 +1,7 @@
 <script>
-	export default {
+import wechatToolbarMixin from './common/utils/wechat-toolbar.js';
+  export default {
+    mixins: [wechatToolbarMixin],
 		onLaunch: function() {
 			console.log('App Launch')
 		},
