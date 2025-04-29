@@ -88,14 +88,26 @@ export default {
     if (this.userId !== '') {
       this.queryUserInfo()
     }
+  },
+  mounted() {
     if (typeof window !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent)) {
-      this.hideWeChatToolbar();
+      const hideToolbar = () => {
+        if (typeof WeixinJSBridge !== 'undefined' && WeixinJSBridge.invoke) {
+          console.log('[WeixinJSBridge] hiding toolbar');
+          WeixinJSBridge.invoke('hideToolbar', {}, function (res) {
+            console.log('hideToolbar response:', res);
+          });
+        }
+      };
+
+      if (typeof WeixinJSBridge === 'undefined') {
+        document.addEventListener('WeixinJSBridgeReady', hideToolbar, false);
+      } else {
+        hideToolbar();
+      }
     }
   },
   methods: {
-    hideWeChatToolbar() {
-      window.WeixinJSBridge.invoke('hideToolbar');
-    },
     queryUserInfo() {
       this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
         if (res.status ==='success') {
