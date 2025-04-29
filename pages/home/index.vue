@@ -83,7 +83,6 @@ export default {
 
 .content {
   height: calc(100% - 105px);
-  border: 1px solid red;
   overflow: auto;
 }
 
