@@ -32,6 +32,7 @@ export default {
     this.queryNews()
     uni.removeStorageSync(`${uni.getStorageSync('userId')}_script`)
     uni.removeStorageSync('searchNews')
+    this.$tip.confirm()
   },
   methods: {
     queryNews() {

@@ -17,7 +17,6 @@ export default {
         // 只在 H5 平台下的微信内调用
         if (typeof window !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent)) {
             hideWeChatToolbar();
-            this.$tip.confirm('1111111',false)
         }
     }
 };

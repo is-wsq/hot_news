@@ -88,8 +88,14 @@ export default {
     if (this.userId !== '') {
       this.queryUserInfo()
     }
+    if (typeof window !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent)) {
+      this.hideWeChatToolbar();
+    }
   },
   methods: {
+    hideWeChatToolbar() {
+      window.WeixinJSBridge.invoke('hideToolbar');
+    },
     queryUserInfo() {
       this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
         if (res.status ==='success') {
