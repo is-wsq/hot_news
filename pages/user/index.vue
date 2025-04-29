@@ -89,24 +89,6 @@ export default {
       this.queryUserInfo()
     }
   },
-  mounted() {
-    if (typeof window !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent)) {
-      const hideToolbar = () => {
-        if (typeof WeixinJSBridge !== 'undefined' && WeixinJSBridge.invoke) {
-          console.log('[WeixinJSBridge] hiding toolbar');
-          WeixinJSBridge.invoke('hideToolbar', {}, function (res) {
-            console.log('hideToolbar response:', res);
-          });
-        }
-      };
-
-      if (typeof WeixinJSBridge === 'undefined') {
-        document.addEventListener('WeixinJSBridgeReady', hideToolbar, false);
-      } else {
-        hideToolbar();
-      }
-    }
-  },
   methods: {
     queryUserInfo() {
       this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
