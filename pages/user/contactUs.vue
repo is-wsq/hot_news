@@ -30,8 +30,9 @@
 }
 .contact-us-content {
   height: calc(100vh - 56px);
-  background-image: url('/static/img/contact_us.png');
+  background-image: url('/static/img/contact.jpeg');
   background-size: cover;
   background-position: center top;
+  background-repeat: no-repeat;
 }
 </style>
