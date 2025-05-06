@@ -183,6 +183,7 @@ export default {
           uni.setStorageSync(`${this.userId}_script`, this.scriptList)
           this.isLoading = false
         } else {
+          this.isLoading = false
           this.$tip.confirm(res.message,false)
         }
       })

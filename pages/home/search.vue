@@ -93,6 +93,7 @@ export default {
           this.isLoading = false
           this.queryHistoryCopy()
         } else {
+          this.isLoading = false
           this.$tip.confirm(res.message, false)
         }
       })

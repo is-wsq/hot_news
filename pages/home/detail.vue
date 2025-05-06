@@ -180,6 +180,7 @@ export default {
           uni.setStorageSync('styleId', this.style.id)
           uni.redirectTo({url: `/pages/home/copy?type=${this.type}`})
         } else {
+          this.isLoading = false
           this.$tip.confirm(res.message,false)
         }
       })
