@@ -169,8 +169,9 @@ export default {
           let status = res.data.base_resp
           let data = res.data.data
           if (status.status_code === 200) {
+            console.log(file)
             let task = {
-              name: file.name.substring(0, task.name.lastIndexOf('.')),
+              name: file.name.split('.')[0],
               type: 'voice',
               id: self.generateUniqueId(),
             }
