@@ -3,7 +3,7 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">我的作品</view>
-      <view class="manageBtn" @click="manage" v-if="videoTasks.length > 0">管理</view>
+      <view class="manageBtn" @click="manage" v-if="showReel.length > 0">管理</view>
     </view>
     <view class="video-list" v-if="videoTasks.length > 0 || showReel.length > 0">
       <view class="video-item" v-for="item in videoTasks" :key="item.id">
