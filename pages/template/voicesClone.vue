@@ -350,8 +350,10 @@ export default {
     },
     handleConfirm() {
       let self = this
-      if (self.recorderFile) {
+      let file = self.recorderFile
+      if (!file) {
         this.$tip.confirm('请先录制音频', false)
+        return
       }
       self.handleCancel()
       uni.request({
@@ -375,7 +377,7 @@ export default {
 
             uni.uploadFile({
               url: data.upload_url,
-              file: self.recorderFile,
+              file: file,
               name: 'file',
               header: {'Authorization': token},
               timeout: 1800000,
