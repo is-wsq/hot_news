@@ -429,7 +429,7 @@ export default {
 }
 
 .template-img {
-  background-image: url('/static/img/microphone.png');
+  background-image: url('/static/img/microphone.jpeg');
   border-radius: 10px;
   width: 160px;
   height: 211px;
@@ -474,7 +474,7 @@ export default {
 .voice-tutorial {
   height: 170px;
   border-radius: 10px;
-  background-image: url('/static/img/microphone_copy.png');
+  background-image: url('/static/img/microphone_copy.jpeg');
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;

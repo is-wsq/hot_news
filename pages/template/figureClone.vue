@@ -73,9 +73,9 @@ export default {
     return {
       requires: ['提交1-3分钟的视频片段', '使用高分辨率相机和麦克风', '录制环境光线充足、安静', '保持人物一直在画框中', '直视镜头', '适当配合通用手势'],
       errors: [
-        {name: '遮住嘴巴', img: '/static/img/error_v1.png'},
-        {name: '人脸出框', img: '/static/img/error_v2.png'},
-        {name: '侧脸拍摄', img: '/static/img/error_v3.png'},
+        {name: '遮住嘴巴', img: '/static/img/error_v1.jpeg'},
+        {name: '人脸出框', img: '/static/img/error_v2.jpeg'},
+        {name: '侧脸拍摄', img: '/static/img/error_v3.jpeg'},
       ],
       contentWidth: 0,
       errorWidth: 0,
@@ -223,7 +223,7 @@ export default {
 }
 
 .template-img {
-  background-image: url('/static/img/correct.png');
+  background-image: url('/static/img/correct.jpeg');
   border-radius: 10px;
   width: 180px;
   height: 240px;
