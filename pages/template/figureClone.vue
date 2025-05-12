@@ -59,16 +59,19 @@
         </view>
       </view>
     </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="视频上传中，请勿离开"/>
   </view>
 </template>
 
 <script>
 import {mapGetters} from "vuex";
+import LoadingVideo from "../../components/loading-video.vue";
 let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
 
 
 export default {
   name: 'figureClone',
+  components: {LoadingVideo},
   data() {
     return {
       requires: ['提交1-3分钟的视频片段', '使用高分辨率相机和麦克风', '录制环境光线充足、安静', '保持人物一直在画框中', '直视镜头', '适当配合通用手势'],
@@ -85,7 +88,8 @@ export default {
       selectedFile: null,
       cloneSound: false,
       uploadUrl: '',
-      fileId: ''
+      fileId: '',
+      isLoading: false
     }
   },
   mounted() {
@@ -147,9 +151,9 @@ export default {
         id: self.generateUniqueId(),
         name: self.selectedFile.name,
       };
-      self.$store.dispatch("task/addTask", task);
-      self.$tip.confirm(`已创建形象克隆任务\n《${self.selectedFile.name}》`,false).then(res => {
-        uni.redirectTo({url: '/pages/template/figures'})
+      self.isLoading = true
+      self.$nextTick(() => {
+        self.$refs.loadingVideo.playVideo()
       })
 
       uni.uploadFile({
@@ -168,10 +172,15 @@ export default {
           let status = JSON.parse(result.data).base_resp
           let data = JSON.parse(result.data).data
           if (status.status_code === 200) {
+            self.isLoading = false
+            self.$store.dispatch("task/addTask", task);
+            self.$tip.confirm(`视频上传成功，已创建形象克隆任务\n《${self.selectedFile.name}》`,false).then(res => {
+              uni.redirectTo({url: '/pages/template/figures'})
+            })
             self.clone(data.file_id,task)
           }else {
-            self.$store.dispatch("task/removeTask", task.id);
-            self.$tip.confirm(`${task.name}形象克隆任务失败,${status.status_msg}`,false)
+            self.isLoading = false
+            self.$tip.confirm(`视频上传失败,${status.status_msg}`,false)
           }
         }
       });
