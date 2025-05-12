@@ -8,7 +8,9 @@
     <view class="copy-content">
       <input style="height: 23px;line-height: 23px;width: 100%;text-align: center;color: #ffffff" type="text" v-model="title"></input>
       <view class="copy-card">
-        <view class="copy-script">{{ script }}</view>
+<!--        <view class="copy-script">{{ script }}</view>-->
+        <textarea class="copy-script" type="text" v-model="script" placeholder-style="color:#9A9A9A"
+                  placeholder="请输入文案内容" :maxlength="-1"></textarea>
         <view style="height: 40px;display: flex;align-items: end">
           <view
               style="margin-left: 18px;width: calc(100% - 36px);color: #d3d3d3;display: flex;justify-content: center;align-items: center">
@@ -357,6 +359,7 @@ export default {
 
 .copy-script {
   height: calc(100% - 40px);
+  width: 100%;
   overflow-y: auto;
   font-size: 14px;
   color: #9A9A9A;

@@ -95,7 +95,7 @@ export default {
         if (res.status ==='success') {
           this.userInfo = res.data
           this.userTypeName = this.userTypeNames.find(item => item.type === this.userInfo.userType).name
-          this.expireTime = this.userInfo.expire_time.replace('T',' ')
+          this.expireTime = this.userInfo.expire_time? this.userInfo.expire_time.replace('T',' ') : ''
         }
       })
     },
