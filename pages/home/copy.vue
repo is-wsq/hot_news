@@ -54,7 +54,7 @@
         <view class="voice-content">
           <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
                 @click="selectedVoice = item">
-            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '' }">
+            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '', backgroundImage: `url(${item.avatar})` }">
               <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-if="testAudioIndex !== index"
                          @click="previewAudio(item,index)">{{'\ue618'}}</uni-icons>
               <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-else
@@ -454,8 +454,8 @@ export default {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #9A9A9A;
   position: relative;
+  background-size: cover;
 }
 
 .off-on {
