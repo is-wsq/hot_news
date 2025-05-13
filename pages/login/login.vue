@@ -223,8 +223,8 @@ export default {
       this.$http.get('/user/wx/auth',{code: code}).then(res => {
         if (res.status ==='success') {
           uni.setStorageSync('userId', res.data.user_id)
-          const cleanUrl = window.location.origin + window.location.pathname;
-          window.history.replaceState({}, '', cleanUrl);
+          // const cleanUrl = window.location.origin + window.location.pathname;
+          // window.history.replaceState({}, '', cleanUrl);
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
           }else {
