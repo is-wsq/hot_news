@@ -20,6 +20,10 @@
         <view class="setting-name" @click="showStylePopup">{{ style.name }}</view>
         <uni-icons type="right" size="20" color="#E5E5E5;" @click="showStylePopup"></uni-icons>
       </view>
+      <view class="setting-item">
+        <view style="color: #E5E5E5;flex: 1">带货设置</view>
+        <uni-icons type="right" size="20" color="#E5E5E5;" @click="showSellPopup"></uni-icons>
+      </view>
     </view>
     <view style="position: relative;width: 250px;margin: 0 auto">
       <button class="detail-btn" @click="generate">口播文案生成</button>
@@ -65,6 +69,22 @@
         <button class="detail-btn" @click="styleSure">确定</button>
       </view>
     </uni-popup>
+    <uni-popup ref="sellPopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
+      <view class="popup-content">
+        <view class="popup-title">
+          <view style="color: #ffffff; font-size: 16px;">带货设置</view>
+        </view>
+        <view class="style-content">
+          <view class="img-add" @click="addImg">
+            <uni-icons type="plusempty" size="25" color="#e99d42"></uni-icons>
+          </view>
+          <view class="img-item" v-for="(item, index) in img_list" :key="index" :style="{ backgroundImage: `url(${item})` }">
+            <view class="delete-btn" @tap="deleteImage(index)">×</view>
+          </view>
+        </view>
+        <button class="detail-btn" @click="sellSure" :loading="extracting" :disabled="extracting">{{ extracting? '商品信息提取中':'提取商品信息' }}</button>
+      </view>
+    </uni-popup>
     <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
   </view>
 </template>
@@ -107,7 +127,11 @@ export default {
       selectedStyle: {},
       indicatorStyle: `height: 50px;`,
       isLoading: false,
-      type: ''
+      type: '',
+      img_list: [],
+      image_base64_list: [],
+      productInfo: '',
+      extracting: false
     }
   },
   mounted() {
@@ -121,6 +145,23 @@ export default {
     }
   },
   methods: {
+    addImg() {
+      if (this.img_list.length === 4) {
+        this.$tip.confirm('最多只能上传4张图片',false)
+        return
+      }
+      uni.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album'],
+        success: (res) => {
+          this.img_list = this.img_list.concat(res.tempFilePaths);
+        }
+      });
+    },
+    deleteImage(index) {
+      this.img_list.splice(index, 1);
+    },
     queryStyles() {
       this.$http.get('/copywriting/styles/query/all').then(res => {
         if (res.status === 'success') {
@@ -139,6 +180,9 @@ export default {
     showStylePopup() {
       this.$refs.stylePopup.open()
     },
+    showSellPopup() {
+      this.$refs.sellPopup.open()
+    },
     bindChange(e) {
       let val = e.detail.value[0]
       this.selectedWord = this.words[val].count
@@ -152,6 +196,58 @@ export default {
     styleSure() {
       this.style = this.selectedStyle
       this.$refs.stylePopup.close()
+    },
+    async sellSure() {
+      if (this.img_list.length === 0) {
+        this.$tip.confirm('请先上传商品相关图片',false)
+        return
+      }
+      this.extracting = true
+      await this.convertToBase64()
+      let params = {
+        image_base64_list: this.image_base64_list
+      }
+      this.$http.post('/extract_product_info',params,1800000).then(res => {
+        if (res.status === 'success') {
+          this.productInfo = res.data.product_info
+          this.$tip.toast('商品信息提取成功')
+        } else {
+          this.$tip.confirm(res.message,false)
+        }
+        this.extracting = false
+        this.$refs.sellPopup.close()
+      })
+    },
+    async convertToBase64() {
+      this.image_base64_list = []; // 清空旧的 base64 列表
+
+      for (const path of this.img_list) {
+        try {
+          const base64 = await this.convertImageToJpegBase64(path);
+          this.image_base64_list.push(base64);
+        } catch (e) {
+          console.error('转换失败：', e);
+        }
+      }
+    },
+    convertImageToJpegBase64(imageUrl) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous'; // 跨域处理
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          // 导出为 image/jpeg 格式的 Base64
+          const jpegBase64 = canvas.toDataURL('image/jpeg', 0.92); // 可调质量
+          resolve(jpegBase64);
+        };
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
     },
     generate() {
       if (this.userId === '') {
@@ -218,7 +314,7 @@ export default {
 
 .detail-card {
   width: 100%;
-  height: calc(100% - 275px);
+  height: calc(100% - 310px);
   margin-top: 15px;
   font-size: 14px;
   color: #ffffff;
@@ -352,12 +448,47 @@ export default {
   gap: 20px;
   overflow-x: auto;
   flex-wrap: nowrap;
-  align-items: center
+  align-items: center;
 }
 
 .style-item {
   width: 80px;
   height: 80px;
   border-radius: 50%;
+}
+
+.img-item {
+  width: 90px;
+  height: 120px;
+  border-radius: 7px;
+  background-size: cover;
+  position: relative;
+  flex: none;
+}
+
+.img-add {
+  width: 88px;
+  height: 118px;
+  border-radius: 7px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e99d42
+}
+
+.delete-btn {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: red;
+  color: white;
+  font-size: 30rpx;
+  text-align: center;
+  line-height: 40rpx;
+  border-radius: 50%;
+  z-index: 1;
 }
 </style>
