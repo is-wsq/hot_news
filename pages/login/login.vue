@@ -197,14 +197,22 @@ export default {
     wxLogin() {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
-        const redirectUri = encodeURIComponent(location.href)
+        const redirectUri = encodeURIComponent(window.location.href)
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'STATE123'
         const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
-        location.replace(authUrl)
+        // window.location.replace(authUrl)
+
+        // 使用 a 标签模拟点击跳转，兼容 iOS 微信防止前进后退按钮出现
+        const a = document.createElement('a');
+        a.href = authUrl;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }else {
         this.$tip.confirm('需要在微信环境下才能使用',false)
       }
@@ -216,6 +224,7 @@ export default {
     checkWeChatCode() {
       let code = this.getUrlCode('code')
       if (code && uni.getStorageSync('authorized')) {
+        uni.removeStorageSync('authorized');
         this.loginByCode(code)
       }
     },
