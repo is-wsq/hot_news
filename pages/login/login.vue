@@ -225,7 +225,7 @@ export default {
           uni.setStorageSync('userId', res.data.user_id)
           // const cleanUrl = window.location.origin + window.location.pathname;
           // window.history.replaceState({}, '', cleanUrl);
-          window.location.replace(this.path)
+          window.location.replace('/#' + this.path)
           // if (this.type === 'switchTab') {
           //   uni.switchTab({ url: this.path })
           // }else {
