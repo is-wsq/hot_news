@@ -78,7 +78,7 @@ export default {
   onLoad: function (option) {
     this.type = option.type
     this.path = option.path
-    // this.checkWeChatCode()
+    this.checkWeChatCode()
   },
   methods: {
     login() {
@@ -200,12 +200,11 @@ export default {
     wxLogin() {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
-        // const redirectUri = encodeURIComponent(location.href)
-        const redirectUri = encodeURIComponent(`${this.getCurrentUrl()}#/pages/login/auth-callback`)
+        const redirectUri = encodeURIComponent(location.href)
+        // const redirectUri = encodeURIComponent(`${this.getCurrentUrl()}#/pages/login/auth-callback`)
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'xyz123'
-        // const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
-        const authUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx520c15f417810387&redirect_uri=https%3A%2F%2Fchong.qq.com%2Fphp%2Findex.php%3Fd%3D%26c%3DwxAdapter%26m%3DmobileDeal%26showwxpaytitle%3D1%26vb2ctag%3D4_2030_5_1194_60&response_type=code&scope=snsapi_base&state=123#wechat_redirect';
+        const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}&forcePopup=true#wechat_redirect`;
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)

@@ -261,6 +261,7 @@ export default {
         style_id: this.style.id,
         news_details: this.news.details,
         count: this.word,
+        productInfo: this.productInfo
       }
       this.isLoading = true
       this.$nextTick(() => {
@@ -274,6 +275,7 @@ export default {
           uni.setStorageSync(`${this.userId}_script`, scriptList)
           uni.setStorageSync('wordSetting', this.word)
           uni.setStorageSync('styleId', this.style.id)
+          uni.setStorageSync('productInfo',this.productInfo)
           uni.redirectTo({url: `/pages/home/copy?type=${this.type}`})
         } else {
           this.isLoading = false

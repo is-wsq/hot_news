@@ -122,7 +122,8 @@ export default {
       testAudioIndex: null,
       isLoading: false,
       fileInfo: {},
-      type: ''
+      type: '',
+      productInfo: ''
     }
   },
   mounted() {
@@ -130,6 +131,7 @@ export default {
     this.news = uni.getStorageSync('news')
     this.word = uni.getStorageSync('wordSetting')
     this.styleId = uni.getStorageSync('styleId')
+    this.productInfo = uni.getStorageSync('productInfo')
     this.queryTitleAndScript()
     this.queryVoices()
     this.queryFigures()
@@ -172,6 +174,7 @@ export default {
         style_id: this.styleId,
         news_details: this.news.details,
         count: this.word,
+        productInfo: this.productInfo
       }
       this.isLoading = true
       this.$nextTick(() => {
