@@ -16,10 +16,11 @@ export default {
     },
     checkWeChatCode() {
       let code = this.getUrlCode('code')
-      if (code && uni.getStorageSync('authorized')) {
-        uni.removeStorageSync('authorized');
-        this.loginByCode(code)
-      }
+      this.$tip.confirm(`${code}正在登录中，请稍候...`,false);
+      // if (code && uni.getStorageSync('authorized')) {
+      //   uni.removeStorageSync('authorized');
+      //   this.loginByCode(code)
+      // }
     },
     loginByCode(code) {
       this.$http.get('/user/wx/auth',{code: code}).then(res => {
