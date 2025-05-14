@@ -11,7 +11,8 @@
       <view class="download-preview">
         <video ref="video" style="width: 100%; height: 100%;" :src="filepath"></video>
       </view>
-      <button class="download-btn" type="primary" @click="download" :loading="loading" :disabled="loading">{{ loading? '下载任务创建中' : '下载文件' }}</button>
+      <button class="download-btn" type="primary" @click="download">下载视频</button>
+<!--      <view style="color: #FFFFFF; font-size: 14px; margin-top: 20px;">下载进度：{{ downloadProgress }}</view>-->
     </view>
     <uni-popup ref="dialog" type="dialog">
       <uni-popup-dialog type="info" confirmText="确定" :showClose="false" @confirm="$refs.dialog.close()"
@@ -27,7 +28,7 @@ export default {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
       filename: '',
       filepath: '',
-      loading: false
+      downloadProgress: 0
     }
   },
   onLoad: function (option) {
@@ -45,27 +46,47 @@ export default {
       if (this.isWeChat()) {
         this.$refs.dialog.open()
       }else {
-        let self = this
-        self.loading = true
-        fetch(this.filepath).then(response => response.blob()) // 获取二进制数据
-          .then(blob => {
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob); // 创建 Blob URL
-            link.download = this.filename + '.mp4'; // 指定下载文件名
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href); // 释放 URL
-            self.loading = false
-          }).catch(error => {
-            console.error("视频下载失败", error)
-            this.$tip.confirm(error,false);
-            self.loading = false
-          });
+        const a = document.createElement('a');
+        a.href = this.filepath.replace('results','download_v2'); // 已加载的视频地址
+        a.download =  this.filename + '.mp4'; // 告诉浏览器是下载，不是打开
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // this.downloadByStream('https://u480621-96f7-a7a0b4fd.westc.gpuhub.com:8443/results/19038caf-0499-4feb-8d94-9b772be9eb33-r.mp4', (loaded, total) => {
+        //   console.log(`下载进度：${(loaded / total * 100).toFixed(2)}%`);
+        //   this.downloadProgress = (loaded / total * 100).toFixed(2)
+        // }).then(blob => {
+        //   const url = URL.createObjectURL(blob);
+        //   const a = document.createElement('a');
+        //   a.href = url;
+        //   a.download = this.filename + '.mp4';
+        //   a.click();
+        //   URL.revokeObjectURL(url);
+        // });
       }
     },
+    async downloadByStream(url, onProgress) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('网络请求失败');
+
+      const reader = response.body.getReader();
+      const contentLength = +response.headers.get('Content-Length');
+      let receivedLength = 0;
+      let chunks = [];
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        receivedLength += value.length;
+        onProgress?.(receivedLength, contentLength);
+      }
+
+      return new Blob(chunks, {type: 'video/mp4'});
+    },
     back() {
-      // uni.navigateBack()
       uni.redirectTo({
         url: '/pages/template/videoList'
       })
