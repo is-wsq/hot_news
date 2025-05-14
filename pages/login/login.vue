@@ -204,14 +204,11 @@ export default {
         const redirectUri = encodeURIComponent(`${this.getCurrentUrl()}#/pages/login/auth-callback`)
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'xyz123'
-        const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`;
+        const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
-        // location.replace(authUrl)
-        uni.redirectTo({
-          url: authUrl,
-        })
+        location.replace(authUrl)
 
         // 使用 a 标签模拟点击跳转，兼容 iOS 微信防止前进后退按钮出现     试过不行
         // const a = document.createElement('a');
