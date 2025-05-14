@@ -78,7 +78,7 @@ export default {
   onLoad: function (option) {
     this.type = option.type
     this.path = option.path
-    this.checkWeChatCode()
+    // this.checkWeChatCode()
   },
   methods: {
     login() {
@@ -194,13 +194,17 @@ export default {
     isWeChat() {
       return /MicroMessenger/i.test(navigator.userAgent);
     },
+    getCurrentUrl() {
+      return location.href.split('#')[0];
+    },
     wxLogin() {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
-        const redirectUri = encodeURIComponent(location.href)
+        // const redirectUri = encodeURIComponent(location.href)
+        const redirectUri = encodeURIComponent(`${this.getCurrentUrl().replace(/\/$/, '')}/#/pages/login/auth-callback`)
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
-        const state = 'STATE123'
-        const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`
+        const state = 'xyz123'
+        const authUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`;
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
