@@ -200,7 +200,8 @@ export default {
     wxLogin() {
       if (this.isWeChat()) {
         const appId = 'wx48d2e02bf10f849c'
-        const redirectUri = encodeURIComponent(location.href)
+        // const redirectUri = encodeURIComponent(location.href)
+        const redirectUri = encodeURIComponent('https://live.tellai.tech/api/news_assistant/user/wx/auth')
         // const redirectUri = encodeURIComponent(`${this.getCurrentUrl()}#/pages/login/auth-callback`)
         const scope = 'snsapi_userinfo' // 或 snsapi_base（静默授权）
         const state = 'xyz123'
