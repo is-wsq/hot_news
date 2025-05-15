@@ -210,7 +210,7 @@ export default {
         user_id: uni.getStorageSync('userId'),
         audio_name: task.name
       }
-      this.$http.post('/timbres/clone/file_id', params).then(res => {
+      this.$http.post('/timbres/clone/file_id', params, 1800000).then(res => {
         this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
           this.$tip.confirm(`${task.name}音色克隆任务成功`, false)

@@ -192,7 +192,7 @@ export default {
         video_name: task.name.substring(0, task.name.lastIndexOf('.')),
         cloneSound: this.cloneSound
       }
-      this.$http.post('/figure/clone/file_id',params).then(res => {
+      this.$http.post('/figure/clone/file_id',params,1800000).then(res => {
         this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
           this.$tip.confirm(`${task.name}形象克隆任务成功`,false)

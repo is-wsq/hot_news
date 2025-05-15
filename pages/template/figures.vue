@@ -22,7 +22,7 @@
                  :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
           <view class="shine-layer"></view>
           <view class="loading-title">
-            <view style="font-size: 14px">视频生成中</view>
+            <view style="font-size: 14px">形象克隆中</view>
             <view class="dot" style="font-size: 20px">{{ dot }}</view>
           </view>
         </view>
