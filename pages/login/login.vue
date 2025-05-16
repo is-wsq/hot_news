@@ -115,6 +115,7 @@ export default {
       this.$http.post('/user/login', params).then(res => {
         if (res.status === 'success') {
           uni.setStorageSync('userId', res.data.user_id)
+          this.$store.dispatch('task/userLogin', res.data.user_id);
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
           }else {
@@ -138,6 +139,7 @@ export default {
       this.$http.post('/sms/verify', params).then(res => {
         if (res.status ==='success') {
           uni.setStorageSync('userId', res.data.user_id)
+          this.$store.dispatch('task/userLogin', res.data.user_id);
           if (this.type === 'switchTab') {
             uni.switchTab({ url: this.path })
           }else {
@@ -237,6 +239,7 @@ export default {
       this.$http.get('/user/wx/auth',{code: code}).then(res => {
         if (res.status ==='success') {
           uni.setStorageSync('userId', res.data.user_id)
+          this.$store.dispatch('task/userLogin', res.data.user_id);
           const cleanUrl = location.origin + location.pathname;
           history.replaceState({}, '', cleanUrl);
           // uni.switchTab({ url: '/pages/home/index' })

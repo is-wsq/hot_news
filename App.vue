@@ -1,6 +1,8 @@
 <script>
 // import wechatToolbarMixin from './common/utils/wechat-toolbar.js';
-  export default {
+  import {mapGetters} from "vuex";
+
+export default {
     // mixins: [wechatToolbarMixin],
 		onLaunch: function() {
 			console.log('App Launch')
@@ -16,21 +18,25 @@
         pollingTimer: null
       }
     },
-    mounted() {
-      if(this.$store.state.task.isLogin) {
-        this.startPolling()
-      }
-      this.$store.watch(
-        (state) => state.isLogin,
-        (isLogin) => {
-          console.log(isLogin)
-          if (isLogin) {
+    computed: {
+      ...mapGetters("task", ["isLogin"]), // 获取任务列表
+    },
+    watch: {
+      isLogin: {
+        handler() {
+          if (this.isLogin) {
             this.startPolling()
           }else{
             this.stopPolling()
           }
-        }
-      )
+        },
+        deep: true,
+      },
+    },
+    mounted() {
+      if(this.$store.state.task.isLogin) {
+        this.startPolling()
+      }
     },
     methods: {
       startPolling() {

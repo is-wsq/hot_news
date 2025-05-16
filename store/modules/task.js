@@ -19,7 +19,7 @@ if (uni.getStorageSync('userId')) {
 
 const mutations = {
     setLoginStatus(state, status) {
-        state.loginStatus = status;
+        state.isLogin = status;
     },
 
     setUserId(state, userId) {
@@ -49,9 +49,14 @@ const mutations = {
 };
 
 const actions = {
-    login({ commit }, userId) {
+    async userLogin({ commit }, userId) {
         commit("setLoginStatus", true)
         commit("setUserId", userId)
+    },
+
+    async userLogout({ commit }) {
+        commit("setLoginStatus", false)
+        commit("setUserId", '')
     },
 
     async pollVideoTasks({ state, commit }) {
@@ -170,6 +175,7 @@ const getters = {
     videoTasks: (state) => state.videoTasks,
     voiceTasks: (state) => state.voiceTasks,
     figureTasks: (state) => state.figureTasks,
+    isLogin: (state) => state.isLogin,
 };
 
 export default {
