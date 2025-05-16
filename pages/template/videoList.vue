@@ -148,7 +148,7 @@ export default {
   height: calc(100% - 140px);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  grid-template-rows: 230px;
+  grid-auto-rows: 230px;
   gap: 10px;
   justify-items: center;
   overflow: auto;
