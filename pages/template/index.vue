@@ -9,7 +9,7 @@
       <uni-icons type="right" size="21" color="#ffffff" @click="goto('/pages/template/videoList')"></uni-icons>
     </view>
     <view class="video-list" style="height: calc(100% - 180px)">
-      <view class="video-item" v-for="item in videoTasks" :key="item.id">
+      <view class="video-item" v-for="item in processList" :key="item.id">
         <view class="image-wrapper shining">
           <image class="item-img" src="/static/img/20.png"></image>
           <view class="shine-layer"></view>
@@ -18,9 +18,9 @@
             <view class="dot">{{ dot }}</view>
           </view>
         </view>
-        <view class="item-title" style="margin-top: 1px">{{ item.name }}</view>
+        <view class="item-title" style="margin-top: 1px">{{ item.filename }}</view>
       </view>
-      <view class="video-item" v-for="item in showReel" :key="item.id">
+      <view class="video-item" v-for="item in videoList" :key="item.id">
         <image class="item-img" :src="item.picture"></image>
         <view class="item-title">{{ item.filename }}</view>
       </view>
@@ -44,28 +44,19 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('task', ['allTasks']), // 获取任务列表
-    videoTasks() {
-      return this.allTasks.filter((item) => item.type === "video");
+    ...mapGetters("task", ["videoTasks"]),
+    processList() {
+      return this.videoTasks.filter((item) => item.status === 'pending');
+    },
+    videoList() {
+      return this.videoTasks.filter((item) => item.status === 'success');
     },
   },
-  watch: {
-    // 监听 Vuex 任务数据的变化，自动更新任务列表
-    videoTasks: {
-      handler() {
-        this.queryReel()
-      },
-      deep: true
-    }
+  mounted() {
+    this.startDotAnimation();
+    this.$store.dispatch("task/pollVideoTasks");
   },
-  onShow() {
-    this.userId = uni.getStorageSync('userId') || ''
-    this.queryReel()
-    if (this.videoTasks.length > 0) {
-      this.startDotAnimation();
-    }
-  },
-  onHide() {
+  beforeDestroy() {
     clearInterval(this.dotTimer);
   },
   methods: {
@@ -74,19 +65,6 @@ export default {
         this.dotCount = this.dotCount % 3 + 1;
         this.dot = '.'.repeat(this.dotCount);
       }, 1000);
-    },
-    queryReel() {
-      if (this.userId === '') {
-        return
-      }
-      this.$http.get('/video_record/query', {user_id: this.userId}).then(res => {
-        if (res.status === 'success') {
-          this.showReel = res.data
-        }
-      })
-    },
-    downloadVideo(data) {
-      this.goto(`/pages/download?filepath=${data.video_path}&filename=${data.filename}`)
     },
     goto(path) {
       let userId = uni.getStorageSync('userId') || ''

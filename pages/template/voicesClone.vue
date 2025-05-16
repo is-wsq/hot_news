@@ -102,14 +102,18 @@
         </view>
       </view>
     </uni-popup>
+    <loading-video ref="loadingVideo" v-if="isLoading" text="文件上传中，请勿离开"/>
   </view>
 </template>
 
 <script>
+import LoadingVideo from "../../components/loading-video.vue";
+
 let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
 import '../../static/js/recorder.wav.min.js'
 
 export default {
+  components: {LoadingVideo},
   data() {
     return {
       requires: ['30秒左右的视频、音频', '录制环境安静无杂音', '确保录制全程环境一致', '保持正常语速、音调', '保留自然停顿'],
@@ -130,7 +134,8 @@ export default {
       recorderFile: null,
       sentence: "现在做视频真的太简单了，使用奇点数字人，不用真人出镜也能出爆款视频。",
       delayStep: 0.277, // 每个字的延迟秒数（10秒/36字）
-      started: false
+      started: false,
+      isLoading: false
     }
   },
   computed: {
@@ -155,7 +160,6 @@ export default {
             return
           }
           let type = res.tempFiles[0].type.indexOf('audio') !== -1 ? 'audio' : 'video'
-          console.log(res.tempFiles[0])
           self.getFileId(type, res.tempFiles[0])
         }
       });
@@ -169,15 +173,9 @@ export default {
           let status = res.data.base_resp
           let data = res.data.data
           if (status.status_code === 200) {
-            console.log(file)
-            let task = {
-              name: file.name.split('.')[0],
-              type: 'voice',
-              id: self.generateUniqueId(),
-            }
-            self.$store.dispatch('task/addTask', task);
-            self.$tip.confirm(`已创建音色克隆任务\n《${task.name}》`, false).then(res => {
-              uni.redirectTo({url: '/pages/template/voice'})
+            self.isLoading = true
+            self.$nextTick(() => {
+              self.$refs.loadingVideo.playVideo()
             })
 
             uni.uploadFile({
@@ -191,10 +189,10 @@ export default {
                 let upload_status = JSON.parse(result.data).base_resp
                 let upload_data = JSON.parse(result.data).data
                 if (upload_status.status_code === 200) {
-                  self.clone(upload_data.file_id, task)
+                  self.isLoading = false
+                  self.clone(upload_data.file_id, file.name.split('.')[0])
                 } else {
-                  self.$store.dispatch("task/removeTask", task.id);
-                  self.$tip.confirm(`${task.name}音色克隆任务失败,${upload_status.status_msg}`, false)
+                  self.$tip.confirm(`${file.name.split('.')[0]}文件上传失败,${upload_status.status_msg}`, false)
                 }
               }
             });
@@ -204,18 +202,19 @@ export default {
         }
       });
     },
-    clone(fileId, task) {
+    clone(fileId, name) {
       let params = {
         file_id: fileId,
         user_id: uni.getStorageSync('userId'),
-        audio_name: task.name
+        audio_name: name
       }
       this.$http.post('/timbres/clone/file_id', params, 1800000).then(res => {
-        this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
-          this.$tip.confirm(`${task.name}音色克隆任务成功`, false)
+          this.$tip.confirm(`文件上传成功，已创建音色克隆任务\n《${name}》`,false).then(res => {
+            uni.redirectTo({url: '/pages/template/voice'})
+          })
         } else {
-          this.$tip.confirm(`${task.name}音色克隆任务失败,${res.message}`, false)
+          this.$tip.confirm(`${name}音色克隆任务创建失败,${res.message}`, false)
         }
       })
     },
@@ -256,7 +255,6 @@ export default {
       uni.redirectTo({url: '/pages/template/voice'})
     },
     gotoTranscribe() {
-      // uni.redirectTo({url: '/pages/template/recorder'})
       this.$refs.recorder.open()
       setTimeout(() => {
         this.drawProgress()

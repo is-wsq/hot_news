@@ -6,7 +6,7 @@
     </view>
     <view style="font-size: 18px; color: #ffffff;margin-bottom: 15px">系统音色</view>
     <view class="voice-list" :style="{height: heightStyle + 'px'}">
-      <view class="voice-item" v-for="item in systems" :key="item.id" @click="previewAudio(item)">
+      <view class="voice-item" v-for="item in systemVoice" :key="item.id" @click="previewAudio(item)">
         <image :class="{ 'active-item': audioCtxId === item.id }" :src="item.avatar"
                style="width: 80px; height: 80px; border-radius: 50%"/>
         <view class="voice-name" :style="{color: audioCtxId === item.id ? '#e99d42' : '#ffffff'}">{{
@@ -17,7 +17,7 @@
     </view>
     <view style="font-size: 18px; color: #ffffff;margin: 15px 0">我的音色</view>
     <view class="voice-list" :style="{height: heightStyle + 'px'}">
-      <view class="voice-item" v-for="item in voiceTasks" :key="item.id">
+      <view class="voice-item" v-for="item in processVoice" :key="item.id">
         <view class="image-wrapper shining">
           <image src="/static/img/voice-loading.png" style="width: 80px; height: 80px; border-radius: 50%"/>
           <view class="shine-layer"></view>
@@ -29,7 +29,7 @@
         <view class="voice-name">{{ item.name }}</view>
       </view>
 
-      <view class="voice-item" v-for="item in clones" :key="item.id" @click="previewAudio(item)">
+      <view class="voice-item" v-for="item in cloneVoice" :key="item.id" @click="previewAudio(item)">
         <image :class="{ 'active-item': audioCtxId === item.id }" :src="item.avatar"
                style="width: 80px; height: 80px; border-radius: 50%"/>
         <view class="voice-name" :style="{color: audioCtxId === item.id ? '#e99d42' : '#ffffff'}">{{
@@ -49,8 +49,6 @@ export default {
   data() {
     return {
       heightStyle: 0,
-      systems: [],
-      clones: [],
       audioCtx: null,
       audioCtxId: null,
       dotCount: 1,
@@ -59,24 +57,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("task", ["allTasks"]), // 获取任务列表
-    voiceTasks() {
-      return this.allTasks.filter((item) => item.type === "voice");
+    ...mapGetters("task", ["voiceTasks"]), // 获取任务列表
+    processVoice() {
+      return this.voiceTasks.filter((item) => item.status === 'pending');
     },
-  },
-  watch: {
-    voiceTasks: {
-      handler() {
-        this.queryVoices();
-      },
-      deep: true,
+    systemVoice() {
+      return this.voiceTasks.filter((item) => item.type === "system");
     },
+    cloneVoice() {
+      return this.voiceTasks.filter((item) => item.type === "clone" && item.status === "success");
+    }
   },
   mounted() {
-    this.queryVoices()
-    if (this.voiceTasks.length > 0) {
-      this.startDotAnimation()
-    }
+    this.$store.dispatch("task/pollVoiceTasks");
+    this.startDotAnimation()
     this.heightStyle = (uni.getSystemInfoSync().safeArea.height - 200) / 2
   },
   beforeDestroy() {
@@ -89,19 +83,6 @@ export default {
         this.dotCount = this.dotCount % 3 + 1;
         this.dot = '.'.repeat(this.dotCount);
       }, 1000);
-    },
-    queryVoices() {
-      this.systems = []
-      this.clones = []
-      this.$http.get('/timbres/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
-        if (res.status === 'success') {
-          res.data.forEach(item => {
-            item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
-          })
-        } else {
-          this.$tip.confirm(res.message, false)
-        }
-      })
     },
     previewAudio(item) {
       if (this.audioCtxId === item.id) {  // 已经播放了当前音色，则停止播放

@@ -146,11 +146,6 @@ export default {
       let self = this
       self.$refs.clonePopup.close()
 
-      let task = {
-        type: "figures",
-        id: self.generateUniqueId(),
-        name: self.selectedFile.name,
-      };
       self.isLoading = true
       self.$nextTick(() => {
         self.$refs.loadingVideo.playVideo()
@@ -173,36 +168,30 @@ export default {
           let data = JSON.parse(result.data).data
           if (status.status_code === 200) {
             self.isLoading = false
-            self.$store.dispatch("task/addTask", task);
-            self.$tip.confirm(`视频上传成功，已创建形象克隆任务\n《${self.selectedFile.name}》`,false).then(res => {
-              uni.redirectTo({url: '/pages/template/figures'})
-            })
-            self.clone(data.file_id,task)
+            self.clone(data.file_id)
           }else {
             self.isLoading = false
-            self.$tip.confirm(`视频上传失败,${status.status_msg}`,false)
+            self.$tip.confirm(`${self.selectedFile.name}视频上传失败,${status.status_msg}`,false)
           }
         }
       });
     },
-    clone(fileId,task) {
+    clone(fileId) {
       let params = {
         user_id: uni.getStorageSync('userId'),
         file_id: fileId,
-        video_name: task.name.substring(0, task.name.lastIndexOf('.')),
+        video_name: this.selectedFile.name,
         cloneSound: this.cloneSound
       }
       this.$http.post('/figure/clone/file_id',params,1800000).then(res => {
-        this.$store.dispatch("task/removeTask", task.id);
         if (res.status === 'success') {
-          this.$tip.confirm(`${task.name}形象克隆任务成功`,false)
+          this.$tip.confirm(`视频上传成功，已创建形象克隆任务\n《${this.selectedFile.name}》`,false).then(res => {
+            uni.redirectTo({url: '/pages/template/figures'})
+          })
         }else {
-          this.$tip.confirm(`${task.name}形象克隆任务失败,${res.message}`,false)
+          this.$tip.confirm(`${this.selectedFile.name}形象克隆任务创建失败,${res.message}`,false)
         }
       })
-    },
-    generateUniqueId() {
-      return Date.now() + Math.random().toString(36).substr(2, 16);
     },
     back() {
       uni.switchTab({url: '/pages/template/index'})

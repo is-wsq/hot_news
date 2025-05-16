@@ -7,7 +7,7 @@
     <view style="font-size: 18px; color: #ffffff;margin-bottom: 10px">系统形象</view>
     <view class="figure-list"
           :style="{ height: heightStyle + 30 + 'px', gridTemplateRows: `repeat(1, ${heightStyle + 30}px)`, gridAutoColumns: `${heightStyle * 3 / 4}px` }">
-      <view v-for="item in systems" :key="item.id" @click="previewFigure(item)">
+      <view v-for="item in systemFigure" :key="item.id" @click="previewFigure(item)">
         <image :src="item.picture"
                :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
         <view class="figure-name" :style="{ width: heightStyle * 3 / 4 + 'px' }">{{ item.name }}</view>
@@ -16,7 +16,7 @@
     <view style="font-size: 18px; color: #ffffff;margin: 15px 0">我的形象</view>
     <view class="figure-list"
           :style="{ height: heightStyle * 2 + 85 + 'px', gridTemplateRows: `repeat(2, ${heightStyle + 30}px)`, gridAutoColumns: `${heightStyle * 3 / 4}px`}">
-      <view v-for="item in figureTasks" :key="item.id">
+      <view v-for="item in processFigure" :key="item.id">
         <view class="image-wrapper shining">
           <image src="/static/img/20.png"
                  :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
@@ -28,7 +28,7 @@
         </view>
         <view class="figure-name" style="margin-top: -5px">{{ item.name }}</view>
       </view>
-      <view v-for="item in clones" :key="item.id" @click="previewFigure(item)">
+      <view v-for="item in cloneFigure" :key="item.id" @click="previewFigure(item)">
         <image :src="item.picture"
                :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
         <view class="figure-name" :style="{ width: heightStyle * 3 / 4 + 'px' }">{{ item.name }}</view>
@@ -54,8 +54,6 @@ export default {
   data() {
     return {
       safeArea: uni.getSystemInfoSync().safeArea,
-      systems: [],
-      clones: [],
       heightStyle: 0,
       figureStyle: {},
       contentStyle: {},
@@ -67,25 +65,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("task", ["allTasks"]), // 获取任务列表
-    figureTasks() {
-      return this.allTasks.filter((item) => item.type === "figures");
+    ...mapGetters("task", ["figureTasks"]), // 获取任务列表
+    processFigure() {
+      return this.figureTasks.filter((item) => item.status === 'ready');
     },
-  },
-  watch: {
-    figureTasks: {
-      handler() {
-        this.queryFigures();
-      },
-      deep: true,
+    systemFigure() {
+      return this.figureTasks.filter((item) => item.type === "system");
     },
+    cloneFigure() {
+      return this.figureTasks.filter((item) => item.type === "clone" && item.status === "success");
+    }
   },
   mounted() {
-    this.queryFigures();
+    this.$store.dispatch("task/pollFigureTasks");
     this.heightStyle = (uni.getSystemInfoSync().safeArea.height - 320) / 3
-    if (this.figureTasks.length > 0) {
-      this.startDotAnimation();
-    }
+    this.startDotAnimation();
   },
   beforeDestroy() {
     clearInterval(this.dotTimer);
@@ -96,19 +90,6 @@ export default {
         this.dotCount = this.dotCount % 3 + 1;
         this.dot = '.'.repeat(this.dotCount);
       }, 1000);
-    },
-    queryFigures() {
-      this.systems = []
-      this.clones = []
-      this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
-        if (res.status === 'success') {
-          res.data.forEach(item => {
-            item.type === 'system' ? this.systems.push(item) : this.clones.push(item)
-          })
-        } else {
-          this.$tip.confirm(res.message, false)
-        }
-      })
     },
     previewFigure(item) {
       this.selectedFigure = item

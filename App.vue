@@ -10,7 +10,47 @@
 		},
 		onHide: function() {
 			console.log('App Hide')
-		}
+		},
+    data() {
+      return {
+        pollingTimer: null
+      }
+    },
+    mounted() {
+      if(this.$store.state.task.isLogin) {
+        this.startPolling()
+      }
+      this.$store.watch(
+        (state) => state.isLogin,
+        (isLogin) => {
+          console.log(isLogin)
+          if (isLogin) {
+            this.startPolling()
+          }else{
+            this.stopPolling()
+          }
+        }
+      )
+    },
+    methods: {
+      startPolling() {
+        this.$store.dispatch("task/pollVideoTasks");
+        this.$store.dispatch("task/pollVoiceTasks");
+        this.$store.dispatch("task/pollFigureTasks");
+        this.pollingTimer = setInterval(() => {
+          this.$store.dispatch("task/pollVideoTasks");
+          this.$store.dispatch("task/pollVoiceTasks");
+          this.$store.dispatch("task/pollFigureTasks");
+        }, 5000);
+      },
+      stopPolling() {
+        clearInterval(this.pollingTimer);
+        this.pollingTimer = null;
+      }
+    },
+    beforeDestroy() {
+      this.stopPolling()
+    }
 	}
 </script>
 

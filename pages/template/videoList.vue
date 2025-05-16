@@ -3,10 +3,10 @@
     <view class="nav-bar-header">
       <uni-icons class="nav-bar-back" type="left" size="21" color="#ffffff" @click="back"></uni-icons>
       <view class="nav-bar-title">我的作品</view>
-      <view class="manageBtn" @click="manage" v-if="showReel.length > 0">管理</view>
+      <view class="manageBtn" @click="manage" v-if="videoList.length > 0">管理</view>
     </view>
-    <view class="video-list" v-if="videoTasks.length > 0 || showReel.length > 0">
-      <view class="video-item" v-for="item in videoTasks" :key="item.id">
+    <view class="video-list" v-if="processList.length > 0 || videoList.length > 0">
+      <view class="video-item" v-for="item in processList" :key="item.id">
         <view class="image-wrapper shining">
           <image class="item-img" src="/static/img/20.png"></image>
           <view class="shine-layer"></view>
@@ -15,9 +15,9 @@
             <view class="dot">{{ dot }}</view>
           </view>
         </view>
-        <view class="item-title" style="margin-top: 1px">{{ item.name }}</view>
+        <view class="item-title" style="margin-top: 1px">{{ item.filename }}</view>
       </view>
-      <view class="video-item" v-for="item in showReel" :key="item.id" @click="manageVideo(item)">
+      <view class="video-item" v-for="item in videoList" :key="item.id" @click="manageVideo(item)">
         <image class="item-img" :src="item.picture"
                :class="{'active-item': selectedVideos.findIndex(video => video.id === item.id) !== -1}">
         </image>
@@ -45,7 +45,6 @@ export default {
   name: 'videoList',
   data() {
     return {
-      showReel: [],
       dotCount: 1,
       dotTimer: null,
       dot: '.',
@@ -54,24 +53,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('task', ['allTasks']),
-    videoTasks() {
-      return this.allTasks.filter((item) => item.type === "video");
+    ...mapGetters("task", ["videoTasks"]),
+    processList() {
+      return this.videoTasks.filter((item) => item.status === 'pending');
+    },
+    videoList() {
+      return this.videoTasks.filter((item) => item.status === 'success');
     },
   },
-  watch: {
-    videoTasks: {
-      handler() {
-        this.queryReel()
-      },
-      deep: true
-    }
-  },
   mounted() {
-    this.queryReel()
-    if (this.videoTasks.length > 0) {
-      this.startDotAnimation()
-    }
+    this.startDotAnimation();
+    this.$store.dispatch("task/pollVideoTasks");
   },
   beforeDestroy() {
     clearInterval(this.dotTimer)
@@ -100,17 +92,6 @@ export default {
         }
       }
     },
-    queryReel() {
-      let params = {
-        user_id: uni.getStorageSync('userId')
-      }
-      this.$http.get('/video_record/query', params).then(res => {
-        console.log('111',res)
-        if (res.status === 'success') {
-          this.showReel = res.data
-        }
-      })
-    },
     delVideos() {
       let ids = this.selectedVideos.map(item => item.id)
       if (ids.length === 0) {
@@ -127,7 +108,7 @@ export default {
               if (res.status === 'success') {
                 this.selectedVideos = []
                 this.$tip.toast('删除成功', 1000)
-                this.queryReel()
+                this.$store.dispatch("task/pollVideoTasks");
               }else {
                 this.$tip.confirm(res.message, false)
               }

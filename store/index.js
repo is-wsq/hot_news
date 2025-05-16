@@ -10,7 +10,4 @@ const store = new Vuex.Store({
     }
 });
 
-// 载入本地存储的任务数据
-store.dispatch('task/loadTasks');
-
 export default store;

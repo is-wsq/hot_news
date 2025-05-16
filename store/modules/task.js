@@ -1,53 +1,175 @@
-const TASK_STORAGE_KEY = 'task_list'; // 存储任务列表的 key
-
 const state = {
-    tasks: [] // 初始化时读取本地存储的任务
+    isLogin: false,
+    userId: '',
+
+    videoTasks: [],
+    videoPreviousStatusMap: {},
+
+    voiceTasks: [],
+    voicePreviousStatusMap: {},
+
+    figureTasks: [],
+    figurePreviousStatusMap: {},
 };
 
+if (uni.getStorageSync('userId')) {
+    state.isLogin = true;
+    state.userId = uni.getStorageSync('userId');
+}
+
 const mutations = {
-    ADD_TASK(state, task) {
-        state.tasks.push(task);
-        // 更新本地存储
-        uni.setStorageSync(TASK_STORAGE_KEY, state.tasks);
+    setLoginStatus(state, status) {
+        state.loginStatus = status;
     },
-    UPDATE_TASK(state, updatedTask) {
-        const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
-        if (index !== -1) {
-            state.tasks[index] = updatedTask;
-            // 更新本地存储
-            uni.setStorageSync(TASK_STORAGE_KEY, state.tasks);
-        }
+
+    setUserId(state, userId) {
+        state.userId = userId;
     },
-    REMOVE_TASK(state, id) {
-        state.tasks = state.tasks.filter(task => task.id !== id)
-        uni.setStorageSync(TASK_STORAGE_KEY, state.tasks);
+
+    setVideoTasks(state, list) {
+        state.videoTasks = list;
     },
-    SET_TASKS(state, tasks) {
-        state.tasks = tasks;
-        // 初始化时同步到本地存储
-        uni.setStorageSync(TASK_STORAGE_KEY, tasks);
-    }
+    updatePreviousStatusMap(state, newMap) {
+        state.videoPreviousStatusMap = { ...newMap };
+    },
+
+    setVoiceTasks(state, tasks) {
+        state.voiceTasks = tasks;
+    },
+    updateVoicePreviousStatusMap(state, map) {
+        state.voicePreviousStatusMap = map;
+    },
+
+    setFigureTasks(state, tasks) {
+        state.figureTasks = tasks;
+    },
+    updateFigurePreviousStatusMap(state, map) {
+        state.figurePreviousStatusMap = map;
+    },
 };
 
 const actions = {
-    addTask({ commit }, task) {
-        commit('ADD_TASK', task);
+    login({ commit }, userId) {
+        commit("setLoginStatus", true)
+        commit("setUserId", userId)
     },
-    updateTask({ commit }, updatedTask) {
-        commit('UPDATE_TASK', updatedTask);
+
+    async pollVideoTasks({ state, commit }) {
+        uni.request({
+            url: 'https://live.tellai.tech/api/news_assistant/video_record/query',
+            data: {
+                user_id: state.userId,
+            },
+            method: 'GET',
+            success: (res) => {
+                if (res.data.status === 'success') {
+                    const list = res.data.data;
+                    list.forEach(video => {
+                        const prev = state.videoPreviousStatusMap[video.id];
+                        if (prev === "pending" && video.status === "success") {
+                            uni.showModal({
+                                title: '提示',
+                                content: `《${video.filename}》视频生成任务成功，本次生成消耗${video.points}个积分`,
+                                showCancel: false,
+                            });
+                        }else if (prev === "pending" && video.status === "failed") {
+                            uni.showModal({
+                                title: '提示',
+                                content: `《${video.filename}》视频生成任务失败`,
+                                showCancel: false,
+                            });
+                        }
+                    });
+
+                    const newStatusMap = {};
+                    list.forEach(v => { newStatusMap[v.id] = v.status; });
+
+                    commit("setVideoTasks", list);
+                    commit("updatePreviousStatusMap", newStatusMap);
+                }
+            }
+        })
     },
-    removeTask({ commit }, id) {
-        commit('REMOVE_TASK', id);
+
+    async pollVoiceTasks({ state, commit }) {
+        uni.request({
+            url: 'https://live.tellai.tech/api/news_assistant/timbres/query/user',
+            data: {
+                user_id: state.userId,
+            },
+            method: 'GET',
+            success: (res) => {
+                if (res.data.status === 'success') {
+                    const list = res.data.data;
+                    list.forEach(voice => {
+                        const prev = state.voicePreviousStatusMap[voice.id];
+                        if (prev === "pending" && voice.status === "success") {
+                            uni.showModal({
+                                title: '提示',
+                                content: `《${voice.name}》音色克隆任务成功`,
+                                showCancel: false,
+                            });
+                        }else if (prev === "pending" && voice.status === "failed") {
+                            uni.showModal({
+                                title: '提示',
+                                content: `《${voice.name}》音色克隆任务失败,${voice.message}`,
+                                showCancel: false,
+                            });
+                        }
+                    });
+
+                    const newStatusMap = {};
+                    list.forEach(v => { newStatusMap[v.id] = v.status; });
+
+                    commit("setVoiceTasks", list);
+                    commit("updateVoicePreviousStatusMap", newStatusMap);
+                }
+            }
+        })
     },
-    loadTasks({ commit }) {
-        // 从本地存储读取任务
-        const tasks = [];
-        commit('SET_TASKS', tasks);
-    }
+
+    async pollFigureTasks({ state, commit }) {
+        uni.request({
+            url: 'https://live.tellai.tech/api/news_assistant/figure/query/user',
+            data: {
+                user_id: state.userId,
+            },
+            method: 'GET',
+            success: (res) => {
+                if (res.data.status === 'success') {
+                    const list = res.data.data;
+                    list.forEach(figure => {
+                        const prev = state.figurePreviousStatusMap[figure.id];
+                        if (prev === "ready" && figure.status === "success") {
+                            uni.showModal({
+                                title: '提示',
+                                content: `《${figure.name}》形象克隆任务成功`,
+                                showCancel: false,
+                            });
+                        }else if (prev === "ready" && figure.status === "failed") {
+                            uni.showModal({
+                                title: '提示',
+                                content: `《${figure.name}》形象克隆任务失败，${figure.message}`,
+                                showCancel: false,
+                            });
+                        }
+                    });
+
+                    const newStatusMap = {};
+                    list.forEach(v => { newStatusMap[v.id] = v.status; });
+
+                    commit("setFigureTasks", list);
+                    commit("updateFigurePreviousStatusMap", newStatusMap);
+                }
+            }
+        })
+    },
 };
 
 const getters = {
-    allTasks: (state) => state.tasks
+    videoTasks: (state) => state.videoTasks,
+    voiceTasks: (state) => state.voiceTasks,
+    figureTasks: (state) => state.figureTasks,
 };
 
 export default {
