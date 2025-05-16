@@ -47,8 +47,9 @@ export default {
         this.$refs.dialog.open()
       }else {
         const a = document.createElement('a');
-        a.href = this.filepath.replace('results','download_v2'); // 已加载的视频地址
-        a.download =  this.filename + '.mp4'; // 告诉浏览器是下载，不是打开
+        let filepath = this.filepath.replace('results','download_v3');
+        a.href = filepath + `/${this.filename}`;
+        a.download =  this.filename + '.mp4';
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
