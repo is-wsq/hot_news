@@ -7,7 +7,7 @@
     <view class="content">
       <view v-for="(item, index) in news" :key="index" class="new" @click="toDetail(item)">
         <view style="width: 35px;height: 35px;display: flex;align-items: center;justify-content: center">
-          <image v-if="index < 3" :src="images[index]" style="width: 25px;height: 25px;" />
+          <image v-if="index < 3" :src="images[index]" style="width: 25px;height: 25px;"/>
           <view style="color: #b3b5b4" v-else>{{ index + 1 }}</view>
         </view>
         <view style="margin-left: 10px;flex: 1;">
@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
-      images: ['/static/top1.png','/static/top2.png','/static/top3.png'],
+      images: ['/static/top1.png', '/static/top2.png', '/static/top3.png'],
       news: []
     }
   },
@@ -43,15 +43,12 @@ export default {
       })
     },
     goto(path) {
-      uni.redirectTo({
-        url: path
-      })
+      uni.redirectTo({url: path})
     },
     toDetail(item) {
       uni.setStorageSync('news', item)
-      uni.redirectTo({
-        url: '/pages/home/detail?type=switchTab'
-      })
+      uni.setStorageSync('back_params', {type: 'switchTab', path: '/pages/home/index'})
+      uni.redirectTo({url: '/pages/home/detail'})
     }
   }
 }

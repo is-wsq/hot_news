@@ -140,11 +140,6 @@ export default {
     this.news = uni.getStorageSync('news')
     this.queryStyles()
   },
-  onLoad: function (option) {
-    if (option.type){
-      this.type = option.type
-    }
-  },
   methods: {
     addImg() {
       if (this.img_list.length === 4) {
@@ -253,7 +248,7 @@ export default {
     generate() {
       if (this.userId === '') {
         this.$tip.confirm('请先登录',false).then(() => {
-          uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/home/detail?type=${this.type}`})
+          uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/home/detail`})
         })
         return
       }
@@ -275,7 +270,7 @@ export default {
           uni.setStorageSync('wordSetting', this.word)
           uni.setStorageSync('styleId', this.style.id)
           uni.setStorageSync('productInfo',this.productInfo)
-          uni.redirectTo({url: `/pages/home/copy?type=${this.type}`})
+          uni.redirectTo({url: `/pages/home/copy`})
         } else {
           this.isLoading = false
           this.$tip.confirm(res.message,false)
@@ -283,10 +278,11 @@ export default {
       })
     },
     back() {
-      if (this.type === 'redirectTo') {
-        uni.redirectTo({url: '/pages/home/search'})
+      let back_params = uni.getStorageSync('back_params')
+      if (back_params.type === 'redirectTo') {
+        uni.redirectTo({url: back_params.path})
       }else {
-        uni.switchTab({url: '/pages/home/index'})
+        uni.switchTab({url: back_params.path})
       }
     },
     viewHistory() {

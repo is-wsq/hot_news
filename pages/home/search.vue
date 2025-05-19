@@ -28,7 +28,7 @@
         <view class="search-details">{{ searchNews.details }}</view>
       </view>
     </view>
-    <view class="custom" @click="toCustom('/pages/home/custom')">
+    <view class="custom" @click="toCustom">
       <view class="custom-text">自定义文案</view>
       <uni-icons type="right" size="18" color="#ffffff" class="custom-icon"></uni-icons>
     </view>
@@ -101,11 +101,10 @@ export default {
     },
     goto() {
       uni.setStorageSync('news', this.searchNews)
-      uni.redirectTo({
-        url: '/pages/home/detail?type=redirectTo'
-      })
+      uni.setStorageSync('back_params', { type: 'redirectTo', path: '/pages/home/search' })
+      uni.redirectTo({url: '/pages/home/detail'})
     },
-    toCustom(url) {
+    toCustom() {
       if (this.userId === '') {
         this.$tip.confirm('请先登录', false).then(() => {
           uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/search'})
@@ -114,7 +113,7 @@ export default {
       }
       uni.hideKeyboard()
       setTimeout(() => {
-        uni.redirectTo({url: url})
+        uni.redirectTo({url: '/pages/home/custom'})
       }, 100)
     },
     back() {

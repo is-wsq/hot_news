@@ -130,11 +130,6 @@ export default {
     this.queryVoices()
     this.queryFigures()
   },
-  onLoad: function (option) {
-    if (option.type){
-      this.type = option.type
-    }
-  },
   methods: {
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
@@ -297,7 +292,7 @@ export default {
     back() {
       uni.hideKeyboard()
       setTimeout(() => {
-        uni.redirectTo({url: `/pages/home/detail?type=${this.type}`})
+        uni.redirectTo({url: `/pages/home/detail`})
       },100)
     },
     edit() {
