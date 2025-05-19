@@ -30,7 +30,7 @@
       <button class="detail-btn" @click="generate">口播文案生成</button>
       <view class="word-count">
         <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>
-        <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
+        <view style="margin-left: 3px;margin-top: -2px;color: #ffffff;font-size: 14px">{{ word / 100 }}</view>
       </view>
     </view>
 
@@ -71,7 +71,7 @@
       </view>
     </uni-popup>
     <uni-popup ref="sellPopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0">
-      <view class="popup-content">
+      <view class="popup-content" style="position: relative">
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">带货设置</view>
         </view>
@@ -83,7 +83,16 @@
             <view class="delete-btn" @tap="deleteImage(index)">×</view>
           </view>
         </view>
-        <button class="detail-btn" @click="sellSure" :loading="extracting" :disabled="extracting">{{ extracting? '商品信息提取中':'提取商品信息' }}</button>
+        <view class="sell-desc">上传单个商品详情页一张或多张截图</view>
+        <view style="position: relative;width: 250px;margin: 0 auto">
+          <button class="detail-btn" @click="sellSure" :loading="extracting" :disabled="extracting">
+            {{ extracting? '商品信息提取中':'提取商品信息' }}
+          </button>
+          <view class="word-count">
+            <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>
+            <view style="margin-left: 3px;margin-top: -2px;color: #ffffff;font-size: 14px">10</view>
+          </view>
+        </view>
       </view>
     </uni-popup>
     <loading-video ref="loadingVideo" v-if="isLoading" text="口播文案生成中..."/>
@@ -364,6 +373,13 @@ export default {
   color: #E5E5E5;
 }
 
+.sell-desc {
+  color: #9a9a9a;
+  font-size: 14px;
+  margin-bottom: 30px;
+  text-align: center
+}
+
 .detail-btn {
   background-color: #e99d42;
   width: 250px;
@@ -456,7 +472,7 @@ export default {
 
 .style-content {
   width: 100%;
-  height: 220px;
+  height: 180px;
   display: flex;
   gap: 20px;
   overflow-x: auto;
@@ -492,15 +508,15 @@ export default {
 
 .delete-btn {
   position: absolute;
-  top: -10rpx;
-  right: -10rpx;
-  width: 40rpx;
-  height: 40rpx;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
   background-color: red;
   color: white;
-  font-size: 30rpx;
+  font-size: 15px;
   text-align: center;
-  line-height: 40rpx;
+  line-height: 20px;
   border-radius: 50%;
   z-index: 1;
 }
