@@ -116,11 +116,8 @@ export default {
         if (res.status === 'success') {
           uni.setStorageSync('userId', res.data.user_id)
           this.$store.dispatch('task/userLogin', res.data.user_id);
-          if (this.type === 'switchTab') {
-            uni.switchTab({ url: this.path })
-          }else {
-            uni.redirectTo({ url: this.path })
-          }
+          let router = uni.getStorageSync('login_router')
+          uni[router.type]({url: router.path})
         }else {
           this.$tip.confirm(res.message,false);
         }
@@ -140,11 +137,8 @@ export default {
         if (res.status ==='success') {
           uni.setStorageSync('userId', res.data.user_id)
           this.$store.dispatch('task/userLogin', res.data.user_id);
-          if (this.type === 'switchTab') {
-            uni.switchTab({ url: this.path })
-          }else {
-            uni.redirectTo({ url: this.path })
-          }
+          let router = uni.getStorageSync('login_router')
+          uni[router.type]({url: router.path})
         }else {
           this.$tip.confirm(res.message,false);
         }
@@ -244,11 +238,8 @@ export default {
           history.replaceState({}, '', cleanUrl);
           // uni.switchTab({ url: '/pages/home/index' })
           // window.location.replace('/#' + this.path)
-          if (this.type === 'switchTab') {
-            uni.switchTab({ url: this.path })
-          }else {
-            uni.redirectTo({ url: this.path })
-          }
+          let router = uni.getStorageSync('login_router')
+          uni[router.type]({url: router.path})
         }else {
           this.$tip.confirm(res.message,false);
         }

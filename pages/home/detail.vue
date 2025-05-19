@@ -248,7 +248,7 @@ export default {
     generate() {
       if (this.userId === '') {
         this.$tip.confirm('请先登录',false).then(() => {
-          uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/home/detail`})
+          this.toLogin()
         })
         return
       }
@@ -276,6 +276,13 @@ export default {
           this.$tip.confirm(res.message,false)
         }
       })
+    },
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'redirectTo',
+        path: '/pages/home/detail'
+      })
+      uni.redirectTo({url: '/pages/login/login'})
     },
     back() {
       let back_params = uni.getStorageSync('back_params')

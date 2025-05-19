@@ -10,7 +10,7 @@
         </view>
       </view>
     </view>
-    <view class="user-info" v-else @click="goto('/pages/login/login?type=switchTab&path=/pages/user/index')">
+    <view class="user-info" v-else @click="toLogin">
       <view class="user-avatar"></view>
       <view class="user-account">
         <view class="user-phone">暂未登录</view>
@@ -102,12 +102,19 @@ export default {
     openVIP() {
       if (this.userId === '') {
         this.$tip.confirm('请先登录',false).then(() => {
-          uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/user/index'})
+          this.toLogin()
         })
         return
       }
       uni.removeStorageSync('packageId')
       this.goto('/pages/user/voucher')
+    },
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'switchTab',
+        path: '/pages/user/index'
+      })
+      uni.redirectTo({url: '/pages/login/login'})
     },
     goto(url) {
       if (url === '')

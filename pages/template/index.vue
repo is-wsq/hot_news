@@ -66,11 +66,18 @@ export default {
         this.dot = '.'.repeat(this.dotCount);
       }, 1000);
     },
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'switchTab',
+        path: '/pages/template/index'
+      })
+      uni.redirectTo({url: '/pages/login/login'})
+    },
     goto(path) {
       let userId = uni.getStorageSync('userId') || ''
       if (userId === '') {
         this.$tip.confirm('请先登录',false).then(() => {
-          uni.redirectTo({url: '/pages/login/login?type=switchTab&path=/pages/template/index'})
+          this.toLogin()
         })
         return
       }

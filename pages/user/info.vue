@@ -61,9 +61,14 @@ export default {
       uni.removeStorageSync('userId')
       uni.removeStorageSync('authorized')
       this.$store.dispatch('task/userLogout');
-      uni.redirectTo({
-        url: '/pages/login/login?type=switchTab&path=/pages/user/index'
+      this.toLogin()
+    },
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'switchTab',
+        path: '/pages/user/index'
       })
+      uni.redirectTo({url: '/pages/login/login'})
     },
     back() {
       uni.switchTab({

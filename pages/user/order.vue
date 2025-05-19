@@ -38,7 +38,7 @@ export default {
     queryOrders() {
       if (!uni.getStorageSync('userId')) {
         this.$tip.confirm('请先登录',false).then(() => {
-          uni.redirectTo({url: `/pages/login/login?type=redirectTo&path=/pages/user/order`})
+          this.toLogin()
         })
         return
       }
@@ -54,6 +54,13 @@ export default {
       const parts = isoString.split('T')
       if (parts.length !== 2) return 'Invalid Date'
       return parts[0].replace(/-/g, '/') + ' ' + parts[1]
+    },
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'redirectTo',
+        path: '/pages/user/order'
+      })
+      uni.redirectTo({url: '/pages/login/login'})
     },
     back() {
       uni.switchTab({ url: '/pages/user/index' })

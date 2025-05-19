@@ -73,7 +73,7 @@ export default {
     search() {
       if (this.userId === '') {
         this.$tip.confirm('请先登录', false).then(() => {
-          uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/search'})
+          this.toLogin()
         })
         return
       }
@@ -107,7 +107,7 @@ export default {
     toCustom() {
       if (this.userId === '') {
         this.$tip.confirm('请先登录', false).then(() => {
-          uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/search'})
+          this.toLogin()
         })
         return
       }
@@ -115,6 +115,13 @@ export default {
       setTimeout(() => {
         uni.redirectTo({url: '/pages/home/custom'})
       }, 100)
+    },
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'redirectTo',
+        path: '/pages/home/search'
+      })
+      uni.redirectTo({url: '/pages/login/login'})
     },
     back() {
       uni.hideKeyboard()

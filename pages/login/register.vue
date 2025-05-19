@@ -31,7 +31,7 @@
       </uni-forms>
       <button v-if="isVerify" class="register-button" @click="verify">验证账号</button>
       <button v-else class="register-button" @click="register">注册账号</button>
-      <text class="forgot-password" @click="gotoLogin" style="margin-top: 7px">已有账户？登陆</text>
+      <text class="forgot-password" @click="toLogin" style="margin-top: 7px">已有账户？登陆</text>
     </view>
   </view>
 </template>
@@ -148,11 +148,9 @@ export default {
       }
       this.$http.post('/user/register', params).then(res => {
         if (res.status === 'success') {
-          this.$tip.confirm('注册成功，请登录',false).then(() => {
+          this.$tip.confirm('注册成功，去登录',false).then(() => {
             this.resetData();
-            uni.redirectTo({
-              url: '/pages/login/login?type=switchTab&path=/pages/home/index'
-            })
+            this.toLogin();
           })
         } else {
           this.$tip.confirm(res.message,false);
@@ -169,10 +167,12 @@ export default {
         rePassword: '',
       };
     },
-    gotoLogin() {
-      uni.redirectTo({
-        url: '/pages/login/login?type=switchTab&path=/pages/home/index'
+    toLogin() {
+      uni.setStorageSync('login_router', {
+        type: 'switchTab',
+        path: '/pages/home/index'
       })
+      uni.redirectTo({url: '/pages/login/login'})
     }
   },
 }
