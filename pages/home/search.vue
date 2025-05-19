@@ -5,20 +5,20 @@
       <input class="search-input" v-model="keyword" placeholder="输入关键字" :focus="true" @confirm="search">
       </input>
       <view class="search-count">
-        <uni-icons fontFamily="CustomFont" color="#ffffff" size="20">{{'\ue607'}}</uni-icons>
+        <uni-icons fontFamily="CustomFont" color="#ffffff" size="20">{{ '\ue607' }}</uni-icons>
         <view style="margin-left: 3px;color: #ffffff;font-size: 14px">4</view>
       </view>
       <uni-icons class="icon" type="search" size="24" color="#ffffff" @click="search"></uni-icons>
     </view>
-    <view class="history" v-if="!searchNews">
+    <view class="history">
       <view class="history-title">
         <view style="color: #ffffff;margin-left: 10px;width: calc(100% - 40px);">历史搜索</view>
-        <uni-icons type="trash-filled" size="20" color="#9a9a9a" @click="clearHistory"></uni-icons>
       </view>
       <view class="tags">
         <view v-for="(item, index) in history" :key="index">
-          <uni-tag circle style="background-color: #303030;border: none;color: #E5E5E5;min-width: 80px;"
-                   :text="item.keyword" @click="searchByHistory(item)"></uni-tag>
+          <uni-tag circle class="tag-item" :class="{ 'tag-active': searchNews && searchNews.id === item.id }"
+                   :text="item.keyword"
+                   @click="searchByHistory(item)"></uni-tag>
         </view>
       </view>
     </view>
@@ -28,7 +28,7 @@
         <view class="search-details">{{ searchNews.details }}</view>
       </view>
     </view>
-    <view v-if="!searchNews" class="custom" @click="toCustom('/pages/home/custom')">
+    <view class="custom" @click="toCustom('/pages/home/custom')">
       <view class="custom-text">自定义文案</view>
       <uni-icons type="right" size="18" color="#ffffff" class="custom-icon"></uni-icons>
     </view>
@@ -51,30 +51,32 @@ export default {
     }
   },
   mounted() {
-    this.userId = uni.getStorageSync('userId') || ''
-    this.queryHistoryCopy()
-    this.searchNews = uni.getStorageSync('searchNews')
+    if (uni.getStorageSync('userId')) {
+      this.userId = uni.getStorageSync('userId')
+      this.queryHistoryCopy()
+    }
   },
   methods: {
-    clearHistory() {
-
-    },
     searchByHistory(item) {
       this.searchNews = item
-      uni.setStorageSync('searchNews', item)
     },
     queryHistoryCopy() {
       let params = {
         user_id: this.userId,
-        is_news: 1
       }
-      this.$http.get('/copywriting_history/query', params).then(res => {
+      this.$http.get('/news/query/user', params).then(res => {
         if (res.status === 'success') {
           this.history = res.data
         }
       })
     },
     search() {
+      if (this.userId === '') {
+        this.$tip.confirm('请先登录', false).then(() => {
+          uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/search'})
+        })
+        return
+      }
       if (this.keyword.length === 0) {
         return
       }
@@ -89,7 +91,6 @@ export default {
       this.$http.get('/news/online_search', params, 600000).then(res => {
         if (res.status === 'success') {
           this.searchNews = res.data
-          uni.setStorageSync('searchNews', res.data)
           this.isLoading = false
           this.queryHistoryCopy()
         } else {
@@ -106,21 +107,21 @@ export default {
     },
     toCustom(url) {
       if (this.userId === '') {
-        this.$tip.confirm('请先登录',false).then(() => {
-          uni.redirectTo({ url: '/pages/login/login?type=redirectTo&path=/pages/home/search' })
+        this.$tip.confirm('请先登录', false).then(() => {
+          uni.redirectTo({url: '/pages/login/login?type=redirectTo&path=/pages/home/search'})
         })
         return
       }
       uni.hideKeyboard()
       setTimeout(() => {
-        uni.redirectTo({ url: url })
-      },100)
+        uni.redirectTo({url: url})
+      }, 100)
     },
     back() {
       uni.hideKeyboard()
       setTimeout(() => {
         uni.switchTab({url: '/pages/home/index'})
-      },100)
+      }, 100)
     }
   }
 }
@@ -168,6 +169,10 @@ export default {
   align-items: center;
 }
 
+.history {
+  margin-bottom: 20px;
+}
+
 .history-title {
   display: flex;
   align-items: center;
@@ -180,6 +185,18 @@ export default {
   padding: 0 10px;
   box-sizing: border-box;
   flex-wrap: wrap;
+}
+
+.tag-item {
+  background-color: #303030;
+  border: none;
+  color: #E5E5E5;
+  min-width: 80px;
+}
+
+.tag-active {
+  background-color: #e99d42 !important;
+  color: #000000 !important;
 }
 
 .search-list {

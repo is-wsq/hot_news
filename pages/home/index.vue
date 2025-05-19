@@ -7,9 +7,8 @@
     <view class="content">
       <view v-for="(item, index) in news" :key="index" class="new" @click="toDetail(item)">
         <view style="width: 35px;height: 35px;display: flex;align-items: center;justify-content: center">
-          <image v-if="index === 0" src="/static/top1.png" style="width: 25px;height: 25px;" />
-          <image v-if="index === 1" src="/static/top2.png" style="width: 25px;height: 25px;" />
-          <image v-if="index === 2" src="/static/top3.png" style="width: 25px;height: 25px;" />
+          <image v-if="index < 3" :src="images[index]" style="width: 25px;height: 25px;" />
+          <view style="color: #b3b5b4" v-else>{{ index + 1 }}</view>
         </view>
         <view style="margin-left: 10px;flex: 1;">
           {{ item.title }}
@@ -25,13 +24,13 @@ export default {
   data() {
     return {
       safeAreaHeight: uni.getSystemInfoSync().safeArea.height,
+      images: ['/static/top1.png','/static/top2.png','/static/top3.png'],
       news: []
     }
   },
   onShow() {
     this.queryNews()
     uni.removeStorageSync(`${uni.getStorageSync('userId')}_script`)
-    uni.removeStorageSync('searchNews')
   },
   methods: {
     queryNews() {
