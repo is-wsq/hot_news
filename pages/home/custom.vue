@@ -210,18 +210,6 @@ export default {
         this.$tip.confirm(`积分余额须大于20方可使用本服务，当前剩余积分${this.userInfo.point}`,false)
         return;
       }
-      let task = {
-        name: this.title,
-        type: 'video',
-        id: this.generateUniqueId(),
-      }
-      this.$store.dispatch('task/addTask', task);
-      this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
-        uni.switchTab({
-          url: '/pages/template/index'
-        })
-      })
-
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -229,17 +217,17 @@ export default {
         video_id: this.figure.video_id,
         filename: this.title
       }
-      this.$http.post('/figure/generate_video', params, 1800000).then(res => {
-        this.$store.dispatch("task/removeTask", task.id);
+      this.$http.post('/figure/generate_video', params).then(res => {
         if (res.status === 'success') {
-          this.$tip.confirm(`口播视频${task.name}生成任务成功，本次生成耗费${res.data.point}个积分`, false)
+          this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+            uni.switchTab({
+              url: '/pages/template/index'
+            })
+          })
         }else {
-          this.$tip.confirm(`口播视频${task.name}生成任务失败,${res.message}`, false)
+          this.$tip.confirm(`创建口播视频生成任务\n《${this.title}.mp4》失败,${res.message}`, false)
         }
       })
-    },
-    generateUniqueId() {
-      return Date.now() + Math.random().toString(36).substr(2, 16);
     },
     back() {
       uni.hideKeyboard()

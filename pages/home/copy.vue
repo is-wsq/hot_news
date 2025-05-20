@@ -117,7 +117,8 @@ export default {
       isLoading: false,
       fileInfo: {},
       type: '',
-      productInfo: ''
+      productInfo: '',
+      userInfo: {}
     }
   },
   mounted() {
@@ -129,8 +130,16 @@ export default {
     this.queryHistoryCopy()
     this.queryVoices()
     this.queryFigures()
+    this.queryUserInfo()
   },
   methods: {
+    queryUserInfo() {
+      this.$http.get('/user/query', {user_id: this.userId}).then(async res => {
+        if (res.status ==='success') {
+          this.userInfo = res.data
+        }
+      })
+    },
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
@@ -185,6 +194,10 @@ export default {
         this.$tip.confirm('请输入标题',false)
         return
       }
+      if (this.userInfo.point < 20) {
+        this.$tip.confirm(`积分余额须大于20方可使用本服务，当前剩余积分${this.userInfo.point}`,false)
+        return;
+      }
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -192,7 +205,7 @@ export default {
         video_id: this.figure.video_id,
         filename: this.news.title
       }
-      this.$http.post('/figure/generate_video', params, 1800000).then(res => {
+      this.$http.post('/figure/generate_video', params).then(res => {
         if (res.status === 'success') {
           this.$tip.confirm(`已创建口播视频生成任务\n《${this.news.title}.mp4》`,false).then(res => {
             uni.switchTab({
