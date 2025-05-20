@@ -39,7 +39,7 @@
       </view>
     </view>
     <view style="position: relative;width: 250px;margin: 0 auto">
-      <button class="copy-btn" @click="generateVideo">口播视频生成</button>
+      <button class="copy-btn" @click="generateVideo" :disabled="disabled">口播视频生成</button>
     </view>
     <uni-popup ref="voicePopup" type="bottom" background-color="#292929" borderRadius="12px 12px 0 0" @maskClick="closeVoicePopup">
       <view class="popup-content">
@@ -118,7 +118,8 @@ export default {
       fileInfo: {},
       type: '',
       productInfo: '',
-      userInfo: {}
+      userInfo: {},
+      disabled: false
     }
   },
   mounted() {
@@ -198,6 +199,7 @@ export default {
         this.$tip.confirm(`积分余额须大于20方可使用本服务，当前剩余积分${this.userInfo.point}`,false)
         return;
       }
+      this.disabled = true
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -207,13 +209,16 @@ export default {
       }
       this.$http.post('/figure/generate_video', params).then(res => {
         if (res.status === 'success') {
-          this.$tip.confirm(`已创建口播视频生成任务\n《${this.news.title}.mp4》`,false).then(res => {
+          this.$tip.confirm(`已创建口播视频生成任务\n《${this.news.title}.mp4》`,false).then(() => {
+            this.disabled = false
             uni.switchTab({
               url: '/pages/template/index'
             })
           })
         }else {
-          this.$tip.confirm(`创建口播视频生成任务\n《${this.news.title}.mp4》失败,${res.message}`, false)
+          this.$tip.confirm(`创建口播视频生成任务\n《${this.news.title}.mp4》失败,${res.message}`, false).then(() => {
+            this.disabled = false
+          })
         }
       })
     },

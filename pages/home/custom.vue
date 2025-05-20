@@ -33,7 +33,7 @@
       </view>
     </view>
     <view style="position: relative;width: 250px;margin: 0 auto">
-      <button class="custom-btn" @click="generateVideo">口播视频生成</button>
+      <button class="custom-btn" @click="generateVideo" :disabled="disabled">口播视频生成</button>
       <view class="word-count">
         <uni-icons fontFamily="CustomFont" color="#ffffff" size="18">{{'\ue607'}}</uni-icons>
         <view style="margin-left: 3px;color: #ffffff;font-size: 14px">{{ scriptLengthInHundredths }}</view>
@@ -100,7 +100,8 @@ export default {
       selectedFigure: {},
       testAudioContext: null,
       testAudioIndex: null,
-      userInfo: {}
+      userInfo: {},
+      disabled: false
     }
   },
   computed: {
@@ -210,6 +211,7 @@ export default {
         this.$tip.confirm(`积分余额须大于20方可使用本服务，当前剩余积分${this.userInfo.point}`,false)
         return;
       }
+      this.disabled = true
       let params = {
         text: this.script,
         user_id: this.userId,
@@ -219,13 +221,16 @@ export default {
       }
       this.$http.post('/figure/generate_video', params).then(res => {
         if (res.status === 'success') {
-          this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(res => {
+          this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(() => {
+            this.disabled = false
             uni.switchTab({
               url: '/pages/template/index'
             })
           })
         }else {
-          this.$tip.confirm(`创建口播视频生成任务\n《${this.title}.mp4》失败,${res.message}`, false)
+          this.$tip.confirm(`创建口播视频生成任务\n《${this.title}.mp4》失败,${res.message}`, false).then(() => {
+            this.disabled = false
+          })
         }
       })
     },
