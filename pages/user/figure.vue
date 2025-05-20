@@ -65,7 +65,7 @@ export default {
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
         if (res.status === 'success') {
-          this.figures = res.data.filter(item => item.type === 'clone')
+          this.figures = res.data.filter(item => item.type === 'clone' && item.status === 'success')
         } else {
           this.$tip.confirm(res.message, false)
         }

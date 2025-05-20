@@ -125,7 +125,7 @@ export default {
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
-          this.figures = res.data
+          this.figures = res.data.filter(item => item.status === 'success')
           if (this.figures.length > 0) {
             this.figure = this.figures[0]
             this.selectedFigure = this.figures[0]
@@ -138,7 +138,7 @@ export default {
     queryVoices() {
       this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
-          this.voices = res.data
+          this.voices = res.data.filter(item => item.status === 'success')
           if (this.voices.length > 0) {
             this.voice = this.voices[0]
             this.selectedVoice = this.voices[0]

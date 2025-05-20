@@ -59,7 +59,7 @@ export default {
     queryVoices() {
       this.$http.get('/timbres/query/user', {user_id: uni.getStorageSync('userId')}).then(res => {
         if (res.status === 'success') {
-          this.voices = res.data.filter(item => item.type === 'clone')
+          this.voices = res.data.filter(item => item.type === 'clone' && item.status === 'success')
         } else {
           this.$tip.confirm(res.message, false)
         }
