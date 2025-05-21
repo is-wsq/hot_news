@@ -75,10 +75,11 @@ export default {
       }
     },
   },
-  onLoad: function (option) {
-    this.type = option.type
-    this.path = option.path
-    this.checkWeChatCode()
+  // onLoad: function (option) {
+  //   this.checkWeChatCode()
+  // },
+  mounted() {
+    this.checkWeChatCode();
   },
   methods: {
     login() {
@@ -223,10 +224,13 @@ export default {
           .replace(/\+/g, '%20')) || null
     },
     checkWeChatCode() {
-      let code = this.getUrlCode('code')
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
       if (code && uni.getStorageSync('authorized')) {
         uni.removeStorageSync('authorized');
         this.loginByCode(code)
+        const currentUrlWithoutParams = this.getCurrentUrl();
+        window.location.replace(currentUrlWithoutParams);
       }
     },
     loginByCode(code) {
