@@ -75,11 +75,8 @@ export default {
       }
     },
   },
-  // onLoad: function (option) {
-  //   this.checkWeChatCode()
-  // },
-  mounted() {
-    this.checkWeChatCode();
+  onLoad: function (option) {
+    this.checkWeChatCode()
   },
   methods: {
     login() {
@@ -224,13 +221,10 @@ export default {
           .replace(/\+/g, '%20')) || null
     },
     checkWeChatCode() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
+      let code = this.getUrlCode('code')
       if (code && uni.getStorageSync('authorized')) {
         uni.removeStorageSync('authorized');
         this.loginByCode(code)
-        const currentUrlWithoutParams = this.getCurrentUrl();
-        window.location.replace(currentUrlWithoutParams);
       }
     },
     loginByCode(code) {
@@ -240,8 +234,6 @@ export default {
           this.$store.dispatch('task/userLogin', res.data.user_id);
           const cleanUrl = location.origin + location.pathname;
           history.replaceState({}, '', cleanUrl);
-          // uni.switchTab({ url: '/pages/home/index' })
-          // window.location.replace('/#' + this.path)
           let router = uni.getStorageSync('login_router')
           uni[router.type]({url: router.path})
         }else {
