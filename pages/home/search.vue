@@ -88,11 +88,13 @@ export default {
         user_id: this.userId,
         keyword: this.keyword
       }
+      this.searchNews = {}
+      this.queryHistoryCopy()
       this.$http.get('/news/online_search', params, 600000).then(res => {
         if (res.status === 'success') {
           this.searchNews = res.data
           this.isLoading = false
-          this.queryHistoryCopy()
+          // this.queryHistoryCopy()
         } else {
           this.isLoading = false
           this.$tip.confirm(res.message, false)
