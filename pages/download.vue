@@ -47,8 +47,8 @@ export default {
         this.$refs.dialog.open()
       }else {
         const a = document.createElement('a');
-        let filepath = this.filepath.replace('results','download_v3');
-        a.href = filepath + `/${this.filename}`;
+        let filepath = this.filepath.replace('results','download_v4');
+        a.href = filepath + `?filename=${this.filename}`;
         a.download =  this.filename + '.mp4';
         a.style.display = 'none';
         document.body.appendChild(a);
