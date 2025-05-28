@@ -7,8 +7,11 @@
     <view class="history-copy-list">
       <view class="history-copy-item" v-for="(item, index) in history" :key="item.id"
       :class="{'margin-bottom': index !== history.length - 1}">
+        <view class="copy-title">{{ item.title }}</view>
         <view class="copy-item">{{ item.copywriting }}</view>
-        <image class="copy-icon" src="/static/copy_icon.png" @click="copy(item)"></image>
+        <view style="width: 100%;text-align: end">
+          <image class="copy-icon" src="/static/copy_icon.png" @click="copy(item)"></image>
+        </view>
       </view>
     </view>
   </view>
@@ -72,11 +75,18 @@ export default {
 .history-copy-item {
   border-radius: 10px;
   background-color: #303030;
-  padding: 14px 14px 5px 14px;
+  padding: 5px 14px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: end;
+}
+
+.copy-title {
+  color: #ffffff;
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .copy-item {
