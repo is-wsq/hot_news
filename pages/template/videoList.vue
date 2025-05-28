@@ -81,7 +81,7 @@ export default {
     },
     manageVideo(data) {
       if (!this.isManage) {
-        let path = `/pages/download?filepath=${data.video_path}&filename=${data.filename}`
+        let path = `/pages/download?filepath=${data.video_path}&filename=${encodeURIComponent(data.filename)}`
         uni.redirectTo({url: path})
       }else {
         let index = this.selectedVideos.findIndex(item => item.id === data.id)
