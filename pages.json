@@ -77,6 +77,9 @@
       "path": "pages/user/order"
     },
     {
+      "path": "pages/user/historyCopy"
+    },
+    {
       "path": "pages/agreement/user"
     },
     {

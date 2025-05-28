@@ -78,6 +78,7 @@ export default {
         {name: '隐私条款', path: '/pages/agreement/privacy?back=index'},
         {name: '用户协议', path: '/pages/agreement/user?back=index'},
         {name: '付费服务协议', path: '/pages/agreement/membership?back=index'},
+        {name: '历史生成文案', path: '/pages/user/historyCopy'},
         {name: '订单管理', path: '/pages/user/order'},
         {name: '联系客服', path: '/pages/user/contactUs'},
       ]
