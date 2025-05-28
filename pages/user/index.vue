@@ -1,7 +1,7 @@
 <template>
   <view class="pages user" :style="{ height: `${safeAreaHeight - 69.8}px` }">
     <view class="user-info" v-if="userId !== ''">
-      <image class="user-avatar" :src="userInfo.avatar" @click="goto('/pages/user/info')"></image>
+      <image class="user-avatar" mode="aspectFill" :src="userInfo.avatar" @click="goto('/pages/user/info')"></image>
       <view class="user-account">
         <view class="user-phone">{{ userInfo.username }}</view>
         <view style="display: flex">

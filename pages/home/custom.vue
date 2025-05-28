@@ -69,7 +69,7 @@
         <view class="figure-content">
           <view style="flex: none;text-align: center" v-for="item in figures" :key="item.id"
                 @click="selectedFigure = item">
-            <image :src="item.picture" class="figure-item"
+            <image :src="item.picture" class="figure-item" mode="aspectFill"
                    :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
             <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;"
                   :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}

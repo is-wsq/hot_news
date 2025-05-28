@@ -8,7 +8,7 @@
     <view class="figure-list">
       <view class="figure-item" v-for="item in systems" :key="item.id"
             :class="{ 'active-item': selectedFigure.id === item.id }" @click="previewFigure(item)">
-        <image :src="item.picture" class="figure-avatar"/>
+        <image :src="item.picture" mode="aspectFill" class="figure-avatar"/>
         <view class="figure-name">{{ item.name }}</view>
       </view>
     </view>
@@ -19,7 +19,7 @@
         <view class="figure-name" style="color: #e99d42 !important;">克隆形象</view>
       </view>
       <view class="figure-item" v-for="item in clones" :key="item.id" @click="previewFigure(item)">
-        <image :src="item.picture" class="figure-avatar"/>
+        <image :src="item.picture" mode="aspectFill" class="figure-avatar"/>
         <view class="figure-name">{{ item.name }}</view>
       </view>
     </view>

@@ -7,7 +7,7 @@
     </view>
     <view class="user-figure-container" :style="{gridAutoRows: figureWidth * 4 / 3 + 30 + 'px' }" v-if="figures.length > 0">
       <view class="user-figure-item" v-for="item in figures" :key="item.id" @click="manageFigure(item)">
-        <image class="user-figure-item-img" :src="item.picture"
+        <image class="user-figure-item-img" :src="item.picture" mode="aspectFill"
                :class="{'user-figure-itemActive': selectedFigures.findIndex(video => video.id === item.id) !== -1}"
                :style="{width: figureWidth + 'px',height: figureWidth * 4 / 3 + 'px'}"></image>
         <view class="user-figure-item-name" :style="{width: figureWidth + 'px'}">{{ item.name }}</view>

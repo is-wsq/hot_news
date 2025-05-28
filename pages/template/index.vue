@@ -11,7 +11,7 @@
     <view class="video-list" style="height: calc(100% - 180px)">
       <view class="video-item" v-for="item in processList" :key="item.id">
         <view class="image-wrapper shining">
-          <image class="item-img" src="/static/img/20.png"></image>
+          <image class="item-img" src="/static/img/20.png" mode="aspectFill"></image>
           <view class="shine-layer"></view>
           <view class="loading-title">
             <view>视频生成中</view>
@@ -21,7 +21,7 @@
         <view class="item-title" style="margin-top: 1px">{{ item.filename }}</view>
       </view>
       <view class="video-item" v-for="item in videoList" :key="item.id">
-        <image class="item-img" :src="item.picture"></image>
+        <image class="item-img" :src="item.picture" mode="aspectFill"></image>
         <view class="item-title">{{ item.filename }}</view>
       </view>
     </view>

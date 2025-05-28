@@ -7,7 +7,7 @@
     <view style="font-size: 18px; color: #ffffff;margin-bottom: 15px">系统音色</view>
     <view class="voice-list" :style="{height: heightStyle + 'px'}">
       <view class="voice-item" v-for="item in systemVoice" :key="item.id" @click="previewAudio(item)">
-        <image :class="{ 'active-item': audioCtxId === item.id }" :src="item.avatar"
+        <image :class="{ 'active-item': audioCtxId === item.id }" :src="item.avatar" mode="aspectFill"
                style="width: 80px; height: 80px; border-radius: 50%"/>
         <view class="voice-name" :style="{color: audioCtxId === item.id ? '#e99d42' : '#ffffff'}">{{
             item.name
@@ -19,7 +19,8 @@
     <view class="voice-list" :style="{height: heightStyle + 'px'}">
       <view class="voice-item" v-for="item in processVoice" :key="item.id">
         <view class="image-wrapper shining">
-          <image src="/static/img/voice-loading.png" style="width: 80px; height: 80px; border-radius: 50%"/>
+          <image src="/static/img/voice-loading.png" mode="aspectFill"
+                 style="width: 80px; height: 80px; border-radius: 50%"/>
           <view class="shine-layer"></view>
           <view class="loading-title">
             <view style="font-size: 14px">克隆中</view>
@@ -30,7 +31,7 @@
       </view>
 
       <view class="voice-item" v-for="item in cloneVoice" :key="item.id" @click="previewAudio(item)">
-        <image :class="{ 'active-item': audioCtxId === item.id }" :src="item.avatar"
+        <image :class="{ 'active-item': audioCtxId === item.id }" :src="item.avatar" mode="aspectFill"
                style="width: 80px; height: 80px; border-radius: 50%"/>
         <view class="voice-name" :style="{color: audioCtxId === item.id ? '#e99d42' : '#ffffff'}">{{
             item.name

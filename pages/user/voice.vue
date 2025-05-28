@@ -7,7 +7,7 @@
     </view>
     <view class="user-voice-container" :style="{gridAutoRows: voiceWidth + 30 + 'px' }" v-if="voices.length > 0">
       <view class="user-voice-item" v-for="item in voices" :key="item.id" @click="manageVoice(item)">
-        <image class="user-voice-item-img" :src="item.avatar"
+        <image class="user-voice-item-img" :src="item.avatar" mode="aspectFill"
                :class="{'user-voice-itemActive': selectedVoices.findIndex(video => video.id === item.id) !== -1 || audioCtxId === item.id}"
                :style="{width: voiceWidth + 'px',height: voiceWidth + 'px'}"></image>
         <view class="user-voice-item-name"

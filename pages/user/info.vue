@@ -7,7 +7,7 @@
     <view class="info-list">
       <view class="info-item" @click="previewAvatar">
         <view class="info-label">头像</view>
-        <view class="info-value"><image class="user-avatar" :src="userInfo.avatar"></image></view>
+        <view class="info-value"><image class="user-avatar" mode="aspectFill" :src="userInfo.avatar"></image></view>
       </view>
       <view class="info-item">
         <view class="info-label">名字</view>

@@ -8,7 +8,7 @@
     <view class="figure-list"
           :style="{ height: heightStyle + 40 + 'px', gridTemplateRows: `repeat(1, ${heightStyle + 30}px)`, gridAutoColumns: `${heightStyle * 3 / 4}px` }">
       <view v-for="item in systemFigure" :key="item.id" @click="previewFigure(item)">
-        <image :src="item.picture"
+        <image :src="item.picture" mode="aspectFill"
                :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
         <view class="figure-name" :style="{ width: heightStyle * 3 / 4 + 'px' }">{{ item.name }}</view>
       </view>
@@ -18,7 +18,7 @@
           :style="{ height: heightStyle * 2 + 85 + 'px', gridTemplateRows: `repeat(2, ${heightStyle + 30}px)`, gridAutoColumns: `${heightStyle * 3 / 4}px`}">
       <view v-for="item in processFigure" :key="item.id">
         <view class="image-wrapper shining">
-          <image src="/static/img/20.png"
+          <image src="/static/img/20.png" mode="aspectFill"
                  :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
           <view class="shine-layer"></view>
           <view class="loading-title">
@@ -29,7 +29,7 @@
         <view class="figure-name" style="margin-top: -5px">{{ item.name }}</view>
       </view>
       <view v-for="item in cloneFigure" :key="item.id" @click="previewFigure(item)">
-        <image :src="item.picture"
+        <image :src="item.picture" mode="aspectFill"
                :style="{height: heightStyle + 'px', width: heightStyle * 3 / 4 + 'px', borderRadius: '10px'}"/>
         <view class="figure-name" :style="{ width: heightStyle * 3 / 4 + 'px' }">{{ item.name }}</view>
       </view>
