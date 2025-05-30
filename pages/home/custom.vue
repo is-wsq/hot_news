@@ -211,25 +211,29 @@ export default {
         this.$tip.confirm(`积分余额须大于20方可使用本服务，当前剩余积分${this.userInfo.point}`,false)
         return;
       }
-      this.disabled = true
-      let params = {
-        text: this.script,
-        user_id: this.userId,
-        voice_id: this.voice.voice_id,
-        video_id: this.figure.video_id,
-        filename: this.title
-      }
-      this.$http.post('/figure/generate_video', params).then(res => {
-        if (res.status === 'success') {
-          this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(() => {
-            this.disabled = false
-            uni.switchTab({
-              url: '/pages/template/index'
-            })
-          })
-        }else {
-          this.$tip.confirm(`创建口播视频生成任务\n《${this.title}.mp4》失败,${res.message}`, false).then(() => {
-            this.disabled = false
+      this.$tip.confirm('确定生成视频？',true).then((res) => {
+        if (res === 'success') {
+          this.disabled = true
+          let params = {
+            text: this.script,
+            user_id: this.userId,
+            voice_id: this.voice.voice_id,
+            video_id: this.figure.video_id,
+            filename: this.title
+          }
+          this.$http.post('/figure/generate_video', params).then(res => {
+            if (res.status === 'success') {
+              this.$tip.confirm(`已创建口播视频生成任务\n《${this.title}.mp4》`,false).then(() => {
+                this.disabled = false
+                uni.switchTab({
+                  url: '/pages/template/index'
+                })
+              })
+            }else {
+              this.$tip.confirm(`创建口播视频生成任务\n《${this.title}.mp4》失败,${res.message}`, false).then(() => {
+                this.disabled = false
+              })
+            }
           })
         }
       })

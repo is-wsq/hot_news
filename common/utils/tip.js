@@ -38,13 +38,13 @@ export default class Tips {
         showCancel: showCancel,
         success: res => {
           if (res.confirm) {
-            resolve(payload);
+            resolve('success');
           } else if (res.cancel) {
-            reject(payload);
+            resolve('fail');
           }
         },
         fail: res => {
-          reject(payload);
+          resolve('fail');
         }
       });
     });
