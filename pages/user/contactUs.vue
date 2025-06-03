@@ -19,6 +19,7 @@
     <view style="display: flex;justify-content: center">
       <image src="/static/img/qrcode.png" alt="logo" style="width: 250px;height: 250px;margin-top: 10px"/>
     </view>
+    <view style="text-align: center;margin-top: 10px;font-size: 14px;color: #999999">长按识别图中二维码</view>
   </view>
 </template>
 
