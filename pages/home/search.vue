@@ -115,6 +115,7 @@ export default {
       }
       uni.hideKeyboard()
       setTimeout(() => {
+        uni.setStorageSync('back_params', { type: 'redirectTo', path: '/pages/home/search' })
         uni.redirectTo({url: '/pages/home/custom'})
       }, 100)
     },

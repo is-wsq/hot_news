@@ -6,7 +6,7 @@
     </view>
     <view class="history-copy-list">
       <view class="history-copy-item" v-for="(item, index) in history" :key="item.id"
-      :class="{'margin-bottom': index !== history.length - 1}">
+      :class="{'margin-bottom': index !== history.length - 1}" @click="gotoCustom(index)">
         <view class="copy-title">{{ item.title }}</view>
         <view class="copy-item">{{ item.copywriting }}</view>
         <view style="width: 100%;text-align: end">
@@ -44,8 +44,12 @@ export default {
         }
       })
     },
+    gotoCustom(index) {
+      uni.setStorageSync('allScriptIndex', index)
+      uni.setStorageSync('back_params', { type: 'redirectTo', path: '/pages/user/historyCopy' })
+      uni.redirectTo({ url: '/pages/home/custom' })
+    },
     copy(item) {
-      console.log(item)
       let self = this
       uni.setClipboardData({
         data: item.copywriting,

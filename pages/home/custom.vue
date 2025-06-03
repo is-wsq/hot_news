@@ -110,6 +110,18 @@ export default {
     }
   },
   mounted() {
+    if (uni.getStorageSync('allScriptIndex') || parseInt(uni.getStorageSync('allScriptIndex')) === 0) {
+      let index = parseInt(uni.getStorageSync('allScriptIndex'))
+      this.$http.get('/copywriting_history/query/all',{user_id: uni.getStorageSync('userId')}).then(res => {
+        if (res.status === 'success') {
+          this.title = res.data[index].title
+          this.script = res.data[index].copywriting
+        }else {
+          this.$tip.toast(res.message)
+        }
+      })
+      uni.removeStorageSync('allScriptIndex')
+    }
     this.userId = uni.getStorageSync('userId')
     this.queryVoices()
     this.queryFigures()
@@ -241,7 +253,12 @@ export default {
     back() {
       uni.hideKeyboard()
       setTimeout(() => {
-        uni.redirectTo({ url: '/pages/home/search' })
+        let back_params = uni.getStorageSync('back_params')
+        if (back_params.type === 'redirectTo') {
+          uni.redirectTo({url: back_params.path})
+        }else {
+          uni.switchTab({url: back_params.path})
+        }
       },100)
     },
     edit() {
