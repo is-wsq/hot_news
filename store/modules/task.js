@@ -80,7 +80,7 @@ const actions = {
                         }else if (prev === "pending" && video.status === "failed") {
                             uni.showModal({
                                 title: '提示',
-                                content: `《${video.filename}》视频生成任务失败`,
+                                content: `《${video.filename}》视频生成任务失败,${video.message}`,
                                 showCancel: false,
                             });
                         }
