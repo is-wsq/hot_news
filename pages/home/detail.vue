@@ -145,7 +145,7 @@ export default {
     }
   },
   mounted() {
-    console.log(111)
+    console.log(222)
     this.userId = uni.getStorageSync('userId') || ''
     this.news = uni.getStorageSync('news')
     this.queryStyles()
