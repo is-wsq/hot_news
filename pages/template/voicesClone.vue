@@ -122,7 +122,7 @@ export default {
       audios: [
         'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/1/case_original.wav',
         'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/1/case_clone.wav',
-        'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/272f4122-ab74-4bc1-9cd6-c29a41fb508f/20250326154431855.wav',
+        'https://live.tellai.tech/api/news_assistant/static/generated_sample_audio/1/audio_course.wav',
       ],
       duration: 0,
       interval: null,
