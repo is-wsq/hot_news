@@ -44,10 +44,26 @@
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">声音</view>
         </view>
+        <view style="color: #ffffff;font-size: 14px;margin-top: 10px;">系统音色</view>
         <view class="voice-content">
-          <view style="flex: none;text-align: center" v-for="(item,index) in voices" :key="item.id"
+          <view style="flex: none;text-align: center" v-for="(item,index) in systemVoice" :key="item.id"
                 @click="selectedVoice = item">
-            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '' }">
+            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '', backgroundImage: `url(${item.avatar})` }">
+              <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-if="testAudioIndex !== index"
+                         @click="previewAudio(item,index)">{{'\ue618'}}</uni-icons>
+              <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-else
+                         @click="stopPreviewAudio">{{'\ue637'}}</uni-icons>
+            </view>
+            <view style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 80px;"
+                  :style="{ color: item.id === selectedVoice.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            </view>
+          </view>
+        </view>
+        <view style="color: #ffffff;font-size: 14px;margin-top: 10px;">克隆音色</view>
+        <view class="voice-content">
+          <view style="flex: none;text-align: center" v-for="(item,index) in cloneVoice" :key="item.id"
+                @click="selectedVoice = item">
+            <view class="voice-item" :style="{ border: item.id === selectedVoice.id? '2px solid #e99d42' : '', backgroundImage: `url(${item.avatar})` }">
               <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-if="testAudioIndex !== index"
                          @click="previewAudio(item,index)">{{'\ue618'}}</uni-icons>
               <uni-icons fontFamily="CustomFont" class="off-on" size="20" color="#ffffff" v-else
@@ -92,7 +108,8 @@ export default {
       focus: false,
       title: '',
       script: '',
-      voices: [],
+      systemVoice: [],
+      cloneVoice: [],
       voice: {},
       selectedVoice: {},
       figures: [],
@@ -151,10 +168,11 @@ export default {
     queryVoices() {
       this.$http.get('/timbres/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
-          this.voices = res.data.filter(item => item.status === 'success')
-          if (this.voices.length > 0) {
-            this.voice = this.voices[0]
-            this.selectedVoice = this.voices[0]
+          this.systemVoice = res.data.filter(item => item.status === 'success' && item.type === 'system')
+          this.cloneVoice = res.data.filter(item => item.status === 'success' && item.type === 'clone')
+          if (this.systemVoice.length > 0) {
+            this.voice = this.systemVoice[0]
+            this.selectedVoice = this.systemVoice[0]
           }
         } else {
           this.$tip.confirm(res.message,false)
@@ -364,7 +382,7 @@ export default {
   background-color: #292929;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-  padding: 20px;
+  padding: 20px 10px;
 }
 
 .popup-title {
@@ -383,7 +401,7 @@ export default {
 
 .voice-content {
   width: 100%;
-  height: 220px;
+  height: 150px;
   display: flex;
   gap: 20px;
   overflow-x: auto;
@@ -395,8 +413,8 @@ export default {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #9A9A9A;
   position: relative;
+  background-size: cover;
 }
 
 .off-on {
