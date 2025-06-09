@@ -86,8 +86,21 @@
         <view class="popup-title">
           <view style="color: #ffffff; font-size: 16px;">形象</view>
         </view>
+        <view style="color: #ffffff;font-size: 14px;margin-top: 10px;">系统形象</view>
         <view class="figure-content">
-          <view style="flex: none;text-align: center" v-for="item in figures" :key="item.id"
+          <view style="flex: none;text-align: center" v-for="item in systemFigure" :key="item.id"
+                @click="selectedFigure = item">
+            <image :src="item.picture" class="figure-item" mode="aspectFill"
+                   :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
+            <view
+                style="margin-top: 10px;font-size: 14px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;"
+                :style="{ color: item.id === selectedFigure.id ? '#e99d42' : '#ffffff' }">{{ item.name }}
+            </view>
+          </view>
+        </view>
+        <view style="color: #ffffff;font-size: 14px;margin-top: 10px;">克隆形象</view>
+        <view class="figure-content">
+          <view style="flex: none;text-align: center" v-for="item in cloneFigure" :key="item.id"
                 @click="selectedFigure = item">
             <image :src="item.picture" class="figure-item" mode="aspectFill"
                    :style="{ border: item.id === selectedFigure.id? '2px solid #e99d42' : '' }"></image>
@@ -128,7 +141,8 @@ export default {
       cloneVoice: [],
       voice: {},
       selectedVoice: {},
-      figures: [],
+      systemFigure: [],
+      cloneFigure: [],
       figure: {},
       selectedFigure: {},
       testAudioContext: null,
@@ -163,10 +177,11 @@ export default {
     queryFigures() {
       this.$http.get('/figure/query/user', {user_id: this.userId}).then(res => {
         if (res.status === 'success') {
-          this.figures = res.data.filter(item => item.status === 'success')
-          if (this.figures.length > 0) {
-            this.figure = this.figures[0]
-            this.selectedFigure = this.figures[0]
+          this.systemFigure = res.data.filter(item => item.status === 'success' && item.type === 'system')
+          this.cloneFigure = res.data.filter(item => item.status === 'success' && item.type === 'clone')
+          if (this.systemFigure.length > 0) {
+            this.figure = this.systemFigure[0]
+            this.selectedFigure = this.systemFigure[0]
           }
         } else {
           this.$tip.confirm(res.message,false)
@@ -500,7 +515,7 @@ export default {
 
 .figure-content {
   width: 100%;
-  height: 250px;
+  height: 180px;
   display: flex;
   gap: 20px;
   overflow-x: auto;
