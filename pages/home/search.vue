@@ -88,7 +88,7 @@ export default {
         user_id: this.userId,
         keyword: this.keyword
       }
-      this.searchNews = {}
+      this.searchNews = null
       this.queryHistoryCopy()
       this.$http.get('/news/online_search', params, 600000).then(res => {
         if (res.status === 'success') {
