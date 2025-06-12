@@ -13,7 +13,7 @@
         <view style="flex: 1;"></view>
         <view style="margin-top: 20px;width: 115px">
           <view style="display: flex">
-            <image v-if="info.member !== '普通会员'" src="/static/royal.png" class="vip-icon"></image>
+            <image v-if="info.member !== '普通会员'" src="/static/royal-vip.png" class="vip-icon"></image>
             <image v-else src="/static/royal.png" class="vip-icon"></image>
             <view class="vip-type">{{ info.member }}</view>
           </view>
@@ -130,6 +130,7 @@ export default {
       this.$http.get('/package/query/user',params).then(res => {
         if (res.status === 'success') {
           this.info = res.data.user_info;
+          console.log(this.info)
           this.packages = res.data.packages;
           if (uni.getStorageSync('packageId')) {
             this.selectedPackage = this.packages.find(item => item.id === uni.getStorageSync('packageId'))
