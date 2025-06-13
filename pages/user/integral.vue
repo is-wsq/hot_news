@@ -61,12 +61,10 @@ export default {
       info: {},
       packages: [],
       selectedPackage: {},
-      jssdkConfig: null // 用于存储 JSSDK 配置信息
     }
   },
   onLoad() {
     this.queryInfo()
-    // this.initJSSDK() // 初始化 JSSDK
     this.checkWeChatCode()
   },
   beforeDestroy() {
@@ -75,74 +73,6 @@ export default {
   methods: {
     isWeChat() {
       return /MicroMessenger/i.test(navigator.userAgent);
-    },
-    async initJSSDK() {
-      if (this.isWeChat()) {
-        try {
-          const url = window.location.href.split('#')[0]
-          // 从后端获取 JSSDK 配置信息
-          const response = await this.$http.get('/getJSSDKConfig', {params: {url}})
-          this.jssdkConfig = response.data
-          wx.config({
-            debug: false, // 开启调试模式
-            appId: this.jssdkConfig.appId,
-            timestamp: this.jssdkConfig.timestamp,
-            nonceStr: this.jssdkConfig.nonceStr,
-            signature: this.jssdkConfig.signature,
-            jsApiList: ['chooseWXPay'] // 需要使用的 JS 接口列表
-          })
-          wx.ready(() => {
-            console.log('JSSDK 初始化成功')
-          })
-          wx.error((res) => {
-            console.error('JSSDK 初始化失败', res)
-          })
-        } catch (error) {
-          console.error('获取 JSSDK 配置信息失败', error)
-        }
-      }
-    },
-    async initPayment() {
-      if (this.isWeChat()) {
-        try {
-          const params = {
-            user_id: uni.getStorageSync('userId'),
-            package_id: uni.getStorageSync('packageId'),
-          }
-          const res = await this.$http.post('/package/buy', params)
-          if (res.status === 'success') {
-            wx.chooseWXPay({
-              timestamp: res.data.timeStamp,
-              nonceStr: res.data.nonceStr,
-              package: res.data.package,
-              signType: res.data.signType,
-              paySign: res.data.paySign,
-              success: (result) => {
-                if (result.errMsg === "chooseWXPay:ok") {
-                  this.$tip.confirm('支付成功', false).then(() => {
-                    this.queryInfo()
-                  })
-                } else {
-                  this.$tip.confirm('支付失败', false)
-                }
-              },
-              cancel: () => {
-                this.$tip.confirm('已取消支付', false)
-              },
-              fail: (err) => {
-                this.$tip.confirm('支付失败', false)
-              }
-            })
-          } else {
-            this.$tip.confirm(res.message, false);
-          }
-        } catch (error) {
-          console.error('支付请求出错', error)
-          this.$tip.confirm('支付请求出错，请稍后重试', false)
-        }
-      } else {
-        this.$tip.confirm('需要在微信环境下才能使用', false)
-      }
     },
     getWeChatCode() {
       if (this.isWeChat()) {
