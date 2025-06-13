@@ -235,7 +235,14 @@ export default {
           const cleanUrl = location.origin + location.pathname;
           history.replaceState({}, '', cleanUrl);
           let router = uni.getStorageSync('login_router')
-          uni[router.type]({url: router.path})
+          uni[router.type]({
+            url: router.path,
+            success: () => {
+              setTimeout(() => {
+                history.replaceState({ cleared: true }, '', location.href);
+              }, 100);
+            }
+          })
         }else {
           this.$tip.confirm(res.message,false);
         }
