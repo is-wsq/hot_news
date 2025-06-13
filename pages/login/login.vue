@@ -203,8 +203,7 @@ export default {
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
-        history.replaceState({}, '', authUrl)
-        // location.replace(authUrl)
+        location.replace(authUrl)
 
         // 使用 a 标签模拟点击跳转，兼容 iOS 微信防止前进后退按钮出现     试过不行
         // const a = document.createElement('a');
@@ -236,14 +235,7 @@ export default {
           const cleanUrl = location.origin + location.pathname;
           history.replaceState({}, '', cleanUrl);
           let router = uni.getStorageSync('login_router')
-          uni[router.type]({
-            url: router.path,
-            success: () => {
-              setTimeout(() => {
-                history.replaceState({ cleared: true }, '', location.href);
-              }, 100);
-            }
-          })
+          uni[router.type]({url: router.path})
         }else {
           this.$tip.confirm(res.message,false);
         }
