@@ -29,7 +29,7 @@
         </view>
       </view>
       <view style="margin: 15px 0">视频教程</view>
-      <video style="width: 100%;height: 200px" :src="src" :poster="poster"></video>
+      <video style="width: 100%;height: 200px" src="/static/course.mp4" :poster="poster" preload="auto"></video>
     </view>
     <view class="figure-footer">
       <button class="clone-button" @click="startClone">开始克隆</button>
