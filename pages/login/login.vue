@@ -226,7 +226,7 @@ export default {
       if (code) {
         const cleanUrl = location.origin + location.pathname;
         history.replaceState({}, '', cleanUrl);
-        history.go(0)
+        history.go(-1)
       }
       if (code && uni.getStorageSync('authorized')) {
         uni.removeStorageSync('authorized');
