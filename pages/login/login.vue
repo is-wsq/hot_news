@@ -203,7 +203,8 @@ export default {
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
-        location.replace(authUrl)
+        history.replaceState({}, '', authUrl)
+        // location.replace(authUrl)
 
         // 使用 a 标签模拟点击跳转，兼容 iOS 微信防止前进后退按钮出现     试过不行
         // const a = document.createElement('a');
