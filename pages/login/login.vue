@@ -203,8 +203,8 @@ export default {
 
         // 微信授权跳转
         uni.setStorageSync('authorized',true)
-        // history.replaceState({}, '', authUrl)
-        location.replace(authUrl)
+        history.replaceState({}, '', authUrl)
+        // location.replace(authUrl)
 
         // 使用 a 标签模拟点击跳转，兼容 iOS 微信防止前进后退按钮出现     试过不行
         // const a = document.createElement('a');
@@ -223,11 +223,6 @@ export default {
     },
     checkWeChatCode() {
       let code = this.getUrlCode('code')
-      if (code) {
-        const cleanUrl = location.origin + location.pathname;
-        history.replaceState({}, '', cleanUrl);
-        history.go(-1)
-      }
       if (code && uni.getStorageSync('authorized')) {
         uni.removeStorageSync('authorized');
         this.loginByCode(code)
@@ -238,8 +233,17 @@ export default {
         if (res.status ==='success') {
           uni.setStorageSync('userId', res.data.user_id)
           this.$store.dispatch('task/userLogin', res.data.user_id);
+          const cleanUrl = location.origin + location.pathname;
+          history.replaceState({}, '', cleanUrl);
           let router = uni.getStorageSync('login_router')
-          uni[router.type]({url: router.path})
+          uni[router.type]({
+            url: router.path,
+            success: () => {
+              setTimeout(() => {
+                history.replaceState({ cleared: true }, '', location.href);
+              }, 100);
+            }
+          })
         }else {
           this.$tip.confirm(res.message,false);
         }
