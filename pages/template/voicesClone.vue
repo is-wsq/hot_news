@@ -109,7 +109,7 @@
 <script>
 import LoadingVideo from "../../components/loading-video.vue";
 
-let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2giLCJzdWIiOiI3ODNjNGI1NC1hMWQwLTVmY2ItOTExZC1kNWM1YjNjODY2MTAiLCJpYXQiOjE3NDIyMTA0NDQsImV4cCI6MTc1OTc5NTIwMCwibmFtZSI6InRlc3QifQ.OGrW6VfdM7zLVcGjGz9UHblQQlQoHWSriFB90kJOq98'
+let token = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xpdmUudGVsbGFpLnRlY2g6NTAxMSIsInN1YiI6Ijg1YmIzNDgyLWNmYTgtNWJiNC1iZGRiLWIzYzg5ZTYwYTkwMyIsImlhdCI6MTc1MDA1OTU4NywiZXhwIjoxNzgxNTY4MDAwLCJuYW1lIjoidGlhbiJ9.yGOBshwKI2LoRh03ZmqYYfCvP_X7KfrlAAuoc_TId7M'
 import '../../static/js/recorder.wav.min.js'
 
 export default {
