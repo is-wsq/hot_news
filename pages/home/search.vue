@@ -194,6 +194,8 @@ export default {
   padding: 0 10px;
   box-sizing: border-box;
   flex-wrap: wrap;
+  max-height: 100px;
+  overflow-y: auto;
 }
 
 .tag-item {
