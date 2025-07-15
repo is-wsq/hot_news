@@ -144,6 +144,10 @@ export default {
     },
     uploadFile() {
       let self = this
+      if (!self.selectedFile || !self.selectedFile.path) {
+        this.$tip.confirm('请先选择要上传的文件',false)
+        return
+      }
       self.$refs.clonePopup.close()
 
       self.isLoading = true
