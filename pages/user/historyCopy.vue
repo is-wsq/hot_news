@@ -10,7 +10,7 @@
         <view class="copy-title">{{ item.title }}</view>
         <view class="copy-item">{{ item.copywriting }}</view>
         <view style="width: 100%;text-align: end">
-          <image class="copy-icon" src="/static/copy_icon.png" @click="copy(item)"></image>
+          <image class="copy-icon" src="/static/copy_icon.png" @click.stop="copy(item)"></image>
         </view>
       </view>
     </view>

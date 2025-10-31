@@ -11,11 +11,39 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-tingzhiluzhi:before {
+  content: "\ue722";
+}
+
+.icon-stop-recording:before {
+  content: "\ue8a5";
+}
+
+.icon-weikong:before {
+  content: "\ue600";
+}
+
+.icon-liebiaoweikong:before {
+  content: "\ue76c";
+}
+
+.icon-dingdanweikong:before {
+  content: "\ue638";
+}
+
+.icon-dingdanweikong1:before {
+  content: "\ue617";
+}
+
+.icon-if-diamond:before {
+  content: "\ue607";
+}
+
 .icon-play:before {
-  content: "\e618";
+  content: "\ue618";
 }
 
 .icon-pause:before {
-  content: "\e637";
+  content: "\ue637";
 }
 
